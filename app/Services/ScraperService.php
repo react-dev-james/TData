@@ -4,6 +4,8 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use \GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Cookie\FileCookieJar;
 
 class ScraperService
 {
@@ -16,11 +18,12 @@ class ScraperService
     protected $proxies;
     protected $log;
 
-    public function __construct( Array $clientOptions = [ 'verify' => false ] )
+    public function __construct( Array $clientOptions = [ 'verify' => false, 'cookies' => true ] )
     {
+
+        $clientOptions['cookies'] = new FileCookieJar(storage_path('app/cookies/ticketCookies.txt'));
         $this->client = new Client( $clientOptions );
-        //$this->cralwer = new Crawler();
-        $this->proxies = \App\Proxy::where("status","active")->get();
+        $this->proxies = collect();
         $this->redirects = [];
     }
 
@@ -37,6 +40,11 @@ class ScraperService
     public function getResponse()
     {
         return $this->lastResponse;
+    }
+
+    public function getRedirects(  )
+    {
+        return $this->redirects;
     }
 
     public function getLog() {
@@ -64,7 +72,7 @@ class ScraperService
     }
 
     public function useCrawlera() {
-        $this->proxy = 'http://d1980ba552e14300be03b2090fca136a:@proxy.crawlera.com:8010';
+        $this->proxy = '';
         return $this;
     }
 
@@ -77,7 +85,7 @@ class ScraperService
     public function display( $message )
     {
         $this->log[] = $message;
-        echo $message . "\n";
+        //echo $message . "\n";
         return $this;
     }
 
@@ -123,13 +131,14 @@ class ScraperService
         return $this;
     }
 
-    protected function post( $url, $params = [], Array $headers = [] )
+    protected function post( $url, $params = [], Array $headers = [], $contentType = 'application/x-www-form-urlencoded; charset=UTF-8' )
     {
 
         $options = [
             'timeout'         => 90,
             'headers'         => array_merge( $headers, [
                 'User-Agent'  => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
+                'Content-Type' => $contentType
             ] ),
             'allow_redirects' => [
                 'track_redirects' => true

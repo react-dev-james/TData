@@ -12162,24 +12162,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {
@@ -61184,7 +61166,7 @@ if (false) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('md-toolbar', {
-    staticClass: "padding-5 no-margin-bottom full-width bg-dark-transparent border-bottom-1 border-grey-400"
+    staticClass: "padding-5 no-margin-bottom full-width bg-white-transparent border-bottom-1 border-grey-400"
   }, [_c('div', {
     staticClass: "col-lg-12 col-md-12"
   }, [_c('div', {
@@ -61192,48 +61174,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('img', {
     attrs: {
       "src": "/img/logo_xs.png",
-      "height": "60",
-      "width": "60"
+      "height": "50",
+      "width": "50"
     }
-  }), _vm._v(" "), _c('md-button', {
-    staticClass: "hidden-xs md-primary",
-    class: _vm.currentPage == 'home' ? 'link-primary' : 'link-accent',
+  }), _vm._v(" "), (_vm.shared.user.id) ? _c('md-button', {
+    class: _vm.currentPage == 'listings' ? 'link-primary' : 'link-accent',
     attrs: {
-      "href": "/"
+      "href": "/admin/listings"
     }
-  }, [_vm._v("\n                Ticket Data\n            ")]), _vm._v(" "), (_vm.shared.user.id) ? _c('md-button', {
-    staticClass: "no-margin-top",
-    class: _vm.currentPage == 'listings' ? 'link-primary' : 'link-accent'
-  }, [_c('md-icon', [_vm._v("confirmation_number")]), _vm._v("\n                Events\n                "), _c('md-icon', [_vm._v("keyboard_arrow_down")])], 1) : _vm._e(), _vm._v(" "), (_vm.shared.user.is_admin) ? _c('md-menu', {
-    staticClass: "hidden-xs hidden-sm pull-right",
-    attrs: {
-      "md-align-trigger": ""
-    }
-  }, [_c('md-button', {
-    staticClass: "no-margin-top",
-    class: _vm.currentPage == 'admin' ? 'link-primary' : 'link-accent',
-    attrs: {
-      "md-menu-trigger": ""
-    }
-  }, [_c('md-icon', [_vm._v("supervisor_account")]), _vm._v("\n                    Admin\n                    "), _c('md-icon', [_vm._v("keyboard_arrow_down")])], 1), _vm._v(" "), _c('md-menu-content', [_c('md-menu-item', {
-    attrs: {
-      "href": "/admin/users"
-    }
-  }, [_vm._v("\n                        Manage Users\n                    ")]), _vm._v(" "), _c('md-menu-item', {
-    attrs: {
-      "href": "/admin/jobs"
-    }
-  }, [_vm._v("\n                        View Logs\n                    ")]), _vm._v(" "), _c('md-menu-item', {
-    attrs: {
-      "href": ""
-    },
-    nativeOn: {
-      "click": function($event) {
-        $event.preventDefault();
-        _vm.$root.showNotification('Placeholder')
-      }
-    }
-  }, [_vm._v("\n                        Manage Settings\n                    ")])], 1)], 1) : _vm._e()], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v("\n                Event Listings\n            ")]) : _vm._e()], 1), _vm._v(" "), _c('div', {
     staticClass: "pull-right"
   }, [(_vm.shared.user.email) ? _c('md-menu', {
     staticClass: "hidden-xs hidden-sm",
@@ -61246,7 +61195,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "md-menu-trigger": ""
     }
-  }, [_c('md-icon', [_vm._v("person")]), _vm._v("\n                        " + _vm._s(_vm.shared.user.name) + "\n                        "), _c('md-icon', [_vm._v("keyboard_arrow_down")])], 1), _vm._v(" "), _c('md-menu-content', [_c('md-menu-item', {
+  }, [_c('md-icon', [_vm._v("person")]), _vm._v("\n                        " + _vm._s(_vm.shared.user.name) + "\n                        "), _c('md-icon', [_vm._v("keyboard_arrow_down")])], 1), _vm._v(" "), _c('md-menu-content', [(_vm.shared.user.is_admin) ? _c('md-menu-item', {
+    attrs: {
+      "href": "/admin/users"
+    }
+  }, [_vm._v("\n                            Manage Users\n                        ")]) : _vm._e(), _vm._v(" "), (_vm.shared.user.is_admin) ? _c('md-menu-item', {
+    attrs: {
+      "href": "/admin/jobs"
+    }
+  }, [_vm._v("\n                            View Logs\n                        ")]) : _vm._e(), _vm._v(" "), (_vm.shared.user.is_admin) ? _c('md-menu-item', {
+    attrs: {
+      "href": ""
+    },
+    nativeOn: {
+      "click": function($event) {
+        $event.preventDefault();
+        _vm.$root.showNotification('Placeholder')
+      }
+    }
+  }, [_vm._v("\n                            Manage Settings\n                        ")]) : _vm._e(), _vm._v(" "), _c('md-menu-item', {
     attrs: {
       "href": "/logout"
     }
