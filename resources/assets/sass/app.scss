@@ -1,0 +1,157 @@
+
+// Fonts
+@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+
+// Variables
+@import "variables";
+
+// Bootstrap
+@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+//Helpers
+@import "helpers";
+
+//Plaeholders
+@import "placeholders";
+
+html,
+body,
+.app-viewport {
+  font-family: "Roboto", sans-serif !important;
+  height: 100%;
+}
+
+div[class^="ui-"] {
+  font-size: 100%;
+}
+
+[class^="ui-modal"] {
+  font-size: 1em !important;
+}
+
+.ui-modal__mask {
+  z-index: 5 !important;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+.v-cloak-show {
+  display: none !important;
+}
+
+.v-cloak-show[v-cloak] {
+  display: block !important;
+}
+
+a {
+  color: #000;
+}
+
+a:hover {
+  color: lighten($brand-primary, 20%) !important;
+}
+
+.link-primary {
+  color: #5e35b1 !important;
+}
+
+.link-accent {
+  color: $brand-primary !important;
+}
+
+.text-accent {
+  color: $brand-accent !important;
+}
+
+.text-invalid {
+  color: $brand-invalid !important;
+}
+
+.affix-hug-top {
+  top: 0px;
+}
+
+.affix {
+  padding: 2px !important;
+  z-index: 100 !important;
+}
+
+.drop-shadow-right {
+  box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.md-toolbar {
+  display: block !important;
+}
+
+.bg-image-6 {
+  background-image: url('/img/bg/bg7.jpg');
+  background-size: cover;
+}
+
+@media (max-width: 1023px) {
+  .fixed-sn .content {
+    padding-left: 0px !important;
+  }
+
+  .sidenav {
+    position: absolute;
+    top: 64px;
+    left: -1000px;
+    bottom: 0px;
+    width: 240px;
+    height: 100%;
+  }
+}
+
+.fixed-sn .content {
+  padding-left: 240px;
+}
+
+.sidenav {
+  position: absolute;
+  top: 64px;
+  bottom: 0px;
+  width: 240px;
+  height: 100%;
+}
+
+.sidenav-fix {
+  top: auto !important;
+  bottom: auto !important;
+  width: initial !important;
+}
+
+.md-background-grey .md-list-item-container {
+  background-color: $brand-background !important;
+}
+
+.md-table  .md-table-cell-container {
+  padding-left: 18px !important;
+  padding-right: 10px !important;
+}
+.md-table .md-table-head-text {
+  padding-left: 18px !important;
+  padding-right: 10px !important;
+}
+
+.md-card .md-title {
+  font-size: 20px !important;
+  line-height: 28px;
+}
+
+.list-group-item {
+  margin: 0px !important;
+  margin-bottom: -1px !important;
+}
+
+.listings-table .md-checkbox {
+  margin: 0px 5px 5px 0px !important;
+}
+
+.md-input-button {
+  margin-top: 0px;
+  margin-bottom: 2px;
+}

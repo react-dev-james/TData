@@ -1,0 +1,75 @@
+@-webkit-keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0
+  }
+  100% {
+    background-position: 468px 0
+  }
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -468px 0
+  }
+  100% {
+    background-position: 468px 0
+  }
+}
+
+.animated-background {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-animation-name: placeHolderShimmer;
+  animation-name: placeHolderShimmer;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  background: transparent;
+  background: -webkit-gradient(linear, left top, right top, color-stop(8%, #eeeeee), color-stop(18%, #dddddd), color-stop(33%, #eeeeee));
+  background: -webkit-linear-gradient(left, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  -webkit-background-size: 800px 104px;
+  background-size: 100% auto;
+  height: auto;
+  position: relative;
+}
+
+.background-masker {
+  background: #fff;
+  position: relative;
+}
+
+.background-masker.content-row {
+  height: 20px;
+  left: 100%;
+  width: 2px;
+}
+
+.background-masker.content-long {
+  height: 8px;
+  left: 80%;
+}
+
+.background-masker.content-medium {
+  height: 8px;
+  left: 60%;
+}
+
+.background-masker.content-short {
+  height: 8px;
+  left: 30%;
+}
+
+.background-masker.content-spacer-small {
+  height: 8px;
+  width: 100%;
+}
+
+.background-masker.content-spacer {
+  height: 20px;
+  width: 100%;
+}
+
