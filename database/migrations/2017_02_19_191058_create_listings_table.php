@@ -25,11 +25,13 @@ class CreateListingsTable extends Migration
             $table->enum('source',['boxofficefox','ticketdata'])->default('boxofficefox');
             $table->string( 'status' )->default('active')->nullable();
             $table->string( 'category' )->default( "" )->nullable();
+            $table->string( 'offer_code' )->default( "" )->nullable();
             $table->string( 'sub_category' )->default( "" )->nullable();
             $table->string( 'performer' )->default( "" )->nullable();
             $table->string( 'performer_normalized' )->default( "" )->nullable();
             $table->string( 'event_name' )->default( "" )->nullable();
             $table->string( 'event_normalized' )->default( "" )->nullable();
+            $table->string( 'event_day' )->default( "" )->nullable();
             $table->timestamp('event_date')->nullable();
             $table->string( 'sale_status' )->default( 'active' )->nullable();
             $table->string( 'venue' )->default( "" )->nullable();

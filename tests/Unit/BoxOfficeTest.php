@@ -18,7 +18,10 @@ class BoxOfficeTest extends TestCase
     public function testBoxOffice()
     {
         $scraper = new \App\Services\TicketService();
-        $scraper->fetchBoxOfficeListings();
-        dd($scraper->getLog());
+
+        $scraper->fetchBoxOfficeListings(500, 1);
+        $this->assertEquals( true, $scraper->state( 'box_logged_in' ) );
+
+        print_r($scraper->getLog());
     }
 }

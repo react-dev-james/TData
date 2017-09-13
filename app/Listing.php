@@ -25,6 +25,14 @@ class Listing extends Model
         return $this->hasOne( Update::class );
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sales(  )
+    {
+        return $this->hasMany(\App\Sale::class);
+    }
+
     public function recordUpdate( $type )
     {
         $dateField = $type . "_at";

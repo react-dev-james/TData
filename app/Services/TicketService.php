@@ -5,6 +5,7 @@ namespace App\Services;
 use \App\Listing;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
+use Carbon\Carbon;
 
 
 class TicketService extends ScraperService implements IScraper
@@ -13,6 +14,7 @@ class TicketService extends ScraperService implements IScraper
     const BOX_LOGIN_URL = 'https://www.boxofficefox.com/login/';
     const BOX_ACCOUNT_URL = 'https://www.boxofficefox.com/myaccount/';
     const BOX_LOGIN_POST_URL = 'https://www.boxofficefox.com/wp-admin/admin-ajax.php';
+    const BOX_SEARCH_URL = 'https://www.boxofficefox.com/wp-admin/admin-ajax.php';
     const BOX_USERNAME = 'mjseats@gmail.com';
     const BOX_PASSWORD = 'noandrew';
 
@@ -40,18 +42,185 @@ class TicketService extends ScraperService implements IScraper
         return $this->state[$key];
     }
 
-    public function fetchBoxOfficeListings(  )
+    public function boxOfficeSearchParams(Carbon $startDate, Carbon $endDate, $offset = 0, $limit = 500) {
+
+        $startDateString = $startDate->format("m/d/y");
+        $endDateString = $endDate->format("m/d/y");
+
+        $params = [
+            "sEcho"          => "1",
+            "iColumns"       => "9",
+            "sColumns"       => "",
+            "iDisplayStart"  => $offset,
+            "iDisplayLength" => $limit,
+            "mDataProp_0"    => "ticket_sale_start",
+            "mDataProp_1"    => "event_start_time",
+            "mDataProp_2"    => "event_name",
+            "mDataProp_3"    => "venue_name",
+            "mDataProp_4"    => "venue_capacity",
+            "mDataProp_5"    => "price_col",
+            "mDataProp_6"    => "venue_city",
+            "mDataProp_7"    => "venue_state",
+            "mDataProp_8"    => "report_link",
+            "sSearch"        => "",
+            "bRegex"         => "false",
+            "sSearch_0"      => "",
+            "bRegex_0"       => "false",
+            "bSearchable_0"  => "true",
+            "sSearch_1"      => "",
+            "bRegex_1"       => "false",
+            "bSearchable_1"  => "true",
+            "sSearch_2"      => "",
+            "bRegex_2"       => "false",
+            "bSearchable_2"  => "true",
+            "sSearch_3"      => "",
+            "bRegex_3"       => "false",
+            "bSearchable_3"  => "true",
+            "sSearch_4"      => "",
+            "bRegex_4"       => "false",
+            "bSearchable_4"  => "true",
+            "sSearch_5"      => "",
+            "bRegex_5"       => "false",
+            "bSearchable_5"  => "true",
+            "sSearch_6"      => "",
+            "bRegex_6"       => "false",
+            "bSearchable_6"  => "true",
+            "sSearch_7"      => "",
+            "bRegex_7"       => "false",
+            "bSearchable_7"  => "true",
+            "sSearch_8"      => "",
+            "bRegex_8"       => "false",
+            "bSearchable_8"  => "true",
+            "iSortCol_0"     => "0",
+            "sSortDir_0"     => "asc",
+            "iSortingCols"   => "1",
+            "bSortable_0"    => "true",
+            "bSortable_1"    => "true",
+            "bSortable_2"    => "true",
+            "bSortable_3"    => "true",
+            "bSortable_4"    => "true",
+            "bSortable_5"    => "true",
+            "bSortable_6"    => "true",
+            "bSortable_7"    => "true",
+            "bSortable_8"    => "true",
+            "action"         => "bofv2",
+            "data"           => "onsale_range=" . $startDateString . "+-+" . $endDateString . "&event_range=&category=All&type=all",
+        ];
+
+        return $params;
+    }
+
+    public function fetchBoxOfficeListings($limit = 500, $maxPages = 1)
     {
+
         if (!$this->state('box_logged_in')) {
-            $this->boxOfficeLogin();
+            if (!$this->boxOfficeLogin()) {
+                $this->display( "Error logging into box office." );
+                return false;
+            }
         }
 
-        if ( !$this->state( 'box_logged_in' ) ) {
-            $this->display("Error logging into box office.");
+        $startDate = Carbon::now();
+        $startDate->startOfWeek();
+        $endDate = $startDate->copy()->addDays(7);
+        $start = 0;
+        $offset = $limit;
+        $savedListings = collect();
+
+        for ($i = 0; $i <= $maxPages; $i++) {
+            $start = $offset * $i;
+            $this->display( "Fetching page " . $i . " from box office with start of " . $start );
+            $params = $this->boxOfficeSearchParams( $startDate, $endDate, $start, $limit );
+            $results = $this->post( self::BOX_SEARCH_URL, $params );
+            $results = @json_decode( $results, true );
+
+            if ( $i == 0 ) {
+                $this->display( "Found " . $results['iTotalRecords'] . " from box office fox, starting parsing." );
+            }
+
+            if ( !isset( $results['iTotalDisplayRecords'] ) || $results['iTotalDisplayRecords'] <= 0 || $results['iTotalDisplayRecords'] <= ( $start + $offset ) ) {
+                $this->display( "No more records found from box office fox." );
+                return false;
+            }
+
+            /* Parse and normalize returned results */
+            $records = $this->boxOfficeNormalize($results['aaData']);
+
+            $savedListings->push($this->saveListings($records));
+
+        }
+    }
+
+    public function boxOfficeNormalize( Array $results )
+    {
+        $records = collect();
+        foreach ($results as $result) {
+            $newRecord = [
+                'source'         => 'boxofficefox',
+                'category'       => ucfirst( $result['category_name'] ),
+                'event_name'     => $result['event_name'],
+                'slug'           => str_slug( $result['event_name'] ),
+                'recurring'      => (bool) $result['recurring'],
+                'offer_code'     => $result['ticket_offer_code'],
+                'venue'          => $result['venue_name'],
+                'venue_zip'      => $result['venue_zip'],
+                'venue_city'     => $result['venue_city'],
+                'venue_state'    => $result['venue_state'],
+                'venue_country'  => $result['venue_country'],
+                'venue_lat'      => $result['venue_lat'],
+                'venue_lng'      => $result['venue_long'],
+                'venue_capacity' => intval(str_replace(",","",$result['venue_capacity'])),
+                'event_date'     => date( "Y-m-d H:i:s", $result['event_start_time_local'] ),
+                'event_day'     => date( "l", $result['event_start_time_local'] ),
+            ];
+
+            if (stristr($result['price_col'], "-") !== false) {
+                list($lowPrice, $highPrice) = explode("-", $result['price_col']);
+            } else {
+                $lowPrice = $result['price_col'];
+                $highPrice = $result['price_col'];
+            }
+
+            $lowPrice = intval(str_replace("$", "", $lowPrice));
+            $highPrice = intval(str_replace("$", "", $highPrice));
+
+            $newRecord['low_ticket_price'] = $lowPrice;
+            $newRecord['high_ticket_price'] = $highPrice;
+            $newRecord['avg_ticket_price'] = round(($highPrice + $lowPrice) / 2);
+
+            /* Extract ticket sale data */
+            $parser = new Crawler($result['ticket_sale_start']);
+            $saleData = $parser->filter('span')->first()->text();
+            if ($saleData == 'OnSale' || $saleData == 'OnPresale') {
+                $newRecord['sale_status'] = $saleData;
+                $newRecord['sale'] = [
+                    'sale_date' => date( "Y-m-d 09:00:00" ),
+                    'day'       => date( "l" ),
+                    'manual'    => true,
+                    'type'      => 'current',
+                    'offer_code' => $result['ticket_offer_code']
+                ];
+            } else {
+
+                /**
+                 * Parse the data from the sale status, format is: 09.16.17 1pm
+                 */
+                $saleDate = str_replace(".","/", $saleData);
+                $newRecord['sale_status'] = "Future";
+                $newRecord['sale'] = [
+                    'sale_date' => date( "Y-m-d H:i:s", strtotime( $saleDate ) ),
+                    'day'       => date( "l", strtotime( $saleDate ) ),
+                    'manual'    => false,
+                    'type'      => 'future',
+                    'offer_code' => '',
+                    'is_future'  => true
+                ];
+            }
+
+            $records->push($newRecord);
         }
 
-        $result = $this->get( self::BOX_ACCOUNT_URL );
-        $this->save( 'box_office_account.html' );
+        return $records;
     }
 
     public function boxOfficeLogin(  )
@@ -108,55 +277,50 @@ class TicketService extends ScraperService implements IScraper
     }
 
     public function saveListings(Collection $listings) {
-        $savedListings = collect([]);
+
         $newListings = 0;
-        $existingListings = 0;
-        foreach ($listings as $key => $item) {
+        $updatedListings = 0;
+        $newSales = 0;
+        $updatedSales = 0;
+        foreach ($listings as $listing) {
 
-            $listing = $item['listing'];
+            $sale = $listing['sale'];
+            unset($listing['sale']);
 
-            $newListing = Listing::firstOrNew([
-                'site_id' => $listing['id'],
-                'source' => self::SOURCE_IDENT
-            ]);
+            $newListing = Listing::firstOrCreate([
+                'slug' => $listing['slug'],
+                'source' => $listing['source']
+            ], $listing);
 
-            if($newListing->exists) {
-                $existingListings++;
-            } else {
+            //$newListing = Listing::create($listing);
+
+            if ($newListing->wasRecentlyCreated === true) {
                 $newListings++;
-                $newListing->fill([
-                    'schedule_updated_at' => date( "Y-m-d H:i:s", time() - 3600000 ),
-                    'priority'            => 1
-                ]);
+            } else {
+                $newListing->fill($listing)->save();
+                $updatedListings++;
             }
 
-            $newListing->fill([
-                'name'          => str_limit($listing['name'],150),
-                'host_name'     => $listing['user']['first_name'],
-                'city'          => $listing['localized_city'],
-                'bedrooms'      => $listing['bedrooms'],
-                'beds'          => $listing['beds'],
-                'lat'           => $listing['lat'],
-                'lng'           => $listing['lng'],
-                'capacity'      => $listing['person_capacity'],
-                'reviews_count' => $listing['reviews_count'],
-                'rating'        => $listing['star_rating'],
-                'room_type'     => $this->normaliseRoomType( $listing['room_type'] ),
-                'rate_type'     => $item['pricing_quote']['rate_type'],
-                'current_rate'  => floatval( $item['pricing_quote']['rate']['amount'] ),
-            ]);
+            $newSale = \App\Sale::firstOrCreate([
+                'listing_id' => $newListing->id,
+                'sale_date'  => $sale['sale_date'],
+                'type'       => $sale['type']
+            ], $sale);
 
-
-            $newListing->save();
-            $this->location->listings()->syncWithoutDetaching([$newListing->id]);
-            $savedListings->push($newListing);
+            if ( $newSale->wasRecentlyCreated === true ) {
+                $newSales++;
+            } else {
+                $newSale->fill( $sale )->save();
+                $updatedSales++;
+            }
 
         }
 
         return collect([
-            'listings' => $savedListings,
-            'new_listings' => $newListings,
-            'existing_listings' => $existingListings
+            'new' => $newListings,
+            'updated' => $updatedListings,
+            'sales_new' => $newSales,
+            'sales_updated' => $updatedSales
         ]);
     }
 
