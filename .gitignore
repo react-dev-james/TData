@@ -1,7 +1,6 @@
 /node_modules
 /public/storage
 /storage/*.key
-/app/Console/Commands/Data/*.csv
 /vendor
 /.idea
 Homestead.json

@@ -64,7 +64,7 @@ class ImportTicketData extends Command
             }, $item);
 
             $ticketItem['category_slug'] = str_slug($ticketItem['category']);
-            $ticketItem['name'] = str_slug($ticketItem['category']);
+            $ticketItem['name'] = $ticketItem['category'];
             $ticketItem['name_slug'] = str_slug($ticketItem['category']);
 
             $record = \App\Data::firstOrCreate(['category_slug' => $ticketItem['category_slug']], $ticketItem);
