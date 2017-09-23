@@ -16,8 +16,10 @@ Route::get( "/reports/{reportType}", 'Api\ReportsController@report' );
 
 /* Listings */
 Route::get( "/listings", 'Api\ListingsController@index' );
+Route::get( "/dataSearch", 'Api\ListingsController@dataSearch' );
 Route::get( '/listings/{listing}', 'Api\ListingsController@fetch' );
 Route::post( '/listings/update/{listing}', 'Api\ListingsController@update' );
+Route::post( '/listings/associate/{listing}/{data}', 'Api\ListingsController@associate' );
 Route::post( '/listings/updateOutlierStatus/{listing}', 'Api\ListingsController@updateOutlierStatus' );
 Route::post( '/listings/create', 'Api\ListingsController@create' );
 Route::post( '/listings/delete/{listing}', 'Api\ListingsController@delete' );

@@ -50,9 +50,12 @@
                     user: {},
                     notifications: [],
                     listings: [],
+                    dataSearch: [],
                     listing: {
                         updates: [],
-                        stats: {}
+                        stats: {},
+                        sales_stats: {},
+                        data: {}
                     },
                     page: '',
                     state: {},

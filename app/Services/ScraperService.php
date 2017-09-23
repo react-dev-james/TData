@@ -135,7 +135,7 @@ class ScraperService
     {
 
         $options = [
-            'timeout'         => 90,
+            'timeout'         => 900,
             'headers'         => array_merge( $headers, [
                 'User-Agent'  => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
                 'Content-Type' => $contentType
@@ -175,7 +175,7 @@ class ScraperService
     {
 
         $options = [
-                'timeout' => 90,
+                'timeout' => 900,
                 'headers' => [
                     'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36',
                 ],
@@ -191,6 +191,11 @@ class ScraperService
 
         if (!empty($this->proxy)) {
             $options['proxy'] = $this->proxy;
+        }
+
+        if (count($params) > 0) {
+            $url .= "?" . http_build_query($params);
+
         }
 
         try {

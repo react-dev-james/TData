@@ -10,7 +10,7 @@
             <div class="col-lg-3 margin-top-5 margin-top-sm-15 margin-top-xs-15" v-for="(listing, rowIndex) in state.reportItems" :key="rowIndex">
                 <div class="padding-5 border-1 border-grey-100 bg-grey-100 border-radius-5">
                     <span>
-                       {{ listing.name|limitTo(20) }}
+                       {{ listing.event_name|limitTo(20) }}
                         <md-tooltip md-direction="top">{{ listing.name }}</md-tooltip>
                     </span>
 
@@ -28,8 +28,7 @@
 
             <div class="padding-15">
                 <div class="pull-left">
-                <h1 class="md-title">Listings <span class="text-muted" v-if="shared.activeReport">({{ shared.activeReport.name }})</span></h1>
-                <a v-if="shared.activeReport" href="/admin/listings" class="text-muted">Clear Custom Report</a>
+                    <h1 class="md-title">Event Listings</h1>
                 </div>
                 <div class="pull-right">
                     <md-menu md-size="4">
@@ -60,9 +59,11 @@
                         <md-icon>search</md-icon>
                     </md-button>
 
+                    <!--
                     <md-button v-if="!state.sortSelected" class="md-icon-button" @click.native="state.sortSelected = !state.sortSelected">
                         <md-icon>sort</md-icon>
                     </md-button>
+                    -->
 
                     <md-button v-if="state.sortSelected" class="md-icon-button" @click.native="state.sortSelected = !state.sortSelected">
                         <md-icon>clear_all</md-icon>
@@ -84,9 +85,9 @@
                         <label>Select a Field</label>
                         <md-select v-model="options.searchField">
                             <md-option value="all">All Fields</md-option>
-                            <md-option value="city">City</md-option>
-                            <md-option value="name">Name</md-option>
-                            <md-option value="host_name">Host Name</md-option>
+                            <md-option value="event_name">Event Name</md-option>
+                            <md-option value="venue_city">Venue City</md-option>
+                            <md-option value="venue">Venue Name</md-option>
                         </md-select>
                     </md-input-container>
                 </div>
@@ -138,18 +139,23 @@
             <md-table v-else :md-sort="options.sort.name" :md-sort-type="options.sort.type" @sort="onSort" @select="onSelected">
                 <md-table-header>
                     <md-table-row>
-                        <md-table-head md-sort-by="name">Name</md-table-head>
-                        <md-table-head md-sort-by="city">Location</md-table-head>
-                        <md-table-head md-sort-by="bedrooms" >Rooms</md-table-head>
-                        <md-table-head md-sort-by="beds" >Beds</md-table-head>
-                        <md-table-head md-sort-by="current_rate" >Rate</md-table-head>
-                        <md-table-head md-sort-by="percent_booked" >Occupancy</md-table-head>
-                        <md-table-head md-sort-by="price_per_bed" >Per Bed</md-table-head>
-                        <md-table-head md-sort-by="projected_revenue" >Revenue</md-table-head>
-                        <md-table-head md-sort-by="profit_score">Score</md-table-head>
-                        <md-table-head md-sort-by="capacity" >Capacity</md-table-head>
-                        <md-table-head md-sort-by="room_type">Type</md-table-head>
-                        <md-table-head md-sort-by="outlier">Outlier</md-table-head>
+                        <md-table-head md-sort-by="event_name">Event</md-table-head>
+                        <md-table-head md-sort-by="performer">Performer</md-table-head>
+                        <md-table-head md-sort-by="venue" >Venue</md-table-head>
+                        <md-table-head md-sort-by="roi" >ROI</md-table-head>
+                        <md-table-head md-sort-by="avg_sale_price" >SH Sold</md-table-head>
+                        <md-table-head md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
+                        <md-table-head md-sort-by="total_sales" >SH Tix</md-table-head>
+                        <md-table-head md-sort-by="total_sales_past" >SH Past</md-table-head>
+                        <md-table-head md-sort-by="low_ticket_price" >Low</md-table-head>
+                        <md-table-head md-sort-by="high_ticket_price" >High</md-table-head>
+                        <md-table-head md-sort-by="total_listed">Available</md-table-head>
+                        <md-table-head md-sort-by="sale_status" >Sale Status</md-table-head>
+                        <md-table-head md-sort-by="venue_capacity" >Capacity</md-table-head>
+                        <md-table-head md-sort-by="event_day" >Day</md-table-head>
+                        <md-table-head md-sort-by="event_date" >Date</md-table-head>
+                        <md-table-head md-sort-by="venue_state" >State</md-table-head>
+
                         <md-table-head >Options</md-table-head>
                     </md-table-row>
                 </md-table-header>
@@ -158,52 +164,58 @@
                     <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing" :md-selection="true" :key="rowIndex">
                         <md-table-cell>
                         <span>
-                           {{ listing.name|limitTo(24) }}
-                            <md-tooltip md-direction="top">{{ listing.name }}</md-tooltip>
+                           {{ listing.event_name|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.event_name }}</md-tooltip>
                         </span>
 
                         </md-table-cell>
                         <md-table-cell>
-                            <span v-if="listing.locations[0]">
-                               <span v-if="listing.locations[0].country == 'United States'">
-                                     {{ listing.locations[0].city }}, {{ listing.locations[0].state }}
-                                </span>
-                                <span v-else>
-                                     {{ listing.locations[0].city }}, {{ listing.locations[0].country }}
-                                </span>
+                            {{ listing.performer ? listing.performer : 'N/A'|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.performer ? listing.performer : 'N/A' }}</md-tooltip>
+                        </md-table-cell>
+                        <md-table-cell>
+                            {{ listing.venue|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.venue }}</md-tooltip>
                             </span>
-                            <span v-else>N/A</span>
                         </md-table-cell>
                         <md-table-cell>
-                        <span class="label label-info pading-10-5">{{ listing.bedrooms }}</span>
+                            <span class="">N/A</span>
                         </md-table-cell>
                         <md-table-cell>
-                        <span class="label label-info pading-10-5">{{ listing.beds }}</span>
+                            <span class="">{{ listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">${{ listing.current_rate }}</span>
+                            <span class="">{{ listing.sales_stats ? listing.sales_stats.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">{{ listing.stats ? listing.stats.percent_booked : 'N/A' }}%</span>
+                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_sales : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">${{ listing.stats ? listing.stats.price_per_bed : 'N/A' }}</span>
+                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">${{ listing.stats ? listing.stats.projected_revenue  : 'N/A'}}</span>
+                            <span class="">${{ listing.low_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">{{ listing.profit_score ? listing.profit_score  : 'N/A'}}</span>
+                            <span class="">${{ listing.high_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="label label-info pading-10-5">{{ listing.capacity }}</span>
+                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_listed : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span >{{ listing.room_type }}</span>
+                            <span class="">{{ listing.sale_status }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <trans-listing-outlier-status :listing="listing"></trans-listing-outlier-status>
-
+                            <span class="">{{ listing.venue_capacity }}</span>
+                        </md-table-cell>
+                        <md-table-cell>
+                            <span class="">{{ listing.event_day }}</span>
+                        </md-table-cell>
+                        <md-table-cell>
+                            <span class="">{{ listing.nice_date }}</span>
+                        </md-table-cell>
+                        <md-table-cell>
+                            <span class="">{{ listing.venue_state }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <md-menu md-size="5" md-direction="top left">
@@ -211,13 +223,13 @@
                                     <md-icon clas="md-primary">more_vert</md-icon>
                                 </md-button>
                                 <md-menu-content>
-                                    <md-menu-item :href="listing.source_link" target="_blank">
-                                            <md-icon>hotel</md-icon>
-                                            <span>View on AirBnb</span>
-                                    </md-menu-item>
                                     <md-menu-item @click.native="confirmDeleteListing(listing)">
                                         <md-icon >delete</md-icon>
                                         <span>Delete</span>
+                                    </md-menu-item>
+                                    <md-menu-item @click.native="associateListing(listing)">
+                                        <md-icon>attach_file</md-icon>
+                                        <span>Associate</span>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
@@ -246,6 +258,57 @@
             ref="delete-listing">
     </md-dialog-confirm>
 
+    <ui-modal ref="associateModal" title="Associate This Listing With Secondary Data" size="large">
+        <h4 class="margin-bottom-5">{{ shared.listing.event_name }}</h4>
+        <span v-if="shared.listing.data.length > 0">This listing is already associated with <span class="text-underline">{{ shared.listing.data[0].category }} </span> <span class="label label-info pull-right">{{ shared.listing.data[0].pivot.confidence }}% Confidence</span></span>
+
+        <md-input-container class="margin-top-10">
+            <label>Search for matching data</label>
+            <md-input v-model="options.dataSearch" @change="onDataSearch"></md-input>
+        </md-input-container>
+
+        <md-list class="md-double-line" v-if="!state.dataLoading" style="max-height: 600px; overflow: auto;">
+            <md-list-item v-for="(item,index) in shared.dataSearch" :key="index">
+                <div class="md-list-text-container">
+                    <span class="label label-info">{{ item.category }}  </span>
+                    <span>{{ item.upcoming_events }} Upcoming Events </span>
+
+                </div>
+
+                <md-button class="md-icon-button md-list-action" @click.native="associateListingWithData(shared.listing,item)">
+                    <md-icon class="md-primary">attach_file</md-icon>
+                </md-button>
+
+            </md-list-item>
+
+            <md-list-item v-if="shared.dataSearch.length == 0 && options.dataSearch">
+                <div class="md-list-text-container">
+                    <span>No matching data found, enter a search term.</span>
+                </div>
+            </md-list-item>
+        </md-list>
+
+        <!-- Cloaked Place Holder Loading Content -->
+        <div v-if="state.dataLoading" class="margin-top-20 text-center">
+            <div class="padding-30 text-center">
+                <div class="animated-background">
+                    <div class="background-masker content-row"></div>
+                    <div class="background-masker content-spacer"></div>
+                    <div class="background-masker content-row"></div>
+                    <div class="background-masker content-spacer"></div>
+                    <div class="background-masker content-row"></div>
+                    <div class="background-masker content-spacer"></div>
+                    <div class="background-masker content-row"></div>
+                </div>
+            </div>
+        </div>
+        <!-- End place holders -->
+
+        <div slot="footer">
+            <ui-button @click="$refs.associateModal.close();">Cancel</ui-button>
+        </div>
+    </ui-modal>
+
 
 
 </div>
@@ -263,6 +326,7 @@
                 searchSelected : false,
 				sortSelected: false,
                 loading: false,
+                dataLoading: false,
                 selectedListing : null,
                 selectedListings : null,
                 activeFilter: null,
@@ -282,42 +346,24 @@
                 },
 				multiSort: [],
                 search: '',
+                dataSearch: '',
                 searchField: 'all',
                 filter: null,
                 reportId: null
             },
             filters: [
                 {
-                    'name' : 'Homes Only',
-                    'id' : 'filter-homes'
+                    'name' : 'On Sale / Pre Sale Only',
+                    'id' : 'filter-on-sale'
                 },
                 {
-                    'name' : 'Condos Only',
-                    'id' : 'filter-condos'
-                },
-                {
-                    'name' : 'Outliers Only',
-                    'id' : 'filter-outliers'
-                },
-                {
-                    'name': 'No Outliers',
-                    'id': 'filter-no-outliers'
+                    'name' : 'Future Sales Only',
+                    'id' : 'filter-future'
                 },
             ],
 			sortColumns: [
 				{name: 'Creation Date', field: 'created_at'},
-				{name: 'Name', field: 'name'},
-				{name: 'Type', field: 'room_type'},
-				{name: 'Number of Rooms', field: 'bedrooms'},
-				{name: 'Number of Beds', field: 'beds'},
-				{name: 'Capacity', field: 'capacity'},
-				{name: 'Rate', field: 'current_rate'},
-				{name: 'Occupancy Rate', field: 'percent_booked'},
-				{name: 'Price Per Bed', field: 'price_per_bed'},
-				{name: 'Monthly Revenue', field: 'projected_revenue'},
-				{name: 'Profit Score', field: 'profit_score'},
-				{name: 'Outlier Status', field: 'outlier'},
-				{name: 'Source', field: 'source'},
+				{name: 'Event Name', field: 'event_name'},
 			],
             selectedListings: 0,
             totalListings: 50000,
@@ -345,6 +391,23 @@
             }
         },
         methods: {
+        	associateListing(listing) {
+        	    this.shared.listing = listing;
+        	    this.$refs.associateModal.open();
+            },
+            associateListingWithData(listing, data) {
+				this.$http.post(`/apiv1/listings/associate/${listing.id}/${data.id}`).then((response) => {
+
+					this.$root.showNotification(response.body.message);
+					this.shared.listing = response.body.results;
+					this.refreshTable();
+
+				}, (response) => {
+					console.log("Error associating listing. Try again.");
+					console.log(response);
+				});
+
+            },
             clearFilters() {
               this.options.search = '';
               this.options.filter = '';
@@ -391,6 +454,30 @@
                 this.options.filter = filter.id;
                 this.refreshTable();
             },
+			onDataSearch(term) {
+				this.options.dataSearch = term;
+				this.performDataSearch();
+			},
+			performDataSearch: _.debounce(function () {
+				this.state.dataLoading = true;
+
+				setTimeout(function () {
+					let dataOptions = {
+						dataSearch: this.options.dataSearch
+					};
+
+					this.$http.get('/apiv1/dataSearch', {params: dataOptions}).then((response) => {
+
+						this.shared.dataSearch = response.body.data;
+						this.state.dataLoading = false;
+
+					}, (response) => {
+						this.state.dataLoading = false;
+						console.log("Error loading data.");
+						console.log(response);
+					});
+				}.bind(this), 500)
+			}, 300),
             onSearch(term) {
                 this.options.search = term;
                 this.performSearch();

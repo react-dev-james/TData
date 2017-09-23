@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ImportTicketData;
+use App\Console\Commands\MatchEventData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,10 +15,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\TestPhantom::class,
-        Commands\TestAirBnb::class,
-        Commands\QueueListingsUpdates::class,
-
+        ImportTicketData::class,
+        MatchEventData::class
     ];
 
     /**
@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('transqueue:stats',['--listings', '--priority','--locations'])->everyTenMinutes()->withoutOverlapping();
+        //$schedule->command('transqueue:stats',['--listings', '--priority','--locations'])->everyTenMinutes()->withoutOverlapping();
 
     }
 

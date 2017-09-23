@@ -18,6 +18,12 @@ class TicketService extends ScraperService implements IScraper
     const BOX_USERNAME = 'mjseats@gmail.com';
     const BOX_PASSWORD = 'noandrew';
 
+    const TD_LOGIN_URL = 'http://broker.ticketdata.com/cgi-bin/userbase.cgi?action=validate';
+    const TD_USERNAME = 'nick.stagefront';
+    const TD_PASSWORD = 'Columbia150';
+    const TD_CATEGORY_URL = 'http://broker.ticketdata.com/?categories';
+    const TD_SEARCH_URL = 'http://broker.ticketdata.com/';
+
     /**
      * @var \App\Location
      */
@@ -274,6 +280,120 @@ class TicketService extends ScraperService implements IScraper
 
         return false;
 
+    }
+
+    public function ticketDataLogin(  )
+    {
+
+        /**
+         * userbase_username:nick.stagefront
+         * userbase_password:Columbia150
+         * remember_me:on
+         * ref:
+         * loginreturn:
+         */
+
+        $loginParams = [
+            'userbase_username' => self::TD_USERNAME,
+            'userbase_password' => self::TD_PASSWORD,
+            'remember_me' => 'on',
+            'ref' => '',
+            'loginreturn' => ''
+        ];
+
+        /* Check if we are already logged in */
+        $results = $this->get(self::TD_CATEGORY_URL);
+        $this->save('ticketdata_category_url.html');
+        if (stristr($results, 'Logout') != false) {
+            $this->display("Logged into ticket data using cookies. ");
+            $this->state['ticket_logged_in'] = true;
+            return true;
+        }
+
+        $results = $this->post(self::TD_LOGIN_URL, $loginParams);
+        $this->save( 'ticketdata_login_url.html' );
+        if ( stristr( $results, 'Logout' ) != false ) {
+            $this->state['ticket_logged_in'] = true;
+            $this->display( "Logged into ticket data using username/password. " );
+            return true;
+        }
+
+        $this->display( "Error logging into to ticket data " );
+        return false;
+
+    }
+
+    public function ticketDataParams($category, $subCategory = '')
+    {
+        $params = [
+            "hier_start"          => $category,
+            "hier_A"              => $subCategory,
+            "hier_B"              => "0",
+            "hier_C"              => "0",
+            "hier_D"              => "0",
+            "upcoming_only"       => "1",
+            "show_as_events_type" => "upcoming",
+            "show_as"             => "categories",
+            "ajax"                => "1",
+            "categories"          => "1",
+            "FAVORITING"          => "1"
+        ];
+
+        return $params;
+    }
+
+    public function fetchTicketDataListings( Array $categories = [] )
+    {
+
+            if ( !$this->state( 'ticket_logged_in' ) ) {
+                if ( !$this->ticketDataLogin() ) {
+                    return false;
+                }
+            }
+
+            $savedListings = collect();
+
+            $params = $this->ticketDataParams('Theater tickets and Arts tickets', 'Dance');
+            $results = $this->get( self::TD_SEARCH_URL, $params );
+            $this->save('ticketdata_search.html');
+            $crawler = new Crawler($results);
+            $numResults = $crawler->filter('tr')->count();
+
+            if (stristr($results, 'search_results') === false) {
+                $this->display("Error loading search results.");
+                return false;
+            }
+
+            $this->display("Found " .$numResults . " results for category search.");
+
+            /* Parse and normalize returned results */
+            $records = $this->ticketDataNormalize( $crawler, $results );
+
+            //$savedListings->push( $this->saveListings( $records ) );
+
+    }
+
+    public function ticketDataNormalize(Crawler $crawler, $results )
+    {
+        $records = collect();
+        $rowIndex = 0;
+        $crawler->filter( 'tr' )->each(function(Crawler $row) use (&$records, &$rowIndex) {
+            if ($rowIndex == 0) {
+                $rowIndex++;
+                return;
+            }
+
+            $rowIndex++;
+
+
+            $newRecord = [
+                'source'         => 'ticketdata',
+                'category'       => $row->filter('td' )->eq( 3 )->text(),
+                'slug'           => str_slug( $row->filter( 'td' )->eq( 0 )->text() ),
+            ];
+
+            dd($newRecord);
+        });
     }
 
     public function saveListings(Collection $listings) {

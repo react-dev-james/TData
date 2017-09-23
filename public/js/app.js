@@ -12442,6 +12442,69 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {
@@ -12455,6 +12518,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 searchSelected: false,
                 sortSelected: false,
                 loading: false,
+                dataLoading: false,
                 selectedListing: null,
                 selectedListings: null,
                 activeFilter: null,
@@ -12474,24 +12538,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 },
                 multiSort: [],
                 search: '',
+                dataSearch: '',
                 searchField: 'all',
                 filter: null,
                 reportId: null
             },
             filters: [{
-                'name': 'Homes Only',
-                'id': 'filter-homes'
+                'name': 'On Sale / Pre Sale Only',
+                'id': 'filter-on-sale'
             }, {
-                'name': 'Condos Only',
-                'id': 'filter-condos'
-            }, {
-                'name': 'Outliers Only',
-                'id': 'filter-outliers'
-            }, {
-                'name': 'No Outliers',
-                'id': 'filter-no-outliers'
+                'name': 'Future Sales Only',
+                'id': 'filter-future'
             }],
-            sortColumns: [{ name: 'Creation Date', field: 'created_at' }, { name: 'Name', field: 'name' }, { name: 'Type', field: 'room_type' }, { name: 'Number of Rooms', field: 'bedrooms' }, { name: 'Number of Beds', field: 'beds' }, { name: 'Capacity', field: 'capacity' }, { name: 'Rate', field: 'current_rate' }, { name: 'Occupancy Rate', field: 'percent_booked' }, { name: 'Price Per Bed', field: 'price_per_bed' }, { name: 'Monthly Revenue', field: 'projected_revenue' }, { name: 'Profit Score', field: 'profit_score' }, { name: 'Outlier Status', field: 'outlier' }, { name: 'Source', field: 'source' }],
+            sortColumns: [{ name: 'Creation Date', field: 'created_at' }, { name: 'Event Name', field: 'event_name' }],
             selectedListings: 0,
             totalListings: 50000,
             searchTerm: null
@@ -12519,6 +12578,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     methods: {
+        associateListing: function associateListing(listing) {
+            this.shared.listing = listing;
+            this.$refs.associateModal.open();
+        },
+        associateListingWithData: function associateListingWithData(listing, data) {
+            var _this = this;
+
+            this.$http.post('/apiv1/listings/associate/' + listing.id + '/' + data.id).then(function (response) {
+
+                _this.$root.showNotification(response.body.message);
+                _this.shared.listing = response.body.results;
+                _this.refreshTable();
+            }, function (response) {
+                console.log("Error associating listing. Try again.");
+                console.log(response);
+            });
+        },
         clearFilters: function clearFilters() {
             this.options.search = '';
             this.options.filter = '';
@@ -12565,6 +12641,32 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.options.filter = filter.id;
             this.refreshTable();
         },
+        onDataSearch: function onDataSearch(term) {
+            this.options.dataSearch = term;
+            this.performDataSearch();
+        },
+
+        performDataSearch: _.debounce(function () {
+            this.state.dataLoading = true;
+
+            setTimeout(function () {
+                var _this2 = this;
+
+                var dataOptions = {
+                    dataSearch: this.options.dataSearch
+                };
+
+                this.$http.get('/apiv1/dataSearch', { params: dataOptions }).then(function (response) {
+
+                    _this2.shared.dataSearch = response.body.data;
+                    _this2.state.dataLoading = false;
+                }, function (response) {
+                    _this2.state.dataLoading = false;
+                    console.log("Error loading data.");
+                    console.log(response);
+                });
+            }.bind(this), 500);
+        }, 300),
         onSearch: function onSearch(term) {
             this.options.search = term;
             this.performSearch();
@@ -12576,7 +12678,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }.bind(this), 500);
         }, 300),
         refreshTable: function refreshTable() {
-            var _this = this;
+            var _this3 = this;
 
             this.state.loading = true;
             this.options.page = this.options.pager.page;
@@ -12586,10 +12688,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.$http.get('/apiv1/listings', { params: this.options }).then(function (response) {
 
-                _this.shared.listings = response.body.data;
-                _this.options.pager.page = response.body['current_page'];
-                _this.totalListings = response.body.total;
-                _this.state.loading = false;
+                _this3.shared.listings = response.body.data;
+                _this3.options.pager.page = response.body['current_page'];
+                _this3.totalListings = response.body.total;
+                _this3.state.loading = false;
             }, function (response) {
                 console.log("Error loading listings");
                 console.log(response);
@@ -12600,7 +12702,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$refs['delete-listing'].open();
         },
         deleteListing: function deleteListing(confirmation) {
-            var _this2 = this;
+            var _this4 = this;
 
             if (confirmation !== 'ok') {
                 return;
@@ -12612,10 +12714,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.$http.post('/apiv1/listings/delete/' + this.state.selectedListing.id, this.state.selectedListing).then(function (response) {
 
-                _this2.$root.showNotification(response.body.message);
-                _this2.refreshTable();
+                _this4.$root.showNotification(response.body.message);
+                _this4.refreshTable();
             }, function (response) {
-                _this2.$root.showNotification(response.body.message);
+                _this4.$root.showNotification(response.body.message);
                 console.log(response);
             });
 
@@ -59907,7 +60009,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       staticClass: "col-lg-3 margin-top-5 margin-top-sm-15 margin-top-xs-15"
     }, [_c('div', {
       staticClass: "padding-5 border-1 border-grey-100 bg-grey-100 border-radius-5"
-    }, [_c('span', [_vm._v("\r\n                       " + _vm._s(_vm._f("limitTo")(listing.name, 20)) + "\r\n                        "), _c('md-tooltip', {
+    }, [_c('span', [_vm._v("\r\n                       " + _vm._s(_vm._f("limitTo")(listing.event_name, 20)) + "\r\n                        "), _c('md-tooltip', {
       attrs: {
         "md-direction": "top"
       }
@@ -59937,14 +60039,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "pull-left"
   }, [_c('h1', {
     staticClass: "md-title"
-  }, [_vm._v("Listings "), (_vm.shared.activeReport) ? _c('span', {
-    staticClass: "text-muted"
-  }, [_vm._v("(" + _vm._s(_vm.shared.activeReport.name) + ")")]) : _vm._e()]), _vm._v(" "), (_vm.shared.activeReport) ? _c('a', {
-    staticClass: "text-muted",
-    attrs: {
-      "href": "/admin/listings"
-    }
-  }, [_vm._v("Clear Custom Report")]) : _vm._e()]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Event Listings")])]), _vm._v(" "), _c('div', {
     staticClass: "pull-right"
   }, [_c('md-menu', {
     attrs: {
@@ -59997,14 +60092,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.state.searchSelected = !_vm.state.searchSelected
       }
     }
-  }, [_c('md-icon', [_vm._v("search")])], 1) : _vm._e(), _vm._v(" "), (!_vm.state.sortSelected) ? _c('md-button', {
-    staticClass: "md-icon-button",
-    nativeOn: {
-      "click": function($event) {
-        _vm.state.sortSelected = !_vm.state.sortSelected
-      }
-    }
-  }, [_c('md-icon', [_vm._v("sort")])], 1) : _vm._e(), _vm._v(" "), (_vm.state.sortSelected) ? _c('md-button', {
+  }, [_c('md-icon', [_vm._v("search")])], 1) : _vm._e(), _vm._v(" "), (_vm.state.sortSelected) ? _c('md-button', {
     staticClass: "md-icon-button",
     nativeOn: {
       "click": function($event) {
@@ -60042,17 +60130,17 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("All Fields")]), _vm._v(" "), _c('md-option', {
     attrs: {
-      "value": "city"
+      "value": "event_name"
     }
-  }, [_vm._v("City")]), _vm._v(" "), _c('md-option', {
+  }, [_vm._v("Event Name")]), _vm._v(" "), _c('md-option', {
     attrs: {
-      "value": "name"
+      "value": "venue_city"
     }
-  }, [_vm._v("Name")]), _vm._v(" "), _c('md-option', {
+  }, [_vm._v("Venue City")]), _vm._v(" "), _c('md-option', {
     attrs: {
-      "value": "host_name"
+      "value": "venue"
     }
-  }, [_vm._v("Host Name")])], 1)], 1)], 1), _vm._v(" "), _c('div', {
+  }, [_vm._v("Venue Name")])], 1)], 1)], 1), _vm._v(" "), _c('div', {
     staticClass: "col-xs-12 col-sm-9"
   }, [_c('md-input-container', {
     staticClass: "md-theme-dark",
@@ -60139,84 +60227,88 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('md-table-header', [_c('md-table-row', [_c('md-table-head', {
     attrs: {
-      "md-sort-by": "name"
+      "md-sort-by": "event_name"
     }
-  }, [_vm._v("Name")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("Event")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "city"
+      "md-sort-by": "performer"
     }
-  }, [_vm._v("Location")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("Performer")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "bedrooms"
+      "md-sort-by": "venue"
     }
-  }, [_vm._v("Rooms")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("Venue")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "beds"
+      "md-sort-by": "roi"
     }
-  }, [_vm._v("Beds")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("ROI")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "current_rate"
+      "md-sort-by": "avg_sale_price"
     }
-  }, [_vm._v("Rate")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("SH Sold")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "percent_booked"
+      "md-sort-by": "avg_sale_price_past"
     }
-  }, [_vm._v("Occupancy")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("SH Past")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "price_per_bed"
+      "md-sort-by": "total_sales"
     }
-  }, [_vm._v("Per Bed")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("SH Tix")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "projected_revenue"
+      "md-sort-by": "total_sales_past"
     }
-  }, [_vm._v("Revenue")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("SH Past")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "profit_score"
+      "md-sort-by": "low_ticket_price"
     }
-  }, [_vm._v("Score")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("Low")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "capacity"
+      "md-sort-by": "high_ticket_price"
+    }
+  }, [_vm._v("High")]), _vm._v(" "), _c('md-table-head', {
+    attrs: {
+      "md-sort-by": "total_listed"
+    }
+  }, [_vm._v("Available")]), _vm._v(" "), _c('md-table-head', {
+    attrs: {
+      "md-sort-by": "sale_status"
+    }
+  }, [_vm._v("Sale Status")]), _vm._v(" "), _c('md-table-head', {
+    attrs: {
+      "md-sort-by": "venue_capacity"
     }
   }, [_vm._v("Capacity")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "room_type"
+      "md-sort-by": "event_day"
     }
-  }, [_vm._v("Type")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("Day")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "outlier"
+      "md-sort-by": "event_date"
     }
-  }, [_vm._v("Outlier")]), _vm._v(" "), _c('md-table-head', [_vm._v("Options")])], 1)], 1), _vm._v(" "), _c('md-table-body', _vm._l((_vm.shared.listings), function(listing, rowIndex) {
+  }, [_vm._v("Date")]), _vm._v(" "), _c('md-table-head', {
+    attrs: {
+      "md-sort-by": "venue_state"
+    }
+  }, [_vm._v("State")]), _vm._v(" "), _c('md-table-head', [_vm._v("Options")])], 1)], 1), _vm._v(" "), _c('md-table-body', _vm._l((_vm.shared.listings), function(listing, rowIndex) {
     return _c('md-table-row', {
       key: rowIndex,
       attrs: {
         "md-item": listing,
         "md-selection": true
       }
-    }, [_c('md-table-cell', [_c('span', [_vm._v("\r\n                           " + _vm._s(_vm._f("limitTo")(listing.name, 24)) + "\r\n                            "), _c('md-tooltip', {
+    }, [_c('md-table-cell', [_c('span', [_vm._v("\r\n                           " + _vm._s(_vm._f("limitTo")(listing.event_name, 20)) + "\r\n                            "), _c('md-tooltip', {
       attrs: {
         "md-direction": "top"
       }
-    }, [_vm._v(_vm._s(listing.name))])], 1)]), _vm._v(" "), _c('md-table-cell', [(listing.locations[0]) ? _c('span', [(listing.locations[0].country == 'United States') ? _c('span', [_vm._v("\r\n                                     " + _vm._s(listing.locations[0].city) + ", " + _vm._s(listing.locations[0].state) + "\r\n                                ")]) : _c('span', [_vm._v("\r\n                                     " + _vm._s(listing.locations[0].city) + ", " + _vm._s(listing.locations[0].country) + "\r\n                                ")])]) : _c('span', [_vm._v("N/A")])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v(_vm._s(listing.bedrooms))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v(_vm._s(listing.beds))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v("$" + _vm._s(listing.current_rate))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v(_vm._s(listing.stats ? listing.stats.percent_booked : 'N/A') + "%")])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v("$" + _vm._s(listing.stats ? listing.stats.price_per_bed : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v("$" + _vm._s(listing.stats ? listing.stats.projected_revenue : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v(_vm._s(listing.profit_score ? listing.profit_score : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {
-      staticClass: "label label-info pading-10-5"
-    }, [_vm._v(_vm._s(listing.capacity))])]), _vm._v(" "), _c('md-table-cell', [_c('span', [_vm._v(_vm._s(listing.room_type))])]), _vm._v(" "), _c('md-table-cell', [_c('trans-listing-outlier-status', {
+    }, [_vm._v(_vm._s(listing.event_name))])], 1)]), _vm._v(" "), _c('md-table-cell', [_vm._v("\r\n                            " + _vm._s(_vm._f("limitTo")(listing.performer ? listing.performer : 'N/A', 20)) + "\r\n                            "), _c('md-tooltip', {
       attrs: {
-        "listing": listing
+        "md-direction": "top"
       }
-    })], 1), _vm._v(" "), _c('md-table-cell', [_c('md-menu', {
+    }, [_vm._v(_vm._s(listing.performer ? listing.performer : 'N/A'))])], 1), _vm._v(" "), _c('md-table-cell', [_vm._v("\r\n                            " + _vm._s(_vm._f("limitTo")(listing.venue, 20)) + "\r\n                            "), _c('md-tooltip', {
+      attrs: {
+        "md-direction": "top"
+      }
+    }, [_vm._v(_vm._s(listing.venue))])], 1), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("N/A")])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.low_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.high_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_listed : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sale_status))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_capacity))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.event_day))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.nice_date))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_state))])]), _vm._v(" "), _c('md-table-cell', [_c('md-menu', {
       attrs: {
         "md-size": "5",
         "md-direction": "top left"
@@ -60231,17 +60323,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "clas": "md-primary"
       }
     }, [_vm._v("more_vert")])], 1), _vm._v(" "), _c('md-menu-content', [_c('md-menu-item', {
-      attrs: {
-        "href": listing.source_link,
-        "target": "_blank"
-      }
-    }, [_c('md-icon', [_vm._v("hotel")]), _vm._v(" "), _c('span', [_vm._v("View on AirBnb")])], 1), _vm._v(" "), _c('md-menu-item', {
       nativeOn: {
         "click": function($event) {
           _vm.confirmDeleteListing(listing)
         }
       }
-    }, [_c('md-icon', [_vm._v("delete")]), _vm._v(" "), _c('span', [_vm._v("Delete")])], 1)], 1)], 1)], 1)], 1)
+    }, [_c('md-icon', [_vm._v("delete")]), _vm._v(" "), _c('span', [_vm._v("Delete")])], 1), _vm._v(" "), _c('md-menu-item', {
+      nativeOn: {
+        "click": function($event) {
+          _vm.associateListing(listing)
+        }
+      }
+    }, [_c('md-icon', [_vm._v("attach_file")]), _vm._v(" "), _c('span', [_vm._v("Associate")])], 1)], 1)], 1)], 1)], 1)
   }))], 1), _vm._v(" "), _c('md-table-pagination', {
     attrs: {
       "md-size": _vm.options.pager.size,
@@ -60267,7 +60360,85 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "close": _vm.deleteListing
     }
-  })], 1)
+  }), _vm._v(" "), _c('ui-modal', {
+    ref: "associateModal",
+    attrs: {
+      "title": "Associate This Listing With Secondary Data",
+      "size": "large"
+    }
+  }, [_c('h4', {
+    staticClass: "margin-bottom-5"
+  }, [_vm._v(_vm._s(_vm.shared.listing.event_name))]), _vm._v(" "), (_vm.shared.listing.data.length > 0) ? _c('span', [_vm._v("This listing is already associated with "), _c('span', {
+    staticClass: "text-underline"
+  }, [_vm._v(_vm._s(_vm.shared.listing.data[0].category) + " ")]), _vm._v(" "), _c('span', {
+    staticClass: "label label-info pull-right"
+  }, [_vm._v(_vm._s(_vm.shared.listing.data[0].pivot.confidence) + "% Confidence")])]) : _vm._e(), _vm._v(" "), _c('md-input-container', {
+    staticClass: "margin-top-10"
+  }, [_c('label', [_vm._v("Search for matching data")]), _vm._v(" "), _c('md-input', {
+    on: {
+      "change": _vm.onDataSearch
+    },
+    model: {
+      value: (_vm.options.dataSearch),
+      callback: function($$v) {
+        _vm.options.dataSearch = $$v
+      },
+      expression: "options.dataSearch"
+    }
+  })], 1), _vm._v(" "), (!_vm.state.dataLoading) ? _c('md-list', {
+    staticClass: "md-double-line",
+    staticStyle: {
+      "max-height": "600px",
+      "overflow": "auto"
+    }
+  }, [_vm._l((_vm.shared.dataSearch), function(item, index) {
+    return _c('md-list-item', {
+      key: index
+    }, [_c('div', {
+      staticClass: "md-list-text-container"
+    }, [_c('span', {
+      staticClass: "label label-info"
+    }, [_vm._v(_vm._s(item.category) + "  ")]), _vm._v(" "), _c('span', [_vm._v(_vm._s(item.upcoming_events) + " Upcoming Events ")])]), _vm._v(" "), _c('md-button', {
+      staticClass: "md-icon-button md-list-action",
+      nativeOn: {
+        "click": function($event) {
+          _vm.associateListingWithData(_vm.shared.listing, item)
+        }
+      }
+    }, [_c('md-icon', {
+      staticClass: "md-primary"
+    }, [_vm._v("attach_file")])], 1)], 1)
+  }), _vm._v(" "), (_vm.shared.dataSearch.length == 0 && _vm.options.dataSearch) ? _c('md-list-item', [_c('div', {
+    staticClass: "md-list-text-container"
+  }, [_c('span', [_vm._v("No matching data found, enter a search term.")])])]) : _vm._e()], 2) : _vm._e(), _vm._v(" "), (_vm.state.dataLoading) ? _c('div', {
+    staticClass: "margin-top-20 text-center"
+  }, [_c('div', {
+    staticClass: "padding-30 text-center"
+  }, [_c('div', {
+    staticClass: "animated-background"
+  }, [_c('div', {
+    staticClass: "background-masker content-row"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-spacer"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-row"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-spacer"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-row"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-spacer"
+  }), _vm._v(" "), _c('div', {
+    staticClass: "background-masker content-row"
+  })])])]) : _vm._e(), _vm._v(" "), _c('div', {
+    slot: "footer"
+  }, [_c('ui-button', {
+    on: {
+      "click": function($event) {
+        _vm.$refs.associateModal.close();
+      }
+    }
+  }, [_vm._v("Cancel")])], 1)], 1)], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

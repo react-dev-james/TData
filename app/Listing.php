@@ -9,12 +9,17 @@ class Listing extends Model
 {
 
     protected $guarded = ['id'];
-    protected $appends = ['source_link'];
+    protected $appends = ['sales_stats','lookups','nice_date'];
+    protected $dates = ['created_at','updated_at','event_date'];
 
+    public function data(  )
+    {
+        return $this->belongsToMany(\App\Data::class, 'listing_data')->withPivot('confidence');
+    }
 
     public function stats()
     {
-        return $this->hasOne( Stat::class )->where("primary", true);
+        return $this->hasOne( Stat::class );
     }
 
     /**
@@ -31,6 +36,25 @@ class Listing extends Model
     public function sales(  )
     {
         return $this->hasMany(\App\Sale::class);
+    }
+
+    public function getSalesStatsAttribute(  )
+    {
+        return $this->data()->first();
+    }
+
+    public function getLookupsAttribute()
+    {
+        if ($this->data->count() == 0) {
+            return [];
+        }
+
+        return \App\EventLookup::where("event_slug",$this->slug)->where("match_slug", $this->data()->first()->category_slug)->get();
+    }
+
+    public function getNiceDateAttribute()
+    {
+        return $this->event_date->toDayDateTimeString();
     }
 
     public function recordUpdate( $type )
