@@ -37,9 +37,14 @@ class FetchBoxOfficeData extends Command
      */
     public function handle()
     {
-        $scraper = new \App\Services\TicketService();
+        try {
+            $scraper = new \App\Services\TicketService();
+            $scraper->fetchBoxOfficeListings( 500, 10 );
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+            echo $e->getTraceAsString();
+        }
 
-        $scraper->fetchBoxOfficeListings( 500, 10 );
 
         $log = $scraper->getLog();
         foreach ($log as $entry) {
