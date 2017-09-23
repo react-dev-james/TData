@@ -133,6 +133,8 @@ class TicketService extends ScraperService implements IScraper
         $offset = $limit;
         $savedListings = collect();
 
+        $this->display("Using start date of " . $startDate->toDateTimeString() . " to " . $endDate->toDateTimeString());
+
         for ($i = 0; $i <= $maxPages; $i++) {
             $start = $offset * $i;
             $this->display( "Fetching page " . $i . " from box office with start of " . $start );
@@ -140,8 +142,8 @@ class TicketService extends ScraperService implements IScraper
             $results = $this->post( self::BOX_SEARCH_URL, $params );
             $results = @json_decode( $results, true );
 
-            if ( $i == 0 ) {
-                $this->display( "Found " . $results['iTotalRecords'] . " from box office fox, starting parsing." );
+            if ( $i == 0 && isset( $results['iTotalDisplayRecords']) ) {
+                $this->display( "Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing." );
             }
 
             if ( !isset( $results['iTotalDisplayRecords'] ) || $results['iTotalDisplayRecords'] <= 0 || $results['iTotalDisplayRecords'] <= ( $start + $offset ) ) {

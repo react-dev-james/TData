@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\ImportTicketData;
 use App\Console\Commands\MatchEventData;
+use App\Console\Commands\FetchBoxOfficeData;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         ImportTicketData::class,
-        MatchEventData::class
+        MatchEventData::class,
+        FetchBoxOfficeData::class
     ];
 
     /**
