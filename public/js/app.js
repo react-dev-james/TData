@@ -12505,6 +12505,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {
@@ -60239,9 +60240,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("Venue")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
-      "md-sort-by": "roi"
+      "md-sort-by": "roi_sh"
     }
-  }, [_vm._v("ROI")]), _vm._v(" "), _c('md-table-head', {
+  }, [_vm._v("ROI (SH)")]), _vm._v(" "), _c('md-table-head', {
     attrs: {
       "md-sort-by": "avg_sale_price"
     }
@@ -60308,7 +60309,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "md-direction": "top"
       }
-    }, [_vm._v(_vm._s(listing.venue))])], 1), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("N/A")])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.low_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.high_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_listed : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sale_status))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_capacity))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.event_day))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.nice_date))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_state))])]), _vm._v(" "), _c('md-table-cell', [_c('md-menu', {
+    }, [_vm._v(_vm._s(listing.venue))])], 1), _vm._v(" "), _c('md-table-cell', [(listing.stats && listing.stats.roi_sh > 100) ? _c('span', {
+      staticClass: "label label-success"
+    }, [_vm._v(_vm._s(listing.stats ? ((listing.stats.roi_sh) + "%") : 'N/A'))]) : _c('span', {
+      staticClass: "label label-danger"
+    }, [_vm._v(_vm._s(listing.stats ? ((listing.stats.roi_sh) + "%") : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.avg_sale_price_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_sales_past : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.low_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v("$" + _vm._s(listing.high_ticket_price))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sales_stats ? listing.sales_stats.total_listed : 'N/A'))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.sale_status))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_capacity))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.event_day))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.nice_date))])]), _vm._v(" "), _c('md-table-cell', [_c('span', {}, [_vm._v(_vm._s(listing.venue_state))])]), _vm._v(" "), _c('md-table-cell', [_c('md-menu', {
       attrs: {
         "md-size": "5",
         "md-direction": "top left"

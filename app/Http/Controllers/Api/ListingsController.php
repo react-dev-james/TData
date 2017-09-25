@@ -29,7 +29,7 @@ class ListingsController extends Controller
     public function index( Request $request )
     {
 
-        $query = Listing::with( "sales","data","updates" );
+        $query = Listing::with( "sales","data","updates","stats" );
 
         /* Handle custom sorting on relations */
         if ( $request->has( "sort" ) && !$request->has( 'multiSort' ) ) {
@@ -123,7 +123,7 @@ class ListingsController extends Controller
 
         /* Create new entry in the listing_data pivot table */
         $listing->data()->sync( [ $data->id => [ 'confidence' => 100 ]] );
-        $listing->load('data','sales','updates');
+        $listing->load('data','sales','updates', 'stats');
 
         return response()->json( [
             'message' => "Listing updated successfully.",
@@ -187,13 +187,12 @@ class ListingsController extends Controller
                     ->orderBy( 'data.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
-                /*
+            case 'roi_sh':
                 $query->join( 'stats', function ( $join ) {
                     $join->on( 'stats.listing_id', '=', 'listings.id' );
                 } )
                     ->orderBy( 'stats.' . $field, $direction )
                     ->select( "listings.*" );
-                */
                 break;
             default:
                 $query->orderBy( "created_at", "desc" );

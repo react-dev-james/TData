@@ -142,7 +142,7 @@
                         <md-table-head md-sort-by="event_name">Event</md-table-head>
                         <md-table-head md-sort-by="performer">Performer</md-table-head>
                         <md-table-head md-sort-by="venue" >Venue</md-table-head>
-                        <md-table-head md-sort-by="roi" >ROI</md-table-head>
+                        <md-table-head md-sort-by="roi_sh" >ROI (SH)</md-table-head>
                         <md-table-head md-sort-by="avg_sale_price" >SH Sold</md-table-head>
                         <md-table-head md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
                         <md-table-head md-sort-by="total_sales" >SH Tix</md-table-head>
@@ -179,7 +179,8 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">N/A</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh > 100" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A' }}</span>
