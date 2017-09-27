@@ -31,6 +31,12 @@
                     <h1 class="md-title">Event Listings</h1>
                 </div>
                 <div class="pull-right">
+                    <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'targeted', id: 'filter-targeted'})">
+                        Targeted
+                    </md-button>
+                    <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'excluded', id: 'filter-excluded'})">
+                        Excluded
+                    </md-button>
                     <md-menu md-size="4">
                         <md-button class="md-icon-button" md-menu-trigger>
                             <md-icon>filter_list</md-icon>
