@@ -20,6 +20,14 @@ class MatchEventData extends Command
      */
     protected $description = 'Match events with ticket data.';
 
+    protected $exclusions = [
+        'fast lane',
+        'express lane',
+        'club and parking upgrade',
+        'vs.',
+        'v.'
+    ];
+
     /**
      * Create a new command instance.
      *
@@ -38,6 +46,32 @@ class MatchEventData extends Command
     public function handle()
     {
         $data = \App\Data::all();
+        $listings = \App\Listing::all();
+
+        /* Check lookups table first */
+        foreach ($listings as $listing) {
+            /* Check lookups table */
+            $lookup = \App\EventLookup::where( "event_name", $listing->event_name )->orderBy("is_auto",'ASC')->orderBy('confidence','DESC')->first();
+            if ( $lookup ) {
+                $dataLookup = \App\Data::where("category", $lookup->match_name)->first();
+                if ($dataLookup) {
+                    $listing->performer = $dataLookup->category;
+                    $listing->save();
+
+                    /* Create new entry in the listing_data pivot table */
+                    $listing->data()->sync( [ $dataLookup->id ], [ 'confidence' => 100 ] );
+                }
+            }
+
+            /* Exclusions */
+            foreach ($this->exclusions as $exclusion) {
+                if (stristr($listing->event_name, $exclusion) !== false) {
+                    $listing->delete();
+                    break;
+                }
+            }
+
+        }
 
         $numMatches = 0;
         foreach ($data as $item) {
@@ -46,9 +80,19 @@ class MatchEventData extends Command
 
             foreach ($listings as $listing) {
 
+                if ($listing->status == 'excluded') {
+                    continue;
+                }
+
+                /* Skip listings with matching lookups */
+                $lookup = \App\EventLookup::where( "event_name", $listing->event_name )->orderBy( "is_auto", 'ASC' )->orderBy( 'confidence', 'DESC' )->first();
+                if ($lookup && $lookup->confidence >= 100) {
+                    continue;
+                }
+
                 /* Verify match */
-                if ( strlen( $item->category ) <= 5 && $item->category != $listing->event_name) {
-                    //echo "X\n";
+                if ( strlen( $item->category ) <= 5 && strtolower($item->category) != strtolower($listing->event_name)) {
+                    echo "X\n";
                     continue;
                 }
 
@@ -56,7 +100,7 @@ class MatchEventData extends Command
                 $similarity = similar_text($item->category, $listing->event_name);
                 $confidence = max(0,($similarity / max(1, (strlen($listing->event_name) - strlen($item->category)))) * 100 - $distance);
 
-                if ($confidence >= 5 || $item->category == $listing->event_name) {
+                if ($confidence >= 5 || strtolower($item->category) == strtolower($listing->event_name)) {
                     $numMatches++;
                     $this->info( "Matching data found for " . $listing->event_name . " matched with " . $item->category );
                     $this->info( "Distance: " . $distance . " Similarity: " . $similarity );

@@ -135,6 +135,12 @@ class ListingsController extends Controller
 
         /* Create new entry in the listing_data pivot table */
         $listing->data()->sync( [ $data->id => [ 'confidence' => 100 ]] );
+
+        /* Recalc ROI */
+        $listing->fresh();
+        $listing->calcRoi();
+
+        /* Load relations */
         $listing->load('data','sales','updates', 'stats');
 
         return response()->json( [

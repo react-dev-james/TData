@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Listing extends Model
 {
 
+    const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
     protected $appends = ['nice_date', 'nice_high_price', 'nice_low_price'];
     protected $dates = ['created_at','updated_at','event_date'];
@@ -36,6 +37,33 @@ class Listing extends Model
     public function sales(  )
     {
         return $this->hasMany(\App\Sale::class);
+    }
+
+    public function getLowTicketPriceAttribute( $value )
+    {
+        if ( $this->venue_country == 'CA') {
+            return round( $value * self::CANADA_ADJUSTMENT );
+        }
+
+        return $value;
+    }
+
+    public function getHighTicketPriceAttribute( $value )
+    {
+        if ( $this->venue_country == 'CA' ) {
+            return round( $value * self::CANADA_ADJUSTMENT );
+        }
+
+        return $value;
+    }
+
+    public function getAvgTicketPriceAttribute( $value )
+    {
+        if ( $this->venue_country == 'CA' ) {
+            return round( $value * self::CANADA_ADJUSTMENT );
+        }
+
+        return $value;
     }
 
     public function getSalesStatsAttribute(  )
@@ -86,6 +114,38 @@ class Listing extends Model
         $update->{$dateField} = date( "Y-m-d H:i:s" );
         $update->{$timesField} = $update->{$timesField} + 1;
         $update->save();
+    }
+
+    public function calcRoi($updateHigh = true, $updateLow = true)
+    {
+        $listing = $this;
+        $data = $listing->data->first();
+        if ( !$data || ( $data->total_sales + $data->total_sales_past ) <= 0 ) {
+            return 0;
+        }
+
+        if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
+            $total = ( $data->avg_sale_price * $data->total_sales ) + ( $data->avg_sale_price_past * $data->total_sales_past );
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 5 );
+            $roi = round( ( $roi - 1 ) * 100 );
+            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
+                'roi_sh'     => $roi,
+                'listing_id' => $listing->id
+            ] );
+        }
+
+        if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
+            $total = ( $data->avg_sale_price * $data->total_sales ) + ( $data->avg_sale_price_past * $data->total_sales_past );
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 5 );
+            $roi = round( ( $roi - 1 ) * 100 );
+            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
+                'roi_low'     => $roi,
+                'listing_id' => $listing->id
+            ] );
+        }
+
+        return true;
+
     }
 
 }
