@@ -9,7 +9,7 @@ class Listing extends Model
 {
 
     protected $guarded = ['id'];
-    protected $appends = ['nice_date'];
+    protected $appends = ['nice_date', 'nice_high_price', 'nice_low_price'];
     protected $dates = ['created_at','updated_at','event_date'];
 
     public function data(  )
@@ -41,6 +41,16 @@ class Listing extends Model
     public function getSalesStatsAttribute(  )
     {
         return $this->data()->first();
+    }
+
+    public function getNiceHighPriceAttribute(  )
+    {
+        return number_format($this->high_ticket_price, 0, '.', '');
+    }
+
+    public function getNiceLowPriceAttribute()
+    {
+        return number_format( $this->low_ticket_price, 0, '.', '' );
     }
 
     public function getLookupsAttribute()

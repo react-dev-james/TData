@@ -154,8 +154,8 @@
                         <md-table-head md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
                         <md-table-head md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head md-sort-by="total_sales_past" >SH Past</md-table-head>
+                        <md-table-head md-sort-by="high_ticket_price">High</md-table-head>
                         <md-table-head md-sort-by="low_ticket_price" >Low</md-table-head>
-                        <md-table-head md-sort-by="high_ticket_price" >High</md-table-head>
                         <md-table-head md-sort-by="total_listed">Available</md-table-head>
                         <md-table-head md-sort-by="sale_status" >Sale Status</md-table-head>
                         <md-table-head md-sort-by="venue_capacity" >Capacity</md-table-head>
@@ -211,10 +211,10 @@
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">${{ listing.low_ticket_price }}</span>
+                            <span class="">${{ listing.nice_high_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">${{ listing.high_ticket_price }}</span>
+                            <span class="">${{ listing.nice_low_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_listed : 'N/A' }}</span>
