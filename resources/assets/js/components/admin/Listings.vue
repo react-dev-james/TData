@@ -405,8 +405,8 @@
 				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
 
 					this.$root.showNotification(response.body.message);
-					this.shared.listing = response.body.results;
 					this.refreshTable();
+
 
 				}, (response) => {
 					console.log("Error updating listing status. Try again.");
