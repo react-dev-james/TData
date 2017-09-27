@@ -508,6 +508,7 @@
             refreshTable()
             {
                 this.state.loading = true;
+				this.$forceUpdate();
                 this.options.page = this.options.pager.page;
                 if (this.shared.activeReport) {
 					this.options.reportId = this.shared.activeReport.id;
@@ -519,6 +520,7 @@
                     this.options.pager.page = response.body['current_page'];
                     this.totalListings = response.body.total;
                     this.state.loading = false;
+                    this.$forceUpdate();
 
                 }, (response) => {
                     console.log("Error loading listings");
