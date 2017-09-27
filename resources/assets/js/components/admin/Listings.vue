@@ -339,11 +339,11 @@
             options: {
                 pager: {
                     page: 1,
-                    size: 20
+                    size: 100
                 },
                 sort : {
-                    name: 'created_at',
-                    type: 'desc'
+                    name: 'roi_sh',
+                    type: 'asc'
                 },
 				multiSort: [],
                 search: '',
