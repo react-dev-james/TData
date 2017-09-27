@@ -150,6 +150,7 @@
                         <md-table-head md-sort-by="performer">Performer</md-table-head>
                         <md-table-head md-sort-by="venue" >Venue</md-table-head>
                         <md-table-head md-sort-by="roi_sh" >ROI (SH)</md-table-head>
+                        <md-table-head md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head md-sort-by="avg_sale_price" >SH Sold</md-table-head>
                         <md-table-head md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
                         <md-table-head md-sort-by="total_sales" >SH Tix</md-table-head>
@@ -199,6 +200,10 @@
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
+                            <span v-if="listing.stats && listing.stats.roi_low > 100" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell>
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
@@ -211,10 +216,10 @@
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">${{ listing.nice_high_price }}</span>
+                            <span class="">${{ listing.high_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">${{ listing.nice_low_price }}</span>
+                            <span class="">${{ listing.low_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_listed : 'N/A' }}</span>

@@ -10,7 +10,7 @@ class Listing extends Model
 
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
-    protected $appends = ['nice_date', 'nice_high_price', 'nice_low_price'];
+    protected $appends = ['nice_date'];
     protected $dates = ['created_at','updated_at','event_date'];
 
     public function data(  )
@@ -42,28 +42,28 @@ class Listing extends Model
     public function getLowTicketPriceAttribute( $value )
     {
         if ( $this->venue_country == 'CA') {
-            return round( $value * self::CANADA_ADJUSTMENT );
+            return number_format( round( $value * self::CANADA_ADJUSTMENT ), 0, '.', '' );
         }
 
-        return $value;
+        return number_format( $value, 0, '.', '' );
     }
 
     public function getHighTicketPriceAttribute( $value )
     {
         if ( $this->venue_country == 'CA' ) {
-            return round( $value * self::CANADA_ADJUSTMENT );
+            return number_format( round( $value * self::CANADA_ADJUSTMENT ), 0, '.', '' );
         }
 
-        return $value;
+        return number_format( $value, 0, '.', '' );
     }
 
     public function getAvgTicketPriceAttribute( $value )
     {
         if ( $this->venue_country == 'CA' ) {
-            return round( $value * self::CANADA_ADJUSTMENT );
+            return number_format( round( $value * self::CANADA_ADJUSTMENT ), 0, '.', '' );
         }
 
-        return $value;
+        return number_format( $value, 0, '.', '' );
     }
 
     public function getSalesStatsAttribute(  )
@@ -71,15 +71,6 @@ class Listing extends Model
         return $this->data()->first();
     }
 
-    public function getNiceHighPriceAttribute(  )
-    {
-        return number_format($this->high_ticket_price, 0, '.', '');
-    }
-
-    public function getNiceLowPriceAttribute()
-    {
-        return number_format( $this->low_ticket_price, 0, '.', '' );
-    }
 
     public function getLookupsAttribute()
     {

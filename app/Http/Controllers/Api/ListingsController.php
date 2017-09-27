@@ -206,6 +206,7 @@ class ListingsController extends Controller
                     ->select( "listings.*" );
                 break;
             case 'roi_sh':
+            case 'roi_low':
                 $query->join( 'stats', function ( $join ) {
                     $join->on( 'stats.listing_id', '=', 'listings.id' );
                 } )
