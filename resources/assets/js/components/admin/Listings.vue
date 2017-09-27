@@ -408,6 +408,7 @@
         	    this.$refs.associateModal.open();
 				setTimeout(() => {
 					document.getElementById("dataSearchInput").focus();
+					document.getElementById("dataSearchInput").select();
 				}, 50);
             },
 			updateStatus(listing, status) {
