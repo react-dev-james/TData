@@ -76,9 +76,19 @@ class ListingsController extends Controller
                         $query->orWhere( 'sale_status', 'OnPresale');
                     } );
                     break;
+                case "filter-targeted":
+                    $query->where( 'status', 'targeted' );
+                    break;
+                case "filter-excluded":
+                    $query->where( 'status', 'excluded' );
+                    break;
                 case "filter-future":
                     $query->where( 'sale_status', 'Future' );
                     break;
+                case "filter-all":
+                default:
+                $query->where( 'status','!=','excluded' );
+                break;                    
             }
         }
 
@@ -216,6 +226,46 @@ class ListingsController extends Controller
             'status'  => "success",
             'results' => $listing
         ] );
+    }
+
+    /**
+     * Update an existing listing status
+     * @param Request $request
+     * @param Listing $listing
+     * @return mixed
+     */
+    public function updateStatus( Request $request, Listing $listing, $status = 'active' )
+    {
+        $canEdit = false;
+        if ( \Auth::user()->isAdmin() ) {
+            $canEdit = true;
+        }
+
+        if ( !$canEdit ) {
+            return response()->json( [
+                'message' => "You do not have permission to edit this listing.",
+                'status'  => "error"
+            ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        if ( $listing->update( ['status' => $status] ) ) {
+            return response()->json( [
+                'message' => "Listing updated successfully.",
+                'new'     => false,
+                'status'  => "success",
+                'results' => $listing
+            ] );
+        }
+
+        return response()->json( [
+            'message' => "Error saving listing. Please Try Again.",
+            'status'  => "error"
+        ],
+            Response::HTTP_UNPROCESSABLE_ENTITY
+        );
+
     }
 
     /**

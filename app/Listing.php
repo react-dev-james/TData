@@ -9,7 +9,7 @@ class Listing extends Model
 {
 
     protected $guarded = ['id'];
-    protected $appends = ['sales_stats','lookups','nice_date'];
+    protected $appends = ['nice_date'];
     protected $dates = ['created_at','updated_at','event_date'];
 
     public function data(  )
@@ -49,7 +49,7 @@ class Listing extends Model
             return [];
         }
 
-        return \App\EventLookup::where("event_slug",$this->slug)->where("match_slug", $this->data()->first()->category_slug)->get();
+        return \App\EventLookup::where("event_slug",$this->slug)->where("match_slug", $this->data->first()->category_slug)->get();
     }
 
     public function getNiceDateAttribute()

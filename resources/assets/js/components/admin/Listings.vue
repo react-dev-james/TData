@@ -139,6 +139,7 @@
             <md-table v-else :md-sort="options.sort.name" :md-sort-type="options.sort.type" @sort="onSort" @select="onSelected">
                 <md-table-header>
                     <md-table-row>
+                        <md-table-head>Options</md-table-head>
                         <md-table-head md-sort-by="event_name">Event</md-table-head>
                         <md-table-head md-sort-by="performer">Performer</md-table-head>
                         <md-table-head md-sort-by="venue" >Venue</md-table-head>
@@ -155,13 +156,22 @@
                         <md-table-head md-sort-by="event_day" >Day</md-table-head>
                         <md-table-head md-sort-by="event_date" >Date</md-table-head>
                         <md-table-head md-sort-by="venue_state" >State</md-table-head>
-
-                        <md-table-head >Options</md-table-head>
                     </md-table-row>
                 </md-table-header>
 
                 <md-table-body>
-                    <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing" :md-selection="true" :key="rowIndex">
+                    <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing"  :key="rowIndex" :class="{'bg-targeted' : listing.status == 'targeted'}">
+                        <md-table-cell>
+                            <button class="btn btn-small btn-danger margin-right-5 padding-5" @click="updateStatus(listing, 'excluded')">
+                                <md-icon>close</md-icon>
+                            </button>
+                            <button class="btn btn-small btn-primary margin-right-5 padding-5" @click="associateListing(listing)">
+                                <md-icon>attach_file</md-icon>
+                            </button>
+                            <button class="btn btn-small btn-success padding-5" @click="updateStatus(listing, 'targeted')">
+                                <md-icon>stars</md-icon>
+                            </button>
+                        </md-table-cell>
                         <md-table-cell>
                         <span>
                            {{ listing.event_name|limitTo(20) }}
@@ -183,16 +193,16 @@
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.sales_stats ? listing.sales_stats.avg_sale_price : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.sales_stats ? listing.sales_stats.avg_sale_price_past : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_sales : 'N/A' }}</span>
+                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_sales_past : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">${{ listing.low_ticket_price }}</span>
@@ -201,7 +211,7 @@
                             <span class="">${{ listing.high_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.sales_stats ? listing.sales_stats.total_listed : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_listed : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.sale_status }}</span>
@@ -217,23 +227,6 @@
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.venue_state }}</span>
-                        </md-table-cell>
-                        <md-table-cell>
-                            <md-menu md-size="5" md-direction="top left">
-                                <md-button class="md-icon-button md-list-action" md-menu-trigger>
-                                    <md-icon clas="md-primary">more_vert</md-icon>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item @click.native="confirmDeleteListing(listing)">
-                                        <md-icon >delete</md-icon>
-                                        <span>Delete</span>
-                                    </md-menu-item>
-                                    <md-menu-item @click.native="associateListing(listing)">
-                                        <md-icon>attach_file</md-icon>
-                                        <span>Associate</span>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
                         </md-table-cell>
                     </md-table-row>
                 </md-table-body>
@@ -353,6 +346,18 @@
                 reportId: null
             },
             filters: [
+				{
+					'name': 'All',
+					'id': 'filter-all'
+				},
+				{
+					'name': 'Targeted',
+					'id': 'filter-targeted'
+				},
+				{
+					'name': 'Excluded',
+					'id': 'filter-excluded'
+				},
                 {
                     'name' : 'On Sale / Pre Sale Only',
                     'id' : 'filter-on-sale'
@@ -396,6 +401,18 @@
         	    this.shared.listing = listing;
         	    this.$refs.associateModal.open();
             },
+			updateStatus(listing, status) {
+				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
+
+					this.$root.showNotification(response.body.message);
+					this.shared.listing = response.body.results;
+					this.refreshTable();
+
+				}, (response) => {
+					console.log("Error updating listing status. Try again.");
+					console.log(response);
+				});
+			},
             associateListingWithData(listing, data) {
 				this.$http.post(`/apiv1/listings/associate/${listing.id}/${data.id}`).then((response) => {
 
