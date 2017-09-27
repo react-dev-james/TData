@@ -264,7 +264,7 @@
 
         <md-input-container class="margin-top-10">
             <label>Search for matching data</label>
-            <md-input v-model="options.dataSearch" @change="onDataSearch"></md-input>
+            <md-input id='dataSearchInput' v-model="options.dataSearch" @change="onDataSearch"></md-input>
         </md-input-container>
 
         <md-list class="md-double-line" v-if="!state.dataLoading" style="max-height: 600px; overflow: auto;">
@@ -406,6 +406,9 @@
         	associateListing(listing) {
         	    this.shared.listing = listing;
         	    this.$refs.associateModal.open();
+				setTimeout(() => {
+					document.getElementById("dataSearchInput").focus();
+				}, 50);
             },
 			updateStatus(listing, status) {
 				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
