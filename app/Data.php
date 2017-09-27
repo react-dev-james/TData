@@ -54,12 +54,12 @@ class Data extends Model
 
     public function getTotalSalesAttribute( $value )
     {
-        return $value * 0.925;
+        return round($value * 0.925);
     }
 
     public function getTotalSalesPastAttribute( $value )
     {
-        return $value * 0.925;
+        return round($value * 0.925);
     }
 
 }
