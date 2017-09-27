@@ -90,6 +90,8 @@ class ListingsController extends Controller
                 $query->where( 'status','!=','excluded' );
                 break;                    
             }
+        } else {
+            $query->where( 'status', '!=', 'excluded' );
         }
 
         return $query->paginate( $size );
@@ -248,6 +250,11 @@ class ListingsController extends Controller
             ],
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
+        }
+
+        /* Reset to default if status changed/clicked again */
+        if ($listing->status == $status) {
+            $status = 'active';
         }
 
         if ( $listing->update( ['status' => $status] ) ) {

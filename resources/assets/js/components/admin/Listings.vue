@@ -342,7 +342,7 @@
                 search: '',
                 dataSearch: '',
                 searchField: 'all',
-                filter: null,
+                filter: 'filter-all',
                 reportId: null
             },
             filters: [
