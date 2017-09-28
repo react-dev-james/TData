@@ -10,8 +10,19 @@ class Listing extends Model
 
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
-    protected $appends = ['nice_date'];
+    protected $appends = ['nice_date','avg_sale_price','avg_sale_price_past'];
     protected $dates = ['created_at','updated_at','event_date'];
+
+    /* Adjustments for days of week */
+    protected $daysOfWeek = [
+        'Sunday'    => 0.89,
+        'Monday'    => 0.85,
+        'Tuesday'   => 0.86,
+        'Wednesday' => 0.86,
+        'Thursday'  => 0.97,
+        'Friday'    => 1.02,
+        'Saturday'  => 1.15
+    ];
 
     public function data(  )
     {
@@ -66,6 +77,36 @@ class Listing extends Model
         return number_format( $value, 0, '.', '' );
     }
 
+    public function getAvgSalePriceAttribute()
+    {
+        $data = $this->data->first();
+        if ( !$data ) {
+            return 0;
+        }
+
+        if ( isset( $this->daysOfWeek[$this->event_day] ) ) {
+            $dayAdjustment = $this->daysOfWeek[$this->event_day];
+            return round( $data->avg_sale_price * $dayAdjustment );
+        }
+
+        return $data->avg_sale_price;
+    }
+
+    public function getAvgSalePricePastAttribute( )
+    {
+        $data = $this->data->first();
+        if ( !$data ) {
+            return 0;
+        }
+
+        if ( isset( $this->daysOfWeek[$this->event_day] ) ) {
+            $dayAdjustment = $this->daysOfWeek[$this->event_day];
+            return round( $data->avg_sale_price_past * $dayAdjustment );
+        }
+
+        return $data->avg_sale_price_past;
+    }
+
     public function getSalesStatsAttribute(  )
     {
         return $this->data()->first();
@@ -116,7 +157,7 @@ class Listing extends Model
         }
 
         if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
-            $total = ( $data->avg_sale_price * $data->total_sales ) + ( $data->avg_sale_price_past * $data->total_sales_past );
+            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
             $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 5 );
             $roi = round( ( $roi - 1 ) * 100 );
             \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
@@ -126,7 +167,7 @@ class Listing extends Model
         }
 
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
-            $total = ( $data->avg_sale_price * $data->total_sales ) + ( $data->avg_sale_price_past * $data->total_sales_past );
+            $total = ( $this->getAvgSalePrice() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
             $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 5 );
             $roi = round( ( $roi - 1 ) * 100 );
             \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [

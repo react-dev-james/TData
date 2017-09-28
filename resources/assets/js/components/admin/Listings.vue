@@ -204,10 +204,10 @@
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].avg_sale_price : 'N/A' }}</span>
+                            <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].avg_sale_price_past : 'N/A' }}</span>
+                            <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
