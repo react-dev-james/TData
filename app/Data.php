@@ -24,7 +24,7 @@ class Data extends Model
         return $this->belongsToMany( \App\Data::class, 'listing_data' );
     }
 
-    public function getAvgSalesPriceAttribute( $value )
+    public function getAvgSalePriceAttribute( $value )
     {
         if (!$this->listing->first()) {
             return $value;
@@ -38,7 +38,7 @@ class Data extends Model
         return $value;
     }
 
-    public function getAvgSalesPricePastAttribute( $value )
+    public function getAvgSalePricePastAttribute( $value )
     {
         if ( !$this->listing->first() ) {
             return $value;
