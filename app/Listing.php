@@ -167,7 +167,7 @@ class Listing extends Model
         }
 
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
-            $total = ( $this->getAvgSalePrice() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
+            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
             $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 5 );
             $roi = round( ( $roi - 1 ) * 100 );
             \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
