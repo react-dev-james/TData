@@ -70,6 +70,12 @@ class MatchEventData extends Command
             }
 
             /* Exclusions */
+            if ($listing->category == 'Sports') {
+                $listing->delete();
+                continue;
+            }
+
+            /* Exclusion list */
             foreach ($this->exclusions as $exclusion) {
                 if (stristr($listing->event_name, $exclusion) !== false) {
                     $listing->delete();
@@ -79,6 +85,7 @@ class MatchEventData extends Command
 
         }
 
+        /* Check for matches based on event data names */
         $numMatches = 0;
         foreach ($data as $item) {
 
@@ -102,6 +109,7 @@ class MatchEventData extends Command
                     continue;
                 }
 
+                /* Calculate string similarity */
                 $distance = levenshtein($item->category, $listing->event_name);
                 $similarity = similar_text($item->category, $listing->event_name);
                 $confidence = max(0,($similarity / max(1, (strlen($listing->event_name) - strlen($item->category)))) * 100 - $distance);

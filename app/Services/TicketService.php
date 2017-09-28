@@ -31,6 +31,7 @@ class TicketService extends ScraperService implements IScraper
     protected $apiKey;
     protected $options;
     protected $state;
+    protected $dateHash;
 
     public function execute(Array $options  )
     {
@@ -129,6 +130,7 @@ class TicketService extends ScraperService implements IScraper
         $startDate = Carbon::now();
         $startDate->startOfWeek();
         $endDate = $startDate->copy()->addDays(7);
+        $this->dateHash = md5($startDate->timestamp . $endDate->timestamp);
         $start = 0;
         $offset = $limit;
         $savedListings = collect();
@@ -170,6 +172,7 @@ class TicketService extends ScraperService implements IScraper
                 'slug'           => str_slug( $result['event_name'] ),
                 'recurring'      => (bool) $result['recurring'],
                 'offer_code'     => $result['ticket_offer_code'],
+                'ticket_url'     => $result['buy_ticket_url'],
                 'venue'          => $result['venue_name'],
                 'venue_zip'      => $result['venue_zip'],
                 'venue_city'     => $result['venue_city'],
@@ -179,7 +182,8 @@ class TicketService extends ScraperService implements IScraper
                 'venue_lng'      => $result['venue_long'],
                 'venue_capacity' => intval(str_replace(",","",$result['venue_capacity'])),
                 'event_date'     => date( "Y-m-d H:i:s", $result['event_start_time_local'] ),
-                'event_day'     => date( "l", $result['event_start_time_local'] ),
+                'event_day'      => date( "l", $result['event_start_time_local'] ),
+                'date_hash'      => $this->dateHash
             ];
 
             if (stristr($result['price_col'], "-") !== false) {
@@ -412,6 +416,7 @@ class TicketService extends ScraperService implements IScraper
 
             $newListing = Listing::firstOrCreate([
                 'slug' => $listing['slug'],
+                'venue' => $listing['venue'],
                 'source' => $listing['source']
             ], $listing);
 

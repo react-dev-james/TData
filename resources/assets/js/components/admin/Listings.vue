@@ -163,6 +163,7 @@
                         <md-table-head md-sort-by="event_day" >Day</md-table-head>
                         <md-table-head md-sort-by="event_date" >Date</md-table-head>
                         <md-table-head md-sort-by="venue_state" >State</md-table-head>
+                        <md-table-head >Buy</md-table-head>
                     </md-table-row>
                 </md-table-header>
 
@@ -238,6 +239,10 @@
                         </md-table-cell>
                         <md-table-cell>
                             <span class="">{{ listing.venue_state }}</span>
+                        </md-table-cell>
+                        <md-table-cell>
+                            <a v-if="listing.ticket_url" :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon></a>
+                            <span v-else>N/A</span>
                         </md-table-cell>
                     </md-table-row>
                 </md-table-body>
