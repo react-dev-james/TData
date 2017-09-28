@@ -15,8 +15,8 @@ Vue.use(KeenUI);
 
 Vue.material.registerTheme('default', {
     primary: {
-        color: 'deep-purple',
-        hue: 600
+		color: 'blue',
+		hue: 500
     },
     accent: {
         color: 'blue',

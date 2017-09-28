@@ -265,6 +265,7 @@ class ListingsController extends Controller
         }
 
         if ( $listing->update( ['status' => $status] ) ) {
+            $listing->load( "sales", "data", "updates", "stats" );
             return response()->json( [
                 'message' => "Listing updated successfully.",
                 'new'     => false,

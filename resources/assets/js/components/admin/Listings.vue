@@ -50,6 +50,16 @@
                         </md-menu-content>
                     </md-menu>
 
+                    <md-select multiple v-model="selectedColumns" class="inline-md-select" >
+                        <md-button class="md-icon-button" md-menu-trigger slot="icon">
+                            <md-icon>view_column</md-icon>
+                        </md-button>
+                        <md-option v-for="(col, index) in columns"
+                                   :key="index"
+                                   :value="col">
+                            {{ col.title }}
+                        </md-option>
+                    </md-select>
 
                     <md-button class="md-icon-button" @click.native="refreshTable()">
                         <md-icon>cached</md-icon>
@@ -61,9 +71,10 @@
                         <md-tooltip md-direction="top">Clear Search</md-tooltip>
                     </md-button>
 
-                    <md-button v-if="!state.searchSelected" class="md-icon-button" @click.native="state.searchSelected = !state.searchSelected">
+                    <md-button v-if="!state.searchSelected" class="md-icon-button" @click.native="openSearch">
                         <md-icon>search</md-icon>
                     </md-button>
+
 
                     <!--
                     <md-button v-if="!state.sortSelected" class="md-icon-button" @click.native="state.sortSelected = !state.sortSelected">
@@ -100,7 +111,7 @@
                 <div class="col-xs-12 col-sm-9">
                     <md-input-container class="md-theme-dark" md-inline>
                         <label>Search Listings</label>
-                        <md-input v-model="options.search" @change="onSearch"></md-input>
+                        <md-input v-model="options.search" @change="onSearch" id="mainSearchInput"></md-input>
                         <md-button class="md-input-button" @click.native="state.searchSelected = !state.searchSelected">
                             <md-icon>search</md-icon>
                         </md-button>
@@ -146,101 +157,94 @@
                 <md-table-header>
                     <md-table-row>
                         <md-table-head>Options</md-table-head>
-                        <md-table-head md-sort-by="event_name">Event</md-table-head>
-                        <md-table-head md-sort-by="performer">Performer</md-table-head>
-                        <md-table-head md-sort-by="venue" >Venue</md-table-head>
-                        <md-table-head md-sort-by="roi_sh" >ROI (SH)</md-table-head>
-                        <md-table-head md-sort-by="roi_low">ROI Low</md-table-head>
-                        <md-table-head md-sort-by="avg_sale_price" >SH Sold</md-table-head>
-                        <md-table-head md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
-                        <md-table-head md-sort-by="total_sales" >SH Tix</md-table-head>
-                        <md-table-head md-sort-by="total_sales_past" >SH Past</md-table-head>
-                        <md-table-head md-sort-by="high_ticket_price">High</md-table-head>
-                        <md-table-head md-sort-by="low_ticket_price" >Low</md-table-head>
-                        <md-table-head md-sort-by="total_listed">Available</md-table-head>
-                        <md-table-head md-sort-by="sale_status" >Sale Status</md-table-head>
-                        <md-table-head md-sort-by="venue_capacity" >Capacity</md-table-head>
-                        <md-table-head md-sort-by="event_day" >Day</md-table-head>
-                        <md-table-head md-sort-by="event_date" >Date</md-table-head>
-                        <md-table-head md-sort-by="venue_state" >State</md-table-head>
-                        <md-table-head >Buy</md-table-head>
+                        <md-table-head v-if="columnActive('event_name')" md-sort-by="event_name">Event</md-table-head>
+                        <md-table-head v-if="columnActive('performer')" md-sort-by="performer">Performer</md-table-head>
+                        <md-table-head v-if="columnActive('venue')" md-sort-by="venue" >Venue</md-table-head>
+                        <md-table-head v-if="columnActive('roi_sh')" md-sort-by="roi_sh" >ROI (SH)</md-table-head>
+                        <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
+                        <md-table-head v-if="columnActive('avg_sale_price')" md-sort-by="avg_sale_price" >SH Sold</md-table-head>
+                        <md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
+                        <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
+                        <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
+                        <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
+                        <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
+                        <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
+                        <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
+                        <md-table-head v-if="columnActive('sale_date')" md-sort-by="sale_date" >Date</md-table-head>
+                        <md-table-head v-if="columnActive('venue_state')" md-sort-by="venue_state" >State</md-table-head>
+                        <md-table-head v-if="columnActive('buy')">Buy</md-table-head>
                     </md-table-row>
                 </md-table-header>
 
                 <md-table-body>
-                    <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing"  :key="rowIndex" :class="{'bg-targeted' : listing.status == 'targeted'}">
+                    <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing"  :key="rowIndex"
+                                  :class="[{'bg-targeted' : listing.status == 'targeted'}, {'bg-excluded' : listing.status == 'excluded'}] ">
                         <md-table-cell>
-                            <button class="btn btn-small btn-danger margin-right-5 padding-5" @click="updateStatus(listing, 'excluded')">
+                            <button class="btn btn-small btn-danger margin-right-5 padding-5" @click="updateStatus(listing, 'excluded', rowIndex)">
                                 <md-icon>close</md-icon>
                             </button>
                             <button class="btn btn-small btn-primary margin-right-5 padding-5" @click="associateListing(listing)">
                                 <md-icon>attach_file</md-icon>
                             </button>
-                            <button class="btn btn-small btn-success padding-5" @click="updateStatus(listing, 'targeted')">
+                            <button class="btn btn-small btn-success padding-5" @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('event_name')">
                         <span>
                            {{ listing.event_name|limitTo(20) }}
                             <md-tooltip md-direction="top">{{ listing.event_name }}</md-tooltip>
                         </span>
 
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('performer')">
                             {{ listing.performer ? listing.performer : 'N/A'|limitTo(20) }}
                             <md-tooltip md-direction="top">{{ listing.performer ? listing.performer : 'N/A' }}</md-tooltip>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('venue')">
                             {{ listing.venue|limitTo(20) }}
                             <md-tooltip md-direction="top">{{ listing.venue }}</md-tooltip>
                             </span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('roi_sh')">
                             <span v-if="listing.stats && listing.stats.roi_sh > 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('roi_low')">
                             <span v-if="listing.stats && listing.stats.roi_low > 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('avg_sale_price')">
                             <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('avg_sale_price_past')">
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('total_sales_past')">
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('high_ticket_price')">
                             <span class="">${{ listing.high_ticket_price }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('low_ticket_price')">
                             <span class="">${{ listing.low_ticket_price }}</span>
                         </md-table-cell>
-                        <md-table-cell>
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_listed : 'N/A' }}</span>
-                        </md-table-cell>
-                        <md-table-cell>
-                            <span class="">{{ listing.sale_status }}</span>
-                        </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('event_day')">
                             <span class="">{{ listing.event_day }}</span>
                         </md-table-cell>
-                        <md-table-cell>
-                            <span class="">{{ listing.nice_date }}</span>
+                        <md-table-cell v-if="columnActive('sale_date')">
+                            <span class="">{{ listing.nice_sale_date }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('venue_state')">
                             <span class="">{{ listing.venue_state }}</span>
                         </md-table-cell>
-                        <md-table-cell>
+                        <md-table-cell v-if="columnActive('buy')">
                             <a v-if="listing.ticket_url" :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon></a>
                             <span v-else>N/A</span>
                         </md-table-cell>
@@ -330,6 +334,10 @@
             console.log(' Admin listings component ready v2.')
             this.refreshTable();
 
+            this.columns.forEach((column) => {
+            	this.selectedColumns.push(column);
+            });
+
         },
         data: () => ({
             state: {
@@ -344,7 +352,26 @@
             },
             _: window._,
             shared: window.appShared,
-            columns: ['name','source','bedrooms','beds','capacity','location','type','current_rate'],
+            selectedColumns: [
+            ],
+            columns: [
+                {id : 1, name: 'event_name', title: 'Event'},
+                {id : 2, name: 'performer', title: 'Performer'},
+                {id : 3, name: 'venue', title: 'Venue'},
+                {id : 4, name: 'roi_sh', title: 'ROI (SH)'},
+                {id : 5, name: 'roi_low', title: 'ROI Low'},
+                {id : 6, name: 'avg_sale_price', title: 'SH Sold'},
+                {id : 7, name: 'avg_sale_price_past', title: 'Price Past'},
+                {id : 8, name: 'total_sales', title: 'Sales'},
+                {id : 9, name: 'total_sales_past', title: 'Sales Past'},
+                {id : 10, name: 'high_ticket_price', title: 'High'},
+                {id : 11, name: 'low_ticket_price', title: 'Low'},
+                {id : 12, name: 'venue_capacity', title: 'Venue Capacity'},
+                {id : 13, name: 'event_day', title: 'Day'},
+                {id : 14, name: 'sale_date', title: 'Date'},
+                {id : 15, name: 'venue_state', title: 'State'},
+                {id : 16, name: 'buy', title: 'Buy'},
+            ],
             options: {
                 pager: {
                     page: 1,
@@ -413,6 +440,23 @@
             }
         },
         methods: {
+        	openSearch() {
+        		this.state.searchSelected = !this.state.searchSelected;
+				setTimeout(() => {
+					document.getElementById("mainSearchInput").focus();
+					document.getElementById("mainSearchInput").select();
+				}, 50);
+            },
+        	columnActive(name) {
+        		let active = false;
+        	    this.selectedColumns.forEach((column) => {
+        	    	if (column.name == name) {
+        	    		active = true;
+                    }
+                });
+
+        	    return active;
+            },
         	associateListing(listing) {
         	    this.shared.listing = listing;
         	    this.$refs.associateModal.open();
@@ -421,11 +465,13 @@
 					document.getElementById("dataSearchInput").select();
 				}, 50);
             },
-			updateStatus(listing, status) {
+			updateStatus(listing, status, rowIndex) {
 				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
 
+					this.shared.listings[rowIndex] = response.body.results;
 					this.$root.showNotification(response.body.message);
-					this.refreshTable();
+					this.$forceUpdate();
+					//this.refreshTable();
 
 
 				}, (response) => {
@@ -518,6 +564,7 @@
 			}, 300),
             onSearch(term) {
                 this.options.search = term;
+                this.options.pager.page = 1;
                 this.performSearch();
             },
             performSearch: _.debounce(function () {

@@ -10,7 +10,7 @@ class Listing extends Model
 
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
-    protected $appends = ['nice_date','avg_sale_price','avg_sale_price_past'];
+    protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past'];
     protected $dates = ['created_at','updated_at','event_date'];
 
     /* Adjustments for days of week */
@@ -47,7 +47,7 @@ class Listing extends Model
      */
     public function sales(  )
     {
-        return $this->hasMany(\App\Sale::class);
+        return $this->hasMany(\App\Sale::class)->orderBy('sale_date','ASC');
     }
 
     public function getLowTicketPriceAttribute( $value )
@@ -125,6 +125,15 @@ class Listing extends Model
     public function getNiceDateAttribute()
     {
         return $this->event_date->toDayDateTimeString();
+    }
+
+    public function getNiceSaleDateAttribute()
+    {
+        if ($this->sales->count() > 0) {
+            return $this->sales->first()->sale_date->format( 'D, M j, g:i A' );
+        }
+
+        return "N/A";
     }
 
     public function recordUpdate( $type )

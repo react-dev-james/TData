@@ -10,6 +10,7 @@ class Sale extends Model
     use Rememberable;
 
     protected $guarded = [ 'id' ];
+    protected $dates = ['sale_date'];
 
     public function listing()
     {

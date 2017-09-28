@@ -164,3 +164,13 @@ a:hover {
 .bg-targeted {
   background-color: #dcf1ea;
 }
+
+.bg-excluded {
+  background-color: #f7a8a8;
+}
+
+.inline-md-select {
+  width: auto !important;
+  min-width: 0px !important;
+ display: inline-block;
+}
