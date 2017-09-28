@@ -153,28 +153,33 @@ class Listing extends Model
         $listing = $this;
         $data = $listing->data->first();
         if ( !$data || ( $data->total_sales + $data->total_sales_past ) <= 0 ) {
+            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
+                'roi_sh'     => 0,
+                'roi_low'    => 0,
+                'listing_id' => $listing->id
+            ] );
             return 0;
         }
 
+        $highRoi = 0;
+        $lowRoi = 0;
         if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
             $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
             $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 5 );
-            $roi = round( ( $roi - 1 ) * 100 );
-            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
-                'roi_sh'     => $roi,
-                'listing_id' => $listing->id
-            ] );
+            $highRoi = round( ( $roi - 1 ) * 100 );
         }
 
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
             $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
             $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 5 );
-            $roi = round( ( $roi - 1 ) * 100 );
-            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
-                'roi_low'     => $roi,
-                'listing_id' => $listing->id
-            ] );
+            $lowRoi = round( ( $roi - 1 ) * 100 );
         }
+
+        \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
+            'roi_sh'     => $highRoi,
+            'roi_low'    => $lowRoi,
+            'listing_id' => $listing->id
+        ] );
 
         return true;
 

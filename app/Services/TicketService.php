@@ -274,6 +274,7 @@ class TicketService extends ScraperService implements IScraper
         $this->save( 'box_office_post_login.html' );
 
         $response = @json_encode($results);
+        dd($response);
         if ($response->type == 'success') {
             $this->state['box_logged_in'] = true;
             $this->display( "Logged into box office fox successfully." );

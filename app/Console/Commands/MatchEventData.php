@@ -50,6 +50,12 @@ class MatchEventData extends Command
 
         /* Check lookups table first */
         foreach ($listings as $listing) {
+
+            /* If listing has match, skip it */
+            if ($listing->data->count() > 0) {
+                continue;
+            }
+
             /* Check lookups table */
             $lookup = \App\EventLookup::where( "event_name", $listing->event_name )->orderBy("is_auto",'ASC')->orderBy('confidence','DESC')->first();
             if ( $lookup ) {
@@ -84,7 +90,7 @@ class MatchEventData extends Command
                     continue;
                 }
 
-                /* Skip listings with matching lookups */
+                /* Skip listings with matching 100% confidence lookups */
                 $lookup = \App\EventLookup::where( "event_name", $listing->event_name )->orderBy( "is_auto", 'ASC' )->orderBy( 'confidence', 'DESC' )->first();
                 if ($lookup && $lookup->confidence >= 100) {
                     continue;
