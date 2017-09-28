@@ -196,11 +196,11 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span v-if="listing.stats && listing.stats.roi_sh > 100" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh > 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
-                            <span v-if="listing.stats && listing.stats.roi_low > 100" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low > 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                             <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell>
