@@ -210,7 +210,8 @@ class TicketService extends ScraperService implements IScraper
                     'day'       => date( "l" ),
                     'manual'    => true,
                     'type'      => 'current',
-                    'offer_code' => $result['ticket_offer_code']
+                    'offer_code' => $result['ticket_offer_code'],
+                    'is_future' => false
                 ];
             } else {
 

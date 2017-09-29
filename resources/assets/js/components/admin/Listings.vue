@@ -153,7 +153,7 @@
         </div>
         <!-- End place holders -->
 
-            <md-table v-else :md-sort="options.sort.name" :md-sort-type="options.sort.type" @sort="onSort" @select="onSelected">
+            <md-table v-else :md-sort="options.sort.name" :md-sort-type="options.sort.type" @sort="onSort" @select="onSelected" >
                 <md-table-header>
                     <md-table-row>
                         <md-table-head>Options</md-table-head>
@@ -257,7 +257,7 @@
                     :md-page="options.pager.page"
                     md-label="Listings"
                     md-separator="of"
-                    :md-page-options="[20, 50, 100]"
+                    :md-page-options="[20, 50, 100,250]"
                     @pagination="onPagination"></md-table-pagination>
 
             <div class="margin-top-40">&nbsp;</div>
