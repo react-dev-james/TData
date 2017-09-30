@@ -13,20 +13,26 @@ Vue.use(VueMaterial);
 import KeenUI from 'keen-ui';
 Vue.use(KeenUI);
 
-Vue.material.registerTheme('default', {
-    primary: {
-		color: 'blue',
-		hue: 500
-    },
-    accent: {
-        color: 'blue',
-        hue: 500
-    },
-    warn: {
-        color: 'red',
-        hue: 600
-    },
-})
+Vue.material.registerTheme({
+	default: {
+		primary: {
+			color: 'blue',
+			hue: 500
+		},
+		accent: {
+			color: 'blue',
+			hue: 500
+		},
+		warn: {
+			color: 'red',
+			hue: 600
+		},
+	},
+	secondary: {
+		primary: 'teal',
+		accent: 'cyan'
+	}
+});
 
 Vue.component('bomb-login', require('./components/auth/Login.vue'));
 Vue.component('bomb-register', require('./components/auth/Register.vue'));

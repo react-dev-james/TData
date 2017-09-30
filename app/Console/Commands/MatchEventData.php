@@ -61,6 +61,8 @@ class MatchEventData extends Command
             if ( $lookup ) {
                 $dataLookup = \App\Data::where("category", $lookup->match_name)->first();
                 if ($dataLookup) {
+
+                    $this->info("Manual lookup match found for" . $listing->event_name);
                     $listing->performer = $dataLookup->category;
                     $listing->save();
 

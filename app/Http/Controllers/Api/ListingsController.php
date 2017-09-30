@@ -68,6 +68,57 @@ class ListingsController extends Controller
 
         }
 
+        /* Date filters */
+        if ( $request->has( "dateFilter" ) && !empty( $request->dateFilter ) ) {
+            switch ($request->dateFilter) {
+                case "monday":
+                    $query->where( function ( $query ) {
+                        $query->where( 'sale_status', 'OnSale' );
+                        $query->orWhere( 'sale_status', 'OnPresale' );
+                    } );
+
+                    $query->whereRaw('weekday(listings.created_at) = 0');
+                    break;
+                case "tuesday":
+                    $query->where( function ( $query ) {
+                        $query->where( 'sale_status', 'OnSale' );
+                        $query->orWhere( 'sale_status', 'OnPresale' );
+                    } );
+
+                    $query->whereRaw( 'weekday(listings.created_at) = 1' );
+                    break;
+                case "wednesday":
+                    $query->where( function ( $query ) {
+                        $query->where( 'sale_status', 'OnSale' );
+                        $query->orWhere( 'sale_status', 'OnPresale' );
+                    } );
+
+                    $query->whereRaw( 'weekday(listings.created_at) = 2' );
+                    break;
+                case "thursday":
+                    $query->where( function ( $query ) {
+                        $query->where( 'sale_status', 'OnSale' );
+                        $query->orWhere( 'sale_status', 'OnPresale' );
+                    } );
+
+                    $query->whereRaw( 'weekday(listings.created_at) = 3' );
+                    break;
+                case "weekend":
+                    $query->where( function ( $query ) {
+                        $query->where( 'sale_status', 'OnSale' );
+                        $query->orWhere( 'sale_status', 'OnPresale' );
+                    } );
+
+                    $query->whereRaw( 'weekday(listings.created_at) >= 4' );
+                    break;
+                case "new":
+                    /* Select the most recent entry and use the date to look for other entries */
+                    $newest = \App\Listing::orderBy('created_at','DESC')->first();
+                    $query->whereDay("created_at", $newest->created_at->day );
+                    break;
+            }
+        }
+
         if ( $request->has( "filter" ) && !empty( $request->filter ) ) {
             switch ($request->filter) {
                 case "filter-on-sale":

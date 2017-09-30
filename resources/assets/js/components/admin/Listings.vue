@@ -31,12 +31,33 @@
                     <h1 class="md-title">Event Listings</h1>
                 </div>
                 <div class="pull-right">
+                    <md-theme md-name="secondary" class="display-inline-block">
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('monday')">
+                        Mon
+                    </md-button>
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('tuesday')">
+                       Tues
+                    </md-button>
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('wednesday')">
+                        Wed
+                    </md-button>
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('thursday')">
+                        Thurs
+                    </md-button>
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('weekend')">
+                        Fri
+                    </md-button>
+                    <md-button md-condensed class="md-primary md-raised" @click.native="onDateFilter('new')">
+                        New
+                    </md-button>
+                    </md-theme>
                     <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'targeted', id: 'filter-targeted'})">
                         Targeted
                     </md-button>
                     <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'excluded', id: 'filter-excluded'})">
                         Excluded
                     </md-button>
+
                     <md-menu md-size="4">
                         <md-button class="md-icon-button" md-menu-trigger>
                             <md-icon>filter_list</md-icon>
@@ -121,6 +142,15 @@
 
         <div v-if="state.activeFilter" class="col-lg-12 bg-grey-200">
             <h4 class="margin-top-10 pull-left">Current Filter: {{ state.activeFilter.name }}</h4>
+            <md-button class="md-icon-button pull-right" @click.native="clearFilters">
+                <md-icon>clear</md-icon>
+                <md-tooltip md-direction="top">Clear Filter</md-tooltip>
+            </md-button>
+            <div class="clearfix"></div>
+        </div>
+
+        <div v-if="options.dateFilter.length > 0" class="col-lg-12 bg-grey-200">
+            <h4 class="margin-top-10 pull-left">Current Filter: {{ options.dateFilter }}</h4>
             <md-button class="md-icon-button pull-right" @click.native="clearFilters">
                 <md-icon>clear</md-icon>
                 <md-tooltip md-direction="top">Clear Filter</md-tooltip>
@@ -386,6 +416,7 @@
                 dataSearch: '',
                 searchField: 'all',
                 filter: 'filter-all',
+                dateFilter: '',
                 reportId: null
             },
             filters: [
@@ -495,6 +526,7 @@
             clearFilters() {
               this.options.search = '';
               this.options.filter = '';
+              this.options.dateFilter = '';
               this.state.activeFilter = null;
               this.state.searchSelected = false;
               this.refreshTable();
@@ -533,6 +565,10 @@
             removeReportItem(index) {
                 this.state.reportItems.splice(index, 1);
             },
+			onDateFilter(filter) {
+				this.options.dateFilter = filter;
+				this.refreshTable();
+			},
             onFilter(filter) {
                 this.state.activeFilter = filter;
                 this.options.filter = filter.id;
