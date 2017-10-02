@@ -11,10 +11,21 @@ class Sale extends Model
 
     protected $guarded = [ 'id' ];
     protected $dates = ['sale_date'];
+    protected $appends = ['nice_day','nice_date'];
 
     public function listing()
     {
         return $this->belongsTo( Listing::class );
+    }
+
+    public function getNiceDayAttribute()
+    {
+        return strtolower($this->day);
+    }
+
+    public function getNiceDateAttribute(  )
+    {
+        return $this->sale_date->format( 'D, M j, g:i A' );
     }
 
 }

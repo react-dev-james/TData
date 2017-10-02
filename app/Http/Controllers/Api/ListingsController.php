@@ -29,7 +29,12 @@ class ListingsController extends Controller
     public function index( Request $request )
     {
 
-        $query = Listing::with( "sales","data","updates","stats" );
+        if ($request->get('currentFilter','true') == 'true') {
+            $query = Listing::with( "sales", "data", "updates", "stats" );
+        } else {
+            $query = Listing::onlyTrashed()->with( "sales", "data", "updates", "stats" );
+        }
+
 
         /* Handle custom sorting on relations */
         if ( $request->has( "sort" ) && !$request->has( 'multiSort' ) ) {
@@ -72,44 +77,54 @@ class ListingsController extends Controller
         if ( $request->has( "dateFilter" ) && !empty( $request->dateFilter ) ) {
             switch ($request->dateFilter) {
                 case "monday":
-                    $query->where( function ( $query ) {
-                        $query->where( 'sale_status', 'OnSale' );
-                        $query->orWhere( 'sale_status', 'OnPresale' );
-                    } );
-
-                    $query->whereRaw('weekday(listings.created_at) = 0');
+                    $query->join( 'sales as salesDate', function ( $join ) {
+                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Monday' )->limit( 1 );
+                    } )
+                        ->whereNotNull( "salesDate.sale_date" )
+                        ->select( "listings.*" );
                     break;
                 case "tuesday":
+                    /*
                     $query->where( function ( $query ) {
                         $query->where( 'sale_status', 'OnSale' );
                         $query->orWhere( 'sale_status', 'OnPresale' );
                     } );
 
                     $query->whereRaw( 'weekday(listings.created_at) = 1' );
+                    */
+
+                    $query->join( 'sales as salesDate', function ( $join ) {
+                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Tuesday' )->limit(1);
+                    } )
+                        ->whereNotNull("salesDate.sale_date")
+                        ->select( "listings.*" );
+                    /*
+                    $query->whereHas( 'sales', function ( $query ) {
+                        $query->where('day','Tuesday');
+                    } );
+                    */
+
                     break;
                 case "wednesday":
-                    $query->where( function ( $query ) {
-                        $query->where( 'sale_status', 'OnSale' );
-                        $query->orWhere( 'sale_status', 'OnPresale' );
-                    } );
-
-                    $query->whereRaw( 'weekday(listings.created_at) = 2' );
+                    $query->join( 'sales as salesDate', function ( $join ) {
+                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Wednesday' )->limit( 1 );
+                    } )
+                        ->whereNotNull( "salesDate.sale_date" )
+                        ->select( "listings.*" );
                     break;
                 case "thursday":
-                    $query->where( function ( $query ) {
-                        $query->where( 'sale_status', 'OnSale' );
-                        $query->orWhere( 'sale_status', 'OnPresale' );
-                    } );
-
-                    $query->whereRaw( 'weekday(listings.created_at) = 3' );
+                    $query->join( 'sales as salesDate', function ( $join ) {
+                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Thursday' )->limit( 1 );
+                    } )
+                        ->whereNotNull( "salesDate.sale_date" )
+                        ->select( "listings.*" );
                     break;
                 case "weekend":
-                    $query->where( function ( $query ) {
-                        $query->where( 'sale_status', 'OnSale' );
-                        $query->orWhere( 'sale_status', 'OnPresale' );
-                    } );
-
-                    $query->whereRaw( 'weekday(listings.created_at) >= 4' );
+                    $query->join( 'sales as salesDate', function ( $join ) {
+                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->whereRaw( 'weekday(salesDate.sale_date) >= 4' )->limit( 1 );
+                    } )
+                        ->whereNotNull( "salesDate.sale_date" )
+                        ->select( "listings.*" );
                     break;
                 case "new":
                     /* Select the most recent entry and use the date to look for other entries */
@@ -256,12 +271,19 @@ class ListingsController extends Controller
                     ->orderBy( 'data.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
+            case "sale_date":
+                $query->join( 'sales', function ( $join ) {
+                    $join->on( 'sales.listing_id', '=', 'listings.id' )->orderBy('sale_date','ASC')->limit(1);
+                } )
+                    ->orderBy( 'sales.' . $field, $direction )
+                    ->select( "listings.*" );
+                break;
             case 'roi_sh':
             case 'roi_low':
-                $query->join( 'stats', function ( $join ) {
-                    $join->on( 'stats.listing_id', '=', 'listings.id' );
+                $query->join( 'stats as statData', function ( $join ) {
+                    $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )
-                    ->orderBy( 'stats.' . $field, $direction )
+                    ->orderBy( 'statData.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
             default:

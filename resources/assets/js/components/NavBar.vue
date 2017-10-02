@@ -11,7 +11,7 @@ Properties: current-page [Declares which page should be active in navigation.]
     <md-toolbar class="padding-5 no-margin-bottom full-width bg-white-transparent border-bottom-1 border-grey-400">
         <div class="col-lg-12 col-md-12">
             <div class="pull-left">
-                <img src="/img/logo_xs.png" height="50" width="50"/>
+                <img src="/img/mjseats.png" height="50" width="50"/>
                 <md-button  v-if="shared.user.id"
                            class=""
                             href="/admin/listings"

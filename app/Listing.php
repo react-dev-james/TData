@@ -4,9 +4,12 @@ namespace App;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
+
+    use SoftDeletes;
 
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
@@ -49,6 +52,7 @@ class Listing extends Model
     {
         return $this->hasMany(\App\Sale::class)->orderBy('sale_date','ASC');
     }
+
 
     public function getLowTicketPriceAttribute( $value )
     {

@@ -29,6 +29,8 @@
             <div class="padding-15">
                 <div class="pull-left">
                     <h1 class="md-title">Event Listings</h1>
+                    <span v-if="options.currentFilter" class="text-muted">Viewing Current Listings</span>
+                    <span v-else class="text-muted">Viewing Past Listings</span>
                 </div>
                 <div class="pull-right">
                     <md-theme md-name="secondary" class="display-inline-block">
@@ -51,6 +53,12 @@
                         New
                     </md-button>
                     </md-theme>
+                    <md-button v-if="options.currentFilter" md-condensed class="md-accent md-raised" @click.native="options.currentFilter = !options.currentFilter; refreshTable();">
+                        Past
+                    </md-button>
+                    <md-button v-if="!options.currentFilter" md-condensed class="md-accent md-raised" @click.native="options.currentFilter = !options.currentFilter; refreshTable();">
+                        Current
+                    </md-button>
                     <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'targeted', id: 'filter-targeted'})">
                         Targeted
                     </md-button>
@@ -269,7 +277,7 @@
                             <span class="">{{ listing.event_day }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sale_date')">
-                            <span class="">{{ listing.nice_sale_date }}</span>
+                            <span class="">{{ getSaleDate(listing) }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_state')">
                             <span class="">{{ listing.venue_state }}</span>
@@ -417,6 +425,7 @@
                 searchField: 'all',
                 filter: 'filter-all',
                 dateFilter: '',
+                currentFilter: true,
                 reportId: null
             },
             filters: [
@@ -471,6 +480,36 @@
             }
         },
         methods: {
+        	getSaleDate(listing) {
+
+        		if (!listing.sales || listing.sales.length == 0) {
+        			return "N/A";
+                }
+
+                if (!this.options.dateFilter || this.options.dateFilter.length == 0 || this.options.dateFilter == 'new') {
+        			return listing.sales[0].nice_date;
+                }
+
+                let sale = null;
+        		listing.sales.forEach((saleData) => {
+        			if (saleData.nice_day == this.options.dateFilter) {
+        				sale = saleData.nice_date;
+                    }
+
+                    if (this.options.dateFilter == 'weekend' && (saleData.nice_day == 'friday' || saleData.nice_day == 'saturday' || saleData.nice_day == 'sunday')) {
+        				if (!sale) {
+							sale = saleData.nice_date;
+                        }
+                    }
+                });
+
+        		if (sale) {
+        			return sale;
+                }
+
+                return "N/A";
+
+            },
         	openSearch() {
         		this.state.searchSelected = !this.state.searchSelected;
 				setTimeout(() => {
