@@ -73,14 +73,14 @@ class MatchEventData extends Command
 
             /* Exclusions */
             if ($listing->category == 'Sports') {
-                $listing->delete();
+                $listing->forceDelete();
                 continue;
             }
 
             /* Exclusion list */
             foreach ($this->exclusions as $exclusion) {
                 if (stristr($listing->event_name, $exclusion) !== false) {
-                    $listing->delete();
+                    $listing->forceDelete();
                     break;
                 }
             }

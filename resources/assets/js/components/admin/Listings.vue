@@ -208,7 +208,7 @@
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
                         <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
-                        <md-table-head v-if="columnActive('sale_date')" md-sort-by="sale_date" >Date</md-table-head>
+                        <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_date" >Date</md-table-head>
                         <md-table-head v-if="columnActive('venue_state')" md-sort-by="venue_state" >State</md-table-head>
                         <md-table-head v-if="columnActive('buy')">Buy</md-table-head>
                     </md-table-row>
@@ -277,7 +277,7 @@
                             <span class="">{{ listing.event_day }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sale_date')">
-                            <span class="">{{ getSaleDate(listing) }}</span>
+                            <span class="">{{ listing.nice_sale_date }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_state')">
                             <span class="">{{ listing.venue_state }}</span>

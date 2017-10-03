@@ -14,7 +14,7 @@ class Listing extends Model
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
     protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past'];
-    protected $dates = ['created_at','updated_at','event_date'];
+    protected $dates = ['created_at','updated_at','event_date','first_onsale_date'];
 
     /* Adjustments for days of week */
     protected $daysOfWeek = [
@@ -133,8 +133,8 @@ class Listing extends Model
 
     public function getNiceSaleDateAttribute()
     {
-        if ($this->sales->count() > 0) {
-            return $this->sales->first()->sale_date->format( 'D, M j, g:i A' );
+        if ( $this->first_onsale_date ) {
+            return $this->first_onsale_date->format( 'D, M j, g:i A' );
         }
 
         return "N/A";

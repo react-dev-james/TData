@@ -77,54 +77,26 @@ class ListingsController extends Controller
         if ( $request->has( "dateFilter" ) && !empty( $request->dateFilter ) ) {
             switch ($request->dateFilter) {
                 case "monday":
+                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 0' );
+                    /*
                     $query->join( 'sales as salesDate', function ( $join ) {
                         $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Monday' )->limit( 1 );
                     } )
                         ->whereNotNull( "salesDate.sale_date" )
                         ->select( "listings.*" );
+                    */
                     break;
                 case "tuesday":
-                    /*
-                    $query->where( function ( $query ) {
-                        $query->where( 'sale_status', 'OnSale' );
-                        $query->orWhere( 'sale_status', 'OnPresale' );
-                    } );
-
-                    $query->whereRaw( 'weekday(listings.created_at) = 1' );
-                    */
-
-                    $query->join( 'sales as salesDate', function ( $join ) {
-                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Tuesday' )->limit(1);
-                    } )
-                        ->whereNotNull("salesDate.sale_date")
-                        ->select( "listings.*" );
-                    /*
-                    $query->whereHas( 'sales', function ( $query ) {
-                        $query->where('day','Tuesday');
-                    } );
-                    */
-
+                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 1' );
                     break;
                 case "wednesday":
-                    $query->join( 'sales as salesDate', function ( $join ) {
-                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Wednesday' )->limit( 1 );
-                    } )
-                        ->whereNotNull( "salesDate.sale_date" )
-                        ->select( "listings.*" );
+                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 2' );
                     break;
                 case "thursday":
-                    $query->join( 'sales as salesDate', function ( $join ) {
-                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Thursday' )->limit( 1 );
-                    } )
-                        ->whereNotNull( "salesDate.sale_date" )
-                        ->select( "listings.*" );
+                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 3' );
                     break;
                 case "weekend":
-                    $query->join( 'sales as salesDate', function ( $join ) {
-                        $join->on( 'salesDate.listing_id', '=', 'listings.id' )->whereRaw( 'weekday(salesDate.sale_date) >= 4' )->limit( 1 );
-                    } )
-                        ->whereNotNull( "salesDate.sale_date" )
-                        ->select( "listings.*" );
+                    $query->whereRaw( 'weekday(listings.first_onsale_date) >= 4' );
                     break;
                 case "new":
                     /* Select the most recent entry and use the date to look for other entries */
@@ -255,6 +227,7 @@ class ListingsController extends Controller
             case "total_value":
             case "created_at":
             case "updated_at":
+            case "first_onsale_date":
                 $query->orderBy( $field, $direction );
                 break;
             case "avg_sale_price":
