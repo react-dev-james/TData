@@ -39,7 +39,8 @@ class FetchBoxOfficeData extends Command
     {
         try {
             $scraper = new \App\Services\TicketService();
-            $scraper->fetchBoxOfficeListings( 500, 10 );
+            $listingData = $scraper->fetchBoxOfficeListings( 500, 10 );
+            print_r($listingData);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             echo $e->getTraceAsString();

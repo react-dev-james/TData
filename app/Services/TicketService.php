@@ -159,6 +159,8 @@ class TicketService extends ScraperService implements IScraper
             $savedListings->push($this->saveListings($records));
 
         }
+
+        return $savedListings;
     }
 
     public function boxOfficeNormalize( Array $results )
