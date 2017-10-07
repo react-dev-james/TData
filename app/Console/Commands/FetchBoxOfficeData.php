@@ -1,4 +1,7 @@
 <?php
+/**
+ * @desc - tickets:boxoffice  - tickets:match - tickets:clean - tickets:stats
+ */
 
 namespace App\Console\Commands;
 

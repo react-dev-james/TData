@@ -33,7 +33,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //$schedule->command('transqueue:stats',['--listings', '--priority','--locations'])->everyTenMinutes()->withoutOverlapping();
+        $schedule->command('tickets:boxoffice')->dailyAt('07:00');
+        $schedule->command('tickets:match')->dailyAt('07:20');
+        $schedule->command('tickets:clean')->dailyAt('07:28');
+        $schedule->command('tickets:stats')->dailyAt('07:32');
+        $schedule->command('tickets:stats')->dailyAt('08:00');
 
     }
 
