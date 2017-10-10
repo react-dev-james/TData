@@ -52,7 +52,7 @@ class MatchEventData extends Command
         foreach ($listings as $listing) {
 
             /* If listing has match, skip it */
-            if ($listing->data->count() > 0) {
+            if ($listing->data->count() > 0 || $listing->slug == 'pnk-beautiful-trauma-world-tour') {
                 continue;
             }
 
