@@ -159,7 +159,7 @@ class ListingsController extends Controller
     public function associate( Request $request, Listing $listing, \App\Data $data )
     {
         /* Create new lookup in the lookups table */
-        \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name ],
+        \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name, 'match_slug' => str_slug( $data->category) ],
             [
                 'match_name' => $data->category,
                 'event_slug' => str_slug( $listing->event_name ),
