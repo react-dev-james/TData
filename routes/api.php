@@ -24,6 +24,8 @@ Route::post( '/listings/status/{listing}/{status}', 'Api\ListingsController@upda
 Route::post( '/listings/updateOutlierStatus/{listing}', 'Api\ListingsController@updateOutlierStatus' );
 Route::post( '/listings/create', 'Api\ListingsController@create' );
 Route::post( '/listings/delete/{listing}', 'Api\ListingsController@delete' );
+Route::post( '/lookups', 'Api\ListingsController@createLookup' );
+
 
 /* Locations */
 Route::get( "/locations", 'Api\LocationsController@index' );

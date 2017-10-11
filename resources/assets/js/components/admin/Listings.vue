@@ -311,8 +311,18 @@
     </md-dialog-confirm>
 
     <ui-modal ref="associateModal" title="Associate This Listing With Secondary Data" size="large">
+        <ui-button size="small pull-right margin-top-10 margin-bottom-10" @click="state.addManualLookup = !state.addManualLookup">Add Manual Lookup</ui-button>
         <h4 class="margin-bottom-5">{{ shared.listing.event_name }}</h4>
-        <span v-if="shared.listing.data.length > 0">This listing is already associated with <span class="text-underline">{{ shared.listing.data[0].category }} </span> <span class="label label-info pull-right">{{ shared.listing.data[0].pivot.confidence }}% Confidence</span></span>
+
+        <div v-if="state.addManualLookup" class="margin-bottom-20">
+            <md-input-container>
+                <label>Match Name</label>
+                <md-input v-model="manualLookupName"></md-input>
+            </md-input-container>
+            <md-button class="pull-right md-primary md-raised" @click="saveManualLookup(shared.listing)">Save</md-button>
+        </div>
+        <div class="clearfix"></div>
+        <span v-if="shared.listing.data.length > 0">This listing is already associated with <span class="text-underline">{{ shared.listing.data[0].category }} </span> <span class="label label-info pull-right font-size-12">{{ shared.listing.data[0].pivot.confidence }}% Confidence</span></span>
 
         <md-input-container class="margin-top-10">
             <label>Search for matching data</label>
@@ -386,8 +396,10 @@
                 selectedListing : null,
                 selectedListings : null,
                 activeFilter: null,
-                reportItems: []
+                reportItems: [],
+				addManualLookup: false
             },
+            manualLookupName: '',
             _: window._,
             shared: window.appShared,
             selectedColumns: [
@@ -535,6 +547,23 @@
 					document.getElementById("dataSearchInput").select();
 				}, 50);
             },
+			saveManualLookup(listing) {
+                let lookup = {
+                	event_name: listing.event_name,
+                	match_name: this.manualLookupName
+                }
+				this.$http.post(`/apiv1/lookups`, lookup).then((response) => {
+
+					this.$root.showNotification(response.body.message);
+
+				}).catch((response) => {
+                	if (response.body.message) {
+						this.$root.showNotification(response.body.message);
+                    } else {
+						this.$root.showNotification('Error adding new lookup. Try again.');
+                    }
+                });
+			},
 			updateStatus(listing, status, rowIndex) {
 				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
 
@@ -554,7 +583,6 @@
 
 					this.$root.showNotification(response.body.message);
 					this.shared.listing = response.body.results;
-					this.refreshTable();
 
 				}, (response) => {
 					console.log("Error associating listing. Try again.");

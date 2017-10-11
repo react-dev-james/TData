@@ -156,10 +156,37 @@ class ListingsController extends Controller
         return $query->paginate( 100 );
     }
 
+    public function createLookup(Request $request)
+    {
+        if (!$request->has('event_name') || !$request->has("match_name")) {
+            return response()->json( [
+                'message' => "Please enter the matching name for this lookup.",
+                'status'  => "error"
+            ],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $request->event_name, 'match_slug' => str_slug( $request->match_name ) ],
+            [
+                'match_name' => $request->match_name,
+                'event_slug' => str_slug( $request->event_name ),
+                'match_slug' => str_slug( $request->match_name ),
+                'confidence' => 100,
+                'is_auto'    => false
+            ] );
+
+        return response()->json( [
+            'message' => "New lookup saved successfully.",
+            'new'     => false,
+            'status'  => "success"
+        ] );
+    }
+
     public function associate( Request $request, Listing $listing, \App\Data $data )
     {
         /* Create new lookup in the lookups table */
-        \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name, 'match_slug' => str_slug( $data->category) ],
+        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name, 'match_slug' => str_slug( $data->category) ],
             [
                 'match_name' => $data->category,
                 'event_slug' => str_slug( $listing->event_name ),
@@ -181,8 +208,25 @@ class ListingsController extends Controller
         /* Load relations */
         $listing->load('data','sales','updates', 'stats');
 
+        $numListings = 1;
+
+        /* Check lookups table for other matching listings */
+        $listings = \App\Listing::where("event_name", $lookup->event_name)->where("id","!=", $listing->id)->get();
+        foreach ($listings as $otherListing) {
+            $numListings++;
+            $otherListing->performer = $lookup->match_name;
+            $otherListing->save();
+
+            /* Create new entry in the listing_data pivot table */
+            $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
+
+            /* Recalc ROI */
+            $otherListing->fresh();
+            $otherListing->calcRoi();
+        }
+
         return response()->json( [
-            'message' => "Listing updated successfully.",
+            'message' => $numListings . " listing(s) updated successfully.",
             'new'     => false,
             'status'  => "success",
             'results' => $listing
