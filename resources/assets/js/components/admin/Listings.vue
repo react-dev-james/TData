@@ -583,7 +583,7 @@
 
 					this.$root.showNotification(response.body.message);
 					this.shared.listing = response.body.results;
-
+					this.$refs.associateModal.close();
 				}, (response) => {
 					console.log("Error associating listing. Try again.");
 					console.log(response);
