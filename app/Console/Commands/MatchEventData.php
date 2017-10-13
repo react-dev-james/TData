@@ -52,7 +52,7 @@ class MatchEventData extends Command
         foreach ($listings as $listing) {
 
             /* If listing has match, skip it */
-            if ($listing->data->count() > 0 && $listing->slug != 'pnk-beautiful-trauma-world-tour') {
+            if ($listing->data->count() > 0) {
                 continue;
             }
 
@@ -107,7 +107,7 @@ class MatchEventData extends Command
 
                 /* Verify match */
                 if ( strlen( $item->category ) <= 5 && strtolower($item->category) != strtolower($listing->event_name)) {
-                    echo "X\n";
+                    echo "X";
                     continue;
                 }
 
@@ -128,6 +128,8 @@ class MatchEventData extends Command
         }
 
         $this->info( "Found Matches: " . $numMatches );
+
+        $this->checkLookups();
     }
 
     public function saveNewMatch(\App\Listing $listing, \App\Data $data, $confidence = 100)
@@ -146,6 +148,45 @@ class MatchEventData extends Command
 
         /* Create new entry in the listing_data pivot table */
         $listing->data()->sync([$data->id], ['confidence' => min( 100, $confidence * 3 ) ]);
+
+    }
+
+    public function checkLookups() {
+        /* Check lookups table for other matching listings */
+        $lookups = \App\EventLookup::all();
+        $numListings = 0;
+        foreach ($lookups as $lookup) {
+            $data = \App\Data::where("name", $lookup->match_name)->first();
+            if (!$data) {
+                continue;
+            }
+
+            $listings = \App\Listing::where( "event_name", $lookup->event_name )->with('data')->get();
+            foreach ($listings as $otherListing) {
+                /* If listing has match, skip it */
+                if ( $otherListing->data->count() > 0) {
+                    $listingData = $otherListing->data->first();
+                    if ($listingData->pivot->confidence >= 100) {
+                        continue;
+                    }
+                }
+
+                $this->info("Matching new event based on lookups.");
+
+                $numListings++;
+                $otherListing->performer = $lookup->match_name;
+                $otherListing->save();
+
+                /* Create new entry in the listing_data pivot table */
+                $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
+
+                /* Recalc ROI */
+                $otherListing->fresh();
+                $otherListing->calcRoi();
+            }
+        }
+
+        $this->info("Found " . $numListings . " events that matched with lookups.");
 
     }
 }
