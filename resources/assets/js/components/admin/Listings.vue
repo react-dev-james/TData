@@ -202,11 +202,11 @@
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price')" md-sort-by="avg_sale_price" >SH Sold</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
+                        <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event">Per Event</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
                         <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
-                        <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event" >Per Event</md-table-head>
                         <md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>
                         <md-table-head v-if="columnActive('past_events')" md-sort-by="past_events" >Past</md-table-head>
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
@@ -261,6 +261,9 @@
                         <md-table-cell v-if="columnActive('avg_sale_price_past')" class="col-border-right">
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
+                        <md-table-cell v-if="columnActive('sold_per_event')">
+                            <span class="">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
+                        </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
                         </md-table-cell>
@@ -272,9 +275,6 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('low_ticket_price')" class="col-border-right">
                             <span class="">${{ listing.low_ticket_price }}</span>
-                        </md-table-cell>
-                        <md-table-cell v-if="columnActive('sold_per_event')" >
-                            <span class="">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('upcoming_events')">
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : 'N/A' }}</span>
