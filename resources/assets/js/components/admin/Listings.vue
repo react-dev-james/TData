@@ -262,7 +262,7 @@
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
-                            <span class="">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
+                            <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
