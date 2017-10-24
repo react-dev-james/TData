@@ -13,7 +13,7 @@ class Listing extends Model
 
     const CANADA_ADJUSTMENT = 0.8;
     protected $guarded = ['id'];
-    protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past'];
+    protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past','sold_per_event'];
     protected $dates = ['created_at','updated_at','event_date','first_onsale_date'];
 
     /* Adjustments for days of week */
@@ -96,6 +96,19 @@ class Listing extends Model
         return $data->avg_sale_price;
     }
 
+    public function getSoldPerEventAttribute()
+    {
+        $data = $this->data->first();
+        if ( !$data ) {
+            return 0;
+        }
+
+        $soldPerEvent = ($data->total_sales + $data->total_sales_past) / max(1, ($data->upcoming_events + $data->past_events) );
+
+        return round($soldPerEvent);
+
+    }
+
     public function getAvgSalePricePastAttribute( )
     {
         $data = $this->data->first();
@@ -115,7 +128,6 @@ class Listing extends Model
     {
         return $this->data()->first();
     }
-
 
     public function getLookupsAttribute()
     {
@@ -195,6 +207,25 @@ class Listing extends Model
         ] );
 
         return true;
+
+    }
+
+    public function updateSoldPerEvent()
+    {
+        $data = $this->data->first();
+        if ( !$data ) {
+            return 0;
+        }
+
+        $soldPerEvent = ( $data->total_sales + $data->total_sales_past ) / max( 1, ( $data->upcoming_events + $data->past_events ) );
+        $soldPerEvent = round( $soldPerEvent );
+
+        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
+            'sold_per_event' => $soldPerEvent,
+            'listing_id' => $this->id
+        ] );
+
+        return $soldPerEvent;
 
     }
 

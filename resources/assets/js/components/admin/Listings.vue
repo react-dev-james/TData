@@ -206,6 +206,9 @@
                         <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
                         <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
+                        <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event" >Per Event</md-table-head>
+                        <md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>
+                        <md-table-head v-if="columnActive('past_events')" md-sort-by="past_events" >Past</md-table-head>
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
                         <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
                         <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_date" >Date</md-table-head>
@@ -255,20 +258,29 @@
                         <md-table-cell v-if="columnActive('avg_sale_price')">
                             <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('avg_sale_price_past')">
+                        <md-table-cell v-if="columnActive('avg_sale_price_past')" class="col-border-right">
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('total_sales_past')">
+                        <md-table-cell v-if="columnActive('total_sales_past')" class="col-border-right">
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('high_ticket_price')">
                             <span class="">${{ listing.high_ticket_price }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('low_ticket_price')">
+                        <md-table-cell v-if="columnActive('low_ticket_price')" class="col-border-right">
                             <span class="">${{ listing.low_ticket_price }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('sold_per_event')" >
+                            <span class="">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('upcoming_events')">
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('past_events')">
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
@@ -383,6 +395,9 @@
             this.refreshTable();
 
             this.columns.forEach((column) => {
+            	if (column.name == 'upcoming_events' || column.name == 'past_events') {
+            		return;
+                }
             	this.selectedColumns.push(column);
             });
 
@@ -421,6 +436,9 @@
                 {id : 14, name: 'sale_date', title: 'Date'},
                 {id : 15, name: 'venue_state', title: 'State'},
                 {id : 16, name: 'buy', title: 'Buy'},
+                {id : 17, name: 'sold_per_event', title: 'Sold Per Event'},
+                {id : 18, name: 'upcoming_events', title: 'Upcoming Events'},
+                {id : 19, name: 'past_events', title: 'Past Events'},
             ],
             options: {
                 pager: {

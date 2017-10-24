@@ -21,6 +21,10 @@ class AddTicketUrlToListings extends Migration
         DB::statement( 'ALTER TABLE `listings`
 ADD INDEX `Listings_Date_Index` (`date_hash`);' );
 
+
+        /* ALTER TABLE `listings`
+MODIFY COLUMN `ticket_url`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL AFTER `updated_at`; */
+
     }
 
     /**

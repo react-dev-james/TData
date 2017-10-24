@@ -38,7 +38,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('tickets:clean')->dailyAt('07:28');
         $schedule->command('tickets:stats')->dailyAt('07:32');
         $schedule->command('tickets:stats')->dailyAt('08:00');
-
     }
 
     /**

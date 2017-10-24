@@ -44,6 +44,7 @@ class UpdateStats extends Command
             /* Calculate ROI for listing */
             try {
                 $listing->calcRoi();
+                $listing->updateSoldPerEvent();
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
                 $this->error($e->getTraceAsString());
@@ -52,6 +53,7 @@ class UpdateStats extends Command
             if ( $listing->stats->first() && ($listing->stats->roi_sh > 0 || $listing->stats->roi_low > 0)) {
                 $this->info( "ROI for " . $listing->event_name . " is " . $listing->stats->roi_sh . "%" );
                 $this->info( "Low ROI for " . $listing->event_name . " is " . $listing->stats->roi_low . "%" );
+                $this->info( "Sold Per Event for " . $listing->event_name . " is " . $listing->stats->sold_per_event );
             }
 
         }

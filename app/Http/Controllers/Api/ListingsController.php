@@ -279,6 +279,8 @@ class ListingsController extends Controller
             case "total_sales":
             case "total_sales_past":
             case "total_listed":
+            case "upcoming_events":
+            case "past_events":
                 $query->join( 'listing_data', function ( $join ) {
                     $join->on( 'listing_data.listing_id', '=', 'listings.id' );
                 } )
@@ -297,6 +299,7 @@ class ListingsController extends Controller
                 break;
             case 'roi_sh':
             case 'roi_low':
+            case 'sold_per_event':
                 $query->join( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )
