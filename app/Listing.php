@@ -192,14 +192,14 @@ class Listing extends Model
         $netRoi = 0;
         if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
             $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
-            $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 5 );
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 6 );
             $highRoi = round( ( $roi - 1 ) * 100 );
-            $netRoi = max(0,round(($roi - 1) * ( intval( $listing->high_ticket_price ) * 1.15 + 5) * 40));
+            $netRoi = max(0,round(($roi - 1) * ( intval( $listing->high_ticket_price ) * 1.15 + 6) * 40));
         }
 
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
             $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
-            $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 5 );
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 6 );
             $lowRoi = round( ( $roi - 1 ) * 100 );
         }
 
