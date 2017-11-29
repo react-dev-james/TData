@@ -395,9 +395,11 @@
             this.refreshTable();
 
             this.columns.forEach((column) => {
-            	if (column.name == 'upcoming_events' || column.name == 'past_events') {
+            	/* Hide some columns by default */
+            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name') {
             		return;
                 }
+
             	this.selectedColumns.push(column);
             });
 
@@ -443,7 +445,7 @@
             options: {
                 pager: {
                     page: 1,
-                    size: 100
+                    size: 250
                 },
                 sort : {
                     name: 'roi_sh',
