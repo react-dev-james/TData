@@ -263,11 +263,11 @@
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_net')">
-                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
