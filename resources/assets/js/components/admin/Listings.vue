@@ -249,12 +249,16 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_sh')">
-                            <span v-if="listing.stats && listing.stats.roi_sh > 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
-                            <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh >= 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh >= 20 && listing.stats.roi_sh < 40" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh < 20 && listing.stats.roi_sh > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_low')">
-                            <span v-if="listing.stats && listing.stats.roi_low > 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
-                            <span v-else class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low >= 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low >= 100 && listing.stats.roi_low < 200" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low < 100 && listing.stats.roi_low > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sale_price')">
                             <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : 'N/A' }}</span>
