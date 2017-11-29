@@ -36,8 +36,20 @@ class Kernel extends ConsoleKernel
         $schedule->command('tickets:boxoffice')->dailyAt('07:00');
         $schedule->command('tickets:match')->dailyAt('07:20');
         $schedule->command('tickets:clean')->dailyAt('07:28');
-        $schedule->command('tickets:stats')->dailyAt('07:32');
+        $schedule->command('tickets:stats')->dailyAt('07:35');
         $schedule->command('tickets:stats')->dailyAt('08:00');
+
+        $schedule->command( 'tickets:boxoffice' )->dailyAt( '11:00' );
+        $schedule->command( 'tickets:match' )->dailyAt( '11:20' );
+        $schedule->command( 'tickets:clean' )->dailyAt( '11:28' );
+        $schedule->command( 'tickets:stats' )->dailyAt( '11:35' );
+        $schedule->command( 'tickets:stats' )->dailyAt( '12:00' );
+
+        $schedule->command( 'tickets:boxoffice' )->dailyAt( '16:00' );
+        $schedule->command( 'tickets:match' )->dailyAt( '16:20' );
+        $schedule->command( 'tickets:clean' )->dailyAt( '16:28' );
+        $schedule->command( 'tickets:stats' )->dailyAt( '16:35' );
+        $schedule->command( 'tickets:stats' )->dailyAt( '17:00' );
     }
 
     /**

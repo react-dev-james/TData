@@ -25,7 +25,16 @@ class MatchEventData extends Command
         'express lane',
         'club and parking upgrade',
         'vs.',
-        'v.'
+        'v.',
+        'Lexus Lounge',
+        'Preshow Experience',
+        'Harlem Globetrotters',
+        'Magic Pass',
+        'Skip the Line',
+        'Rock The Lounge',
+        'Pre Show Dinner',
+        'VIP Upgrade',
+        'Vibe Room'
     ];
 
     /**
@@ -112,8 +121,8 @@ class MatchEventData extends Command
                 }
 
                 /* Calculate string similarity */
-                $distance = levenshtein($item->category, $listing->event_name);
-                $similarity = similar_text($item->category, $listing->event_name);
+                $distance = levenshtein(strtolower($item->category), strtolower($listing->event_name));
+                $similarity = similar_text( strtolower($item->category), strtolower($listing->event_name));
                 $confidence = max(0,($similarity / max(1, (strlen($listing->event_name) - strlen($item->category)))) * 100 - $distance);
 
                 if ($confidence >= 5 || strtolower($item->category) == strtolower($listing->event_name)) {

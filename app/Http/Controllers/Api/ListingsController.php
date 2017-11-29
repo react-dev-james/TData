@@ -299,6 +299,7 @@ class ListingsController extends Controller
                 break;
             case 'roi_sh':
             case 'roi_low':
+            case 'roi_net':
             case 'sold_per_event':
                 $query->join( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );

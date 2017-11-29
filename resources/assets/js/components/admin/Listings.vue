@@ -202,6 +202,7 @@
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price')" md-sort-by="avg_sale_price" >SH Sold</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
+                        <md-table-head v-if="columnActive('roi_net')" md-sort-by="roi_net" >Net</md-table-head>
                         <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event">Per Event</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
@@ -260,6 +261,14 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sale_price_past')" >
                             <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('roi_net')">
+                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            </span>
+                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            </span>
+                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `$${listing.stats.roi_net}` : 'N/A' }}
+                            </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
                             <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
@@ -441,6 +450,7 @@
                 {id : 17, name: 'sold_per_event', title: 'Sold Per Event'},
                 {id : 18, name: 'upcoming_events', title: 'Upcoming Events'},
                 {id : 19, name: 'past_events', title: 'Past Events'},
+                {id : 20, name: 'roi_net', title: 'Net'},
             ],
             options: {
                 pager: {
@@ -448,8 +458,8 @@
                     size: 250
                 },
                 sort : {
-                    name: 'roi_sh',
-                    type: 'asc'
+                    name: 'roi_net',
+                    type: 'asc' //asc is actually = to desc, it gets flipped when calling API
                 },
 				multiSort: [],
                 search: '',
