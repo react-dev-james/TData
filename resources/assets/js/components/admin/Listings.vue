@@ -228,7 +228,9 @@
                             <button class="btn btn-small btn-primary margin-right-5 padding-5" @click="associateListing(listing)">
                                 <md-icon>attach_file</md-icon>
                             </button>
-                            <button class="btn btn-small btn-success padding-5" @click="updateStatus(listing, 'targeted', rowIndex)">
+                            <button class="btn btn-small btn-success padding-5 targetListingButton"
+                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%)`"
+                                    @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
                         </md-table-cell>
@@ -308,7 +310,11 @@
                             <span class="">{{ listing.venue_state }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('buy')">
-                            <a v-if="listing.ticket_url" :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon></a>
+                            <div v-if="listing.ticket_url">
+                            <a class="buyUrlLink" :data-clipboard-text="listing.ticket_url"
+                               :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon>
+                            </a>
+                            </div>
                             <span v-else>N/A</span>
                         </md-table-cell>
                     </md-table-row>
@@ -415,6 +421,10 @@
 
             	this.selectedColumns.push(column);
             });
+
+            let clipboard = new Clipboard('.buyUrlLink');
+			let clipboardt = new Clipboard('.targetListingButton');
+
 
         },
         data: () => ({

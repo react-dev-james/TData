@@ -9,6 +9,7 @@
     <script type="text/javascript" src="/js/plugins/amcharts/serial.js"></script>
     <script type="text/javascript" src="/js/plugins/amcharts/amstock.js"></script>
     <script type="text/javascript" src="/js/plugins/amcharts/themes/dark.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
     <script type="text/javascript">
         window.appShared.activeReport = <?php echo @json_encode($savedReport); ?>;
     </script>
