@@ -99,7 +99,7 @@ class ImportTicketNetwork extends Command
         }
 
         $this->info(count($aggregateItems) . ' Aggregated Items Found, Checking for Matches' );
-        $lookups = \App\EventLookup::all();
+        $lookups = \App\EventLookup::orderBy('is_auto','ASC')->get();
 
         foreach($aggregateItems as $item) {
             if ( $item['tix_sold_in_date_range'] > 100 ) {
@@ -108,13 +108,19 @@ class ImportTicketNetwork extends Command
 
             /* Check for matching events via lookup table */
             foreach ($lookups as $lookup) {
-                if ($lookup->match_name == $item['event']) {
+                if ($lookup->match_name == $item['event'] && $lookup->confidence >= 100) {
                     $listings = \App\Listing::where( "event_name", $lookup->event_name )->get();
                     if (count($listings) > 0) {
                         $this->info( "Found " . count( $listings ) . " Matching " . $item['event'] );
                         foreach ($listings as $listing) {
                             $listing->updateTicketNetworkStats($item['tix_sold_in_date_range'], $item['avg_sold_price_in_date_range'], $item['tn_events'], true);
                         }
+                    }
+
+                    /* Go to next item if this was a manual lookup so we don't match auto lookup events */
+                    if (!$lookup->is_auto) {
+                        $this->info("Continuing on manual lookup match.");
+                        continue 2;
                     }
                 }
             }
