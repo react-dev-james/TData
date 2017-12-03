@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\ImportTicketData;
+use App\Console\Commands\ImportTicketNetwork;
 use App\Console\Commands\MatchEventData;
 use App\Console\Commands\FetchBoxOfficeData;
 use App\Console\Commands\UpdateStats;
@@ -19,6 +20,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         ImportTicketData::class,
+        ImportTicketNetwork::class,
         MatchEventData::class,
         FetchBoxOfficeData::class,
         UpdateStats::class,

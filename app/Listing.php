@@ -177,6 +177,7 @@ class Listing extends Model
     {
         $listing = $this;
         $data = $listing->data->first();
+        $stats = $listing->stats()->first();
         if ( !$data || ( $data->total_sales + $data->total_sales_past ) <= 0 ) {
             \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
                 'roi_sh'     => 0,
@@ -187,19 +188,30 @@ class Listing extends Model
             return 0;
         }
 
+        if (!$stats) {
+            return 0;
+        }
+
         $highRoi = 0;
         $lowRoi = 0;
         $netRoi = 0;
         if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
-            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
-            $roi = ( $total / ( $data->total_sales + $data->total_sales_past )) / ( intval( $listing->high_ticket_price ) * 1.15 + 6 );
+            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales )
+                    + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past )
+                    + ($stats->avg_sold_price_in_date_range * $stats->tix_sold_in_date_range);
+
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past + $stats->tix_sold_in_date_range )) / ( intval( $listing->high_ticket_price ) * 1.15 + 6 );
             $highRoi = round( ( $roi - 1 ) * 100 );
             $netRoi = max(0,round(($roi - 1) * ( intval( $listing->high_ticket_price ) * 1.15 + 6) * 40));
         }
 
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
-            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sales ) + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past );
-            $roi = ( $total / ( $data->total_sales + $data->total_sales_past ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 6 );
+            $total =
+                ( $this->getAvgSalePriceAttribute() * $data->total_sales )
+                + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past )
+                + ( $stats->avg_sold_price_in_date_range * $stats->tix_sold_in_date_range );
+
+            $roi = ( $total / ( $data->total_sales + $data->total_sales_past + $stats->tix_sold_in_date_range ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 6 );
             $lowRoi = round( ( $roi - 1 ) * 100 );
         }
 
@@ -231,6 +243,18 @@ class Listing extends Model
 
         return $soldPerEvent;
 
+    }
+
+    public function updateTicketNetworkStats($ticketsSold, $avgSoldPrice, $updateRoi = false)
+    {
+        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
+            'tix_sold_in_date_range' => round($ticketsSold),
+            'avg_sold_price_in_date_range'     => round($avgSoldPrice)
+        ] );
+
+        if ($updateRoi) {
+            $this->calcRoi();
+        }
     }
 
 }

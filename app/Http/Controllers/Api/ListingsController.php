@@ -301,6 +301,8 @@ class ListingsController extends Controller
             case 'roi_low':
             case 'roi_net':
             case 'sold_per_event':
+            case 'avg_sold_price_in_date_range':
+            case 'tix_sold_in_date_range':
                 $query->join( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )

@@ -206,6 +206,8 @@
                         <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event">Per Event</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
+                        <md-table-head v-if="columnActive('tix_sold_in_date_range')" md-sort-by="tix_sold_in_date_range" >TN Total</md-table-head>
+                        <md-table-head v-if="columnActive('avg_sold_price_in_date_range')" md-sort-by="avg_sold_price_in_date_range" >TN Sold</md-table-head>
                         <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
                         <md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>
@@ -284,6 +286,12 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales_past')" class="col-border-right">
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('tix_sold_in_date_range')">
+                            <span class="">{{ listing.stats ? `${listing.stats.tix_sold_in_date_range}` : 'N/A' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('avg_sold_price_in_date_range')" class="col-border-right">
+                            <span class="">{{ listing.stats ? `${listing.stats.avg_sold_price_in_date_range}` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('high_ticket_price')">
                             <span class="">${{ listing.high_ticket_price }}</span>
@@ -465,6 +473,8 @@
                 {id : 18, name: 'upcoming_events', title: 'Upcoming Events'},
                 {id : 19, name: 'past_events', title: 'Past Events'},
                 {id : 20, name: 'roi_net', title: 'Net'},
+                {id : 21, name: 'tix_sold_in_date_range', title: 'TN Total'},
+                {id : 22, name: 'avg_sold_price_in_date_range', title: 'TN Sold'},
             ],
             options: {
                 pager: {
