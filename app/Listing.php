@@ -229,11 +229,13 @@ class Listing extends Model
     public function updateSoldPerEvent()
     {
         $data = $this->data->first();
-        if ( !$data ) {
+        $stats = $this->stats()->first();
+        if ( !$data || !$stats) {
             return 0;
         }
 
-        $soldPerEvent = ( $data->total_sales + $data->total_sales_past ) / max( 1, ( $data->upcoming_events + $data->past_events ) );
+        $soldPerEvent = ( $data->total_sales + $data->total_sales_past + $stats->tix_sold_in_date_range  ) /
+                        max( 1, ( $data->upcoming_events + $data->past_events + $stats->tn_events ) );
         $soldPerEvent = round( $soldPerEvent );
 
         \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
