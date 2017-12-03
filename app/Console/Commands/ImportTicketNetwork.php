@@ -101,6 +101,11 @@ class ImportTicketNetwork extends Command
         $this->info(count($aggregateItems) . ' Aggregated Items Found, Checking for Matches' );
         $lookups = \App\EventLookup::orderBy('is_auto','ASC')->get();
 
+        /* Reset listing ticketnetwork data */
+        $listings = \App\Listing::all();
+        $listings->each->resetTicketNetwork();
+        $this->info("Reset ticket network stats.");
+
         foreach($aggregateItems as $item) {
             if ( $item['tix_sold_in_date_range'] > 100 ) {
                 // $this->info($item['event'] . " has " . $item['tix_sold_in_date_range'] . " at price of " . $item['avg_sold_price_in_date_range']);

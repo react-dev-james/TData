@@ -247,6 +247,14 @@ class Listing extends Model
 
     }
 
+    public function resetTicketNetwork() {
+        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
+            'tix_sold_in_date_range'       => 0,
+            'avg_sold_price_in_date_range' => 0,
+            'tn_events'                    => 0
+        ] );
+    }
+
     public function updateTicketNetworkStats($ticketsSold, $avgSoldPrice, $numEvents, $updateRoi = false)
     {
         \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
@@ -257,6 +265,7 @@ class Listing extends Model
 
         if ($updateRoi) {
             $this->calcRoi();
+            $this->updateSoldPerEvent();
         }
     }
 

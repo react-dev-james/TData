@@ -16,16 +16,14 @@ class ListingsController extends Controller
 
     public function index( Request $request )
     {
-
-        /* Load the saved report if provided */
-        if ($request->has('reportId') && $request->get('reportType') == 'customListings') {
-            $report = Report::find($request->reportId);
-        } else {
-            $report = null;
+        /* Run ticket network import of not running already */
+        exec( "ps aux | grep -i 'tickets:importtn' | grep -v grep", $pids );
+        if (empty($pids)) {
+            exec( "php " . base_path( "artisan" ) . " tickets:importtn > /dev/null 2>&1 &" );
         }
 
+
         return view("admin.listings", [
-            'savedReport' => $report
         ]);
     }
 
