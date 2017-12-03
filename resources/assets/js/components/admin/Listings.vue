@@ -212,6 +212,7 @@
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
                         <md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>
                         <md-table-head v-if="columnActive('past_events')" md-sort-by="past_events" >Past</md-table-head>
+                        <md-table-head v-if="columnActive('tn_events')" md-sort-by="tn_events" >TN Events</md-table-head>
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
                         <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
                         <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_date" >Date</md-table-head>
@@ -304,6 +305,9 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('past_events')">
                             <span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : '-' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('tn_events')">
+                            <span class="">{{ listing.stats ? `${listing.stats.tn_events}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
@@ -423,7 +427,7 @@
 
             this.columns.forEach((column) => {
             	/* Hide some columns by default */
-            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name') {
+            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name' || column.name == 'tn_events') {
             		return;
                 }
 
@@ -475,6 +479,7 @@
                 {id : 20, name: 'roi_net', title: 'Net'},
                 {id : 21, name: 'tix_sold_in_date_range', title: 'TN Total'},
                 {id : 22, name: 'avg_sold_price_in_date_range', title: 'TN Sold'},
+                {id : 23, name: 'tn_events', title: 'TN Events'},
             ],
             options: {
                 pager: {

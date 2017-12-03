@@ -303,6 +303,7 @@ class ListingsController extends Controller
             case 'sold_per_event':
             case 'avg_sold_price_in_date_range':
             case 'tix_sold_in_date_range':
+            case 'tn_events':
                 $query->join( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )

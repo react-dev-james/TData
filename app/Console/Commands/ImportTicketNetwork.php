@@ -82,15 +82,18 @@ class ImportTicketNetwork extends Command
                                 + ($item['avg_sold_price_in_date_range'] * $item['tix_sold_in_date_range']);
 
                 $totalTixSold = $existing['tix_sold_in_date_range'] + $item['tix_sold_in_date_range'];
+                $numDates = $existing['tn_events'] + $item['dates'];
 
                 $aggregateItems[$itemKey]['tix_sold_in_date_range'] = $totalTixSold;
                 $aggregateItems[$itemKey]['avg_sold_price_in_date_range'] = round($totalWeight / max(1, $totalTixSold));
+                $aggregateItems[$itemKey]['tn_events'] = $numDates;
 
             } else {
                 $aggregateItems[$itemKey] = [
                     'event' => $item['event_name'],
                     'tix_sold_in_date_range' => $item['tix_sold_in_date_range'],
-                    'avg_sold_price_in_date_range' => $item['avg_sold_price_in_date_range']
+                    'avg_sold_price_in_date_range' => $item['avg_sold_price_in_date_range'],
+                    'tn_events' => $item['dates']
                 ];
             }
         }
@@ -110,7 +113,7 @@ class ImportTicketNetwork extends Command
                     if (count($listings) > 0) {
                         $this->info( "Found " . count( $listings ) . " Matching " . $item['event'] );
                         foreach ($listings as $listing) {
-                            $listing->updateTicketNetworkStats($item['tix_sold_in_date_range'], $item['avg_sold_price_in_date_range'], true);
+                            $listing->updateTicketNetworkStats($item['tix_sold_in_date_range'], $item['avg_sold_price_in_date_range'], $item['tn_events'], true);
                         }
                     }
                 }

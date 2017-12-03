@@ -245,11 +245,12 @@ class Listing extends Model
 
     }
 
-    public function updateTicketNetworkStats($ticketsSold, $avgSoldPrice, $updateRoi = false)
+    public function updateTicketNetworkStats($ticketsSold, $avgSoldPrice, $numEvents, $updateRoi = false)
     {
         \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
-            'tix_sold_in_date_range' => round($ticketsSold),
-            'avg_sold_price_in_date_range'     => round($avgSoldPrice)
+            'tix_sold_in_date_range'       => round( $ticketsSold ),
+            'avg_sold_price_in_date_range' => round( $avgSoldPrice ),
+            'tn_events'                    => round( $numEvents )
         ] );
 
         if ($updateRoi) {
