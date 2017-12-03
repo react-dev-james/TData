@@ -244,8 +244,8 @@
 
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('performer')">
-                            {{ listing.performer ? listing.performer : 'N/A'|limitTo(20) }}
-                            <md-tooltip md-direction="top">{{ listing.performer ? listing.performer : 'N/A' }}</md-tooltip>
+                            {{ listing.performer ? listing.performer : '-'|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.performer ? listing.performer : '-' }}</md-tooltip>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue')">
                             {{ listing.venue|limitTo(20) }}
@@ -253,45 +253,45 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_sh')">
-                            <span v-if="listing.stats && listing.stats.roi_sh >= 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh >= 20 && listing.stats.roi_sh < 40" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh < 20 && listing.stats.roi_sh > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh >= 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh >= 20 && listing.stats.roi_sh < 40" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh < 20 && listing.stats.roi_sh > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_sh < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_low')">
-                            <span v-if="listing.stats && listing.stats.roi_low >= 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low >= 100 && listing.stats.roi_low < 200" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low < 100 && listing.stats.roi_low > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : 'N/A' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low >= 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low >= 100 && listing.stats.roi_low < 200" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low < 100 && listing.stats.roi_low > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.roi_low < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sale_price')">
-                            <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : 'N/A' }}</span>
+                            <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sale_price_past')" >
-                            <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : 'N/A' }}</span>
+                            <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sold_price_in_date_range')">
-                            <span class="">{{ listing.stats ? `${listing.stats.avg_sold_price_in_date_range}` : 'N/A' }}</span>
+                            <span class="">{{ listing.stats ? `${listing.stats.avg_sold_price_in_date_range}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_net')">
-                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_net}` : 'N/A' }}
+                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
-                            <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : 'N/A' }}</span>
+                            <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
-                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : 'N/A' }}</span>
+                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales_past')" >
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tix_sold_in_date_range')" class="col-border-right">
-                            <span class="">{{ listing.stats ? `${listing.stats.tix_sold_in_date_range}` : 'N/A' }}</span>
+                            <span class="">{{ listing.stats ? `${listing.stats.tix_sold_in_date_range}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('high_ticket_price')">
                             <span class="">${{ listing.high_ticket_price }}</span>
@@ -300,10 +300,10 @@
                             <span class="">${{ listing.low_ticket_price }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('upcoming_events')">
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('past_events')">
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : 'N/A' }}</span>
+                            <span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
@@ -323,7 +323,7 @@
                                :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon>
                             </a>
                             </div>
-                            <span v-else>N/A</span>
+                            <span v-else>-</span>
                         </md-table-cell>
                     </md-table-row>
                 </md-table-body>
