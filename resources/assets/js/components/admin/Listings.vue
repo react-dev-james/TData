@@ -427,7 +427,7 @@
 
             this.columns.forEach((column) => {
             	/* Hide some columns by default */
-            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name' || column.name == 'tn_events') {
+            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name' || column.name == 'tn_events' || column.name == 'event_day') {
             		return;
                 }
 

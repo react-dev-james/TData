@@ -34,7 +34,13 @@ class MatchEventData extends Command
         'Rock The Lounge',
         'Pre Show Dinner',
         'VIP Upgrade',
-        'Vibe Room'
+        'Vibe Room',
+        'Retro Film Series',
+        'Premium Box Seat',
+        'Shore Club Cabanas',
+        'Fastlane',
+        'Lawn Chair Rental',
+        'Club Upgrade'
     ];
 
     /**
