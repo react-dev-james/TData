@@ -269,4 +269,31 @@ class Listing extends Model
         }
     }
 
+    public function updateWeightedSold( )
+    {
+        $listing = $this;
+        $data = $listing->data()->first();
+        $stats = $listing->stats()->first();
+        if (!$data || !$stats) {
+            return;
+        }
+
+        $totalSales = $data->total_sales + $data->total_sales_past + $stats->tix_sold_in_date_range;
+        if ($totalSales == 0 ) {
+            return;
+        }
+
+        $weightedSold = ( $this->getAvgSalePriceAttribute() * $data->total_sales )
+            + ( $this->getAvgSalePricePastAttribute() * $data->total_sales_past )
+            + ( $stats->avg_sold_price_in_date_range * $stats->tix_sold_in_date_range );
+        $weightedSold = round ($weightedSold / $totalSales);
+
+        $this->weighted_sold = $weightedSold;
+        $this->total_sold_all = $totalSales;
+        $this->save();
+
+        return true;
+
+    }
+
 }

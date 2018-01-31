@@ -274,6 +274,8 @@ class ListingsController extends Controller
             case "created_at":
             case "updated_at":
             case "first_onsale_date":
+            case "weighted_sold":
+            case "total_sold":
                 $query->orderBy( $field, $direction );
                 break;
             case "avg_sale_price":
@@ -316,6 +318,8 @@ class ListingsController extends Controller
                 $query->orderBy( "created_at", "desc" );
                 break;
         }
+
+        $query->orderBy("weighted_sold", "desc");
 
         return $query;
     }

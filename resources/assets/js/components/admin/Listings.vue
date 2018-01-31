@@ -200,11 +200,13 @@
                         <md-table-head v-if="columnActive('venue')" md-sort-by="venue" >Venue</md-table-head>
                         <md-table-head v-if="columnActive('roi_sh')" md-sort-by="roi_sh" >ROI (SH)</md-table-head>
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
+                        <md-table-head v-if="columnActive('weighted_sold')" md-sort-by="weighted_sold">Weighted Sold</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price')" md-sort-by="avg_sale_price" >SH Sold</md-table-head>
                         <md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
                         <md-table-head v-if="columnActive('avg_sold_price_in_date_range')" md-sort-by="avg_sold_price_in_date_range">TN Sold</md-table-head>
                         <md-table-head v-if="columnActive('roi_net')" md-sort-by="roi_net" >Net</md-table-head>
                         <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event">Per Event</md-table-head>
+                        <md-table-head v-if="columnActive('total_sold_all')" md-sort-by="total_sold_all">Total Sales</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
                         <md-table-head v-if="columnActive('tix_sold_in_date_range')" md-sort-by="tix_sold_in_date_range" >TN Total</md-table-head>
@@ -265,6 +267,9 @@
                             <span v-if="listing.stats && listing.stats.roi_low < 100 && listing.stats.roi_low > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
                             <span v-if="listing.stats && listing.stats.roi_low < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
                         </md-table-cell>
+                        <md-table-cell v-if="columnActive('weighted_sold')">
+                            <span class="">{{ listing.weighted_sold > 0 ? listing.weighted_sold : '-' }}</span>
+                        </md-table-cell>
                         <md-table-cell v-if="columnActive('avg_sale_price')">
                             <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : '-' }}</span>
                         </md-table-cell>
@@ -284,6 +289,9 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
                             <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('total_sold_all')">
+                            <span class="">{{listing.total_sold_all ? listing.total_sold_all : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : '-' }}</span>
@@ -480,6 +488,8 @@
                 {id : 21, name: 'tix_sold_in_date_range', title: 'TN Total'},
                 {id : 22, name: 'avg_sold_price_in_date_range', title: 'TN Sold'},
                 {id : 23, name: 'tn_events', title: 'TN Events'},
+                {id : 24, name: 'weighted_sold', title: 'Weighted Sold'},
+                {id : 25, name: 'total_sold_all', title: 'Total Sales'},
             ],
             options: {
                 pager: {

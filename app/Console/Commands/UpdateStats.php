@@ -45,6 +45,7 @@ class UpdateStats extends Command
             try {
                 $listing->calcRoi();
                 $listing->updateSoldPerEvent();
+                $listing->updateWeightedSold();
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
                 $this->error($e->getTraceAsString());

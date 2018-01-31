@@ -71,6 +71,12 @@ class ImportTicketNetwork extends Command
         /* Aggregate results with weighted averages for matching event names */
         $aggregateItems = [];
         foreach ($items as $item) {
+            $item['avg_tix_price'] = intval( $item['avg_tix_price']);
+            $item['value'] = intval( $item['value']);
+            $item['avg_sold_price_in_date_range'] = intval( $item['avg_sold_price_in_date_range']);
+            $item['tix_sold_in_date_range'] = intval( $item['tix_sold_in_date_range']);
+            $item['dates'] = intval( $item['dates']);
+
             $itemKey = str_slug($item['event_name']);
             if (isset($aggregateItems[$itemKey])) {
 
