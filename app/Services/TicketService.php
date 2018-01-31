@@ -195,6 +195,8 @@ class TicketService extends ScraperService implements IScraper
                 $highPrice = $result['price_col'];
             }
 
+            $lowPrice = str_replace(",", "", $lowPrice);
+            $highPrice = str_replace(",", "", $highPrice);
             $lowPrice = intval(str_replace("$", "", $lowPrice));
             $highPrice = intval(str_replace("$", "", $highPrice));
 

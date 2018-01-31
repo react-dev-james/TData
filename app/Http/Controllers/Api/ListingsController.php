@@ -101,7 +101,9 @@ class ListingsController extends Controller
                 case "new":
                     /* Select the most recent entry and use the date to look for other entries */
                     $newest = \App\Listing::orderBy('created_at','DESC')->first();
-                    $query->whereDay("listings.created_at", $newest->created_at->day );
+                    if ($newest) {
+                        $query->whereDay( "listings.created_at", $newest->created_at->day );
+                    }
                     break;
             }
         }
