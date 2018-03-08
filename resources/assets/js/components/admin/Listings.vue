@@ -65,6 +65,12 @@
                     <md-button md-condensed class="md-accent md-raised" @click.native="onFilter({name: 'excluded', id: 'filter-excluded'})">
                         Excluded
                     </md-button>
+                    <md-button v-if="tableView == 'simple'" md-condensed class="md-accent md-raised" @click.native="toggleTableView">
+                        Detailed
+                    </md-button>
+                    <md-button v-if="tableView == 'detailed'" md-condensed class="md-accent md-raised" @click.native="toggleTableView">
+                        Simple
+                    </md-button>
 
                     <md-menu md-size="4">
                         <md-button class="md-icon-button" md-menu-trigger>
@@ -234,7 +240,7 @@
                                 <md-icon>attach_file</md-icon>
                             </button>
                             <button class="btn btn-small btn-success padding-5 targetListingButton"
-                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%)`"
+                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - (${listing.stats ? listing.stats.sold_per_event : 'NA'}%)`"
                                     @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
@@ -288,7 +294,10 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
-                            <span class="label bg-grey-400">{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
+
+                            <span v-if="listing.stats && listing.stats.sold_per_event <= 9" class="label label label-danger" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.sold_per_event >= 20" class="label label label-success" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
+                            <span v-if="listing.stats && listing.stats.sold_per_event > 9 && listing.stats.sold_per_event < 20"class="label bg-grey-400" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sold_all')">
                             <span class="">{{listing.total_sold_all ? listing.total_sold_all : '-' }}</span>
@@ -435,7 +444,11 @@
 
             this.columns.forEach((column) => {
             	/* Hide some columns by default */
-            	if (column.name == 'upcoming_events' || column.name == 'past_events' || column.name == 'event_name' || column.name == 'tn_events' || column.name == 'event_day') {
+            	if (column.name == 'upcoming_events' || column.name == 'past_events' ||
+                  column.name == 'event_name' || column.name == 'tn_events' || column.name == 'event_day' ||
+                  column.name == 'avg_sale_price' || column.name == 'avg_sale_price_past' || column.name == 'total_sales' ||
+                  column.name == 'total_sales_past' || column.name == 'tix_sold_in_date_range' || column.name == 'avg_sold_price_in_date_range'
+                ) {
             		return;
                 }
 
@@ -464,6 +477,7 @@
             shared: window.appShared,
             selectedColumns: [
             ],
+            tableView: 'simple',
             columns: [
                 {id : 1, name: 'event_name', title: 'Event'},
                 {id : 2, name: 'performer', title: 'Performer'},
@@ -608,6 +622,59 @@
 
         	    return active;
             },
+            toggleTableView() {
+        	  let detailedColumns = ['avg_sale_price','avg_sale_price_past','total_sales','total_sales_past','tix_sold_in_date_range','avg_sold_price_in_date_range' ];
+
+        	  let actualColumns = [];
+              detailedColumns.forEach((detailColumn) => {
+                this.columns.forEach((column) => {
+                  if (column.name == detailColumn) {
+                    actualColumns.push(column);
+                  }
+                });
+              });
+
+        	  /* Switch to detailed view */
+        	  if (this.tableView == 'simple') {
+                actualColumns.forEach((detailColumn) => {
+                  let hasColumn = false;
+                  this.selectedColumns.forEach((column) => {
+                    if (column.name == detailColumn.name) {
+                      hasColumn = true;
+                    }
+                  });
+
+                  if (!hasColumn) {
+                    this.selectedColumns.push(detailColumn);
+                  }
+                });
+                this.tableView = 'detailed';
+                return;
+              }
+
+                /* Switch to detailed view */
+              if (this.tableView == 'detailed') {
+                let newColumns = [];
+                this.selectedColumns.forEach((column) => {
+                  let includeColumn = true;
+                  actualColumns.forEach((detailColumn) => {
+                    if (column.name == detailColumn.name) {
+                      includeColumn = false;
+                    }
+                  });
+
+                  if (includeColumn) {
+                    newColumns.push(column);
+                  }
+
+                });
+
+                this.selectedColumns = newColumns;
+                this.tableView = 'simple';
+                return;
+              }
+
+            },
         	associateListing(listing) {
         	    this.shared.listing = listing;
         	    this.$refs.associateModal.open();
@@ -732,7 +799,7 @@
 						console.log("Error loading data.");
 						console.log(response);
 					});
-				}.bind(this), 500)
+				}.bind(this), 100)
 			}, 300),
             onSearch(term) {
                 this.options.search = term;

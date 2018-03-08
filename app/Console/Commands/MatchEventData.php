@@ -40,7 +40,27 @@ class MatchEventData extends Command
         'Shore Club Cabanas',
         'Fastlane',
         'Lawn Chair Rental',
-        'Club Upgrade'
+        'Club Upgrade',
+        "VIP Club Access",
+        "Starplex Pavilion Tailgate Club",
+        "Tailgate Experience",
+        "Preshow Reception",
+        "Hollywood Casino Shuttle",
+        "Park & Ride",
+        "Market Shed Buffet",
+        "Preferred Lawn Upgrade",
+        "VIP Club Access",
+        "VIP Lounge",
+        "Tito's VIP Lounge",
+        "The Green Room",
+        "Lonestar Cabana",
+        "River Garden Deck",
+        "Pre-show Dinner",
+        "River Garden Deck",
+        "Early Entry",
+        "Pre Concert Dinner",
+        "Mini Club Access"
+
     ];
 
     /**
