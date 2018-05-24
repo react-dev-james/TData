@@ -18,13 +18,13 @@ class Listing extends Model
 
     /* Adjustments for days of week */
     protected $daysOfWeek = [
-        'Sunday'    => 0.89,
-        'Monday'    => 0.85,
-        'Tuesday'   => 0.86,
-        'Wednesday' => 0.86,
-        'Thursday'  => 0.97,
-        'Friday'    => 1.02,
-        'Saturday'  => 1.15
+        'Sunday'    => 0.94,
+        'Monday'    => 0.86,
+        'Tuesday'   => 0.82,
+        'Wednesday' => 0.95,
+        'Thursday'  => 1.02,
+        'Friday'    => 1.08,
+        'Saturday'  => 0.95
     ];
 
     public function data(  )
