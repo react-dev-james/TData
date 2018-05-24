@@ -59,6 +59,13 @@ class MatchEventData extends Command
         "River Garden Deck",
         "Early Entry",
         "Pre Concert Dinner",
+        "Carrier Comfort Zone",
+        "Fast Lane Access",
+        "Lawn Chair Rental",
+        "Reserved Lawn",
+        "Hilltop Cabanas",
+        "Flight Deck:",
+        "TIFF Bell Lightbox",
         "Mini Club Access"
 
     ];
