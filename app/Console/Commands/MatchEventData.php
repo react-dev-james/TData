@@ -66,6 +66,8 @@ class MatchEventData extends Command
         'Hilltop Cabanas',
         'Flight Deck:',
         'TIFF Bell Lightbox',
+        'Fast Lane',
+        'Tribute',
         'Mini Club Access'
 
     ];
