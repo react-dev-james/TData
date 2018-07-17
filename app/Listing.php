@@ -11,7 +11,7 @@ class Listing extends Model
 
     use SoftDeletes;
 
-    const CANADA_ADJUSTMENT = 0.8;
+    const CANADA_ADJUSTMENT = 0.76;
     protected $guarded = ['id'];
     protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past','sold_per_event'];
     protected $dates = ['created_at','updated_at','event_date','first_onsale_date'];
