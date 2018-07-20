@@ -171,6 +171,7 @@ return [
         Weidner\Goutte\GoutteServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
+        Webklex\GitHook\Providers\LaravelServiceProvider::class,
 
         /*
          * Application Service Providers...
