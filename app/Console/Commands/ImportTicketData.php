@@ -38,7 +38,7 @@ class ImportTicketData extends Command
     public function handle()
     {
         $data = file_get_contents(__DIR__ . "/Data/ticketdata.csv");
-        $lines = explode("\n", $data);
+        $lines = explode("\r", $data);
 
         $this->info(count($lines) . " Entries Found For Importing");
 
@@ -56,7 +56,7 @@ class ImportTicketData extends Command
             }
 
             $ticketItem = array_map(function($val) {
-                $val = trim(str_replace(['$',','], '', $val));
+                $val = trim(str_replace(['$'], '', $val));
                 if (empty($val) || $val == '#DIV/0!' || $val == "-") {
                     $val = 0;
                 }
