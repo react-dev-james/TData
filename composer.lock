@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d1c7d1f0404456c8eecfe557d5f48511",
+    "content-hash": "2e81ed41681a08f21fb3558b848496c7",
     "packages": [
         {
             "name": "barryvdh/laravel-debugbar",
@@ -1320,6 +1320,45 @@
                 "php"
             ],
             "time": "2018-07-15T17:25:16+00:00"
+        },
+        {
+            "name": "orphans/git-deploy-laravel",
+            "version": "0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/orphans/git-deploy-laravel.git",
+                "reference": "c2f0a10463e34b5e483dfdf0475b6d017c004246"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/orphans/git-deploy-laravel/zipball/c2f0a10463e34b5e483dfdf0475b6d017c004246",
+                "reference": "c2f0a10463e34b5e483dfdf0475b6d017c004246",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/config": "~5",
+                "illuminate/http": "~5",
+                "illuminate/support": "~5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Orphans\\GitDeploy\\GitDeployServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Orphans\\GitDeploy\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Helps automate the deployment of projects onto servers by utilising Git web hooks.",
+            "time": "2018-05-18T09:06:27+00:00"
         },
         {
             "name": "paragonie/random_compat",

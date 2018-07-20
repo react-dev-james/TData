@@ -171,6 +171,7 @@ return [
         Weidner\Goutte\GoutteServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Spatie\Backup\BackupServiceProvider::class,
+        Orphans\GitDeploy\GitDeployServiceProvider::class,
 
         /*
          * Application Service Providers...
