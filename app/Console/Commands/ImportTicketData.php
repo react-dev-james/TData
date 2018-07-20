@@ -38,6 +38,12 @@ class ImportTicketData extends Command
     public function handle()
     {
         $data = file_get_contents(__DIR__ . "/Data/ticketdata.csv");
+
+        /*
+            The line delimiter needs to be verified for each file.  It could be any of the \r, \n, or \r\n combo.
+            Or we need to change this to preg_split.  But we are going to get away from using this file so don't
+            change it for now.
+        */
         $lines = explode("\r", $data);
 
         $this->info(count($lines) . " Entries Found For Importing");
