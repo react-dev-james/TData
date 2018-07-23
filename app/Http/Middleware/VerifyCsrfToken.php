@@ -12,7 +12,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        'git-deploy',
-        'deploy',
+        'bfC34RNEDYiC8Yc3C1c9LoB1Q9tHEEJE',
     ];
 }
