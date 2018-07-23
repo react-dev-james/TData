@@ -28,8 +28,4 @@ Route::get( '/admin/jobs', 'Admin\JobsController@index' )->middleware( [ 'auth',
 
 /* Deployment */
 Route::post('/bfC34RNEDYiC8Yc3C1c9LoB1Q9tHEEJE', 'DeploymentController@index');
-Route::get('/deploy-test', 'DeploymentController@index');
-
-// testing1
-
-
+Route::get('/QVgyeQbqcLs0STkMUFcZTXshAM9IuWla', 'DeploymentController@index');
