@@ -26,6 +26,4 @@ Route::get( '/admin/users', 'Admin\UsersController@index' )->middleware( [ 'auth
 Route::get( "/admin/users/loginAs/{user}", 'Api\UsersController@loginAsUser' )->middleware( [ 'auth', 'admin' ] );
 Route::get( '/admin/jobs', 'Admin\JobsController@index' )->middleware( [ 'auth', 'admin' ] );
 
-/* Deployment */
-Route::get('deploy', 'DeploymentController@index');
 
