@@ -82,19 +82,23 @@ class Listing extends Model
         return number_format( $value, 0, '.', '' );
     }
 
-    public function getAvgSalePriceAttribute()
+    public function getAvgSalePriceAttribute($data)
     {
-        $data = $this->data->first();
         if ( !$data ) {
+            Log::info('**** data not found for event: ' . $this->event_name);
             return 0;
         }
 
+        Log::info('event day: ' . $this->event_day);
+        Log::info('day of the week and day: ' . $this->daysOfWeek[$this->event_day]);
         if ( isset( $this->daysOfWeek[$this->event_day] ) ) {
             $dayAdjustment = $this->daysOfWeek[$this->event_day];
-            return round( $data->avg_sale_price * $dayAdjustment );
+
+            Log::info('day adjustment: ' . $this->daysOfWeek[$this->event_day]);
+            return round( $data->weighted_avg * $dayAdjustment );
         }
 
-        return $data->avg_sale_price;
+        return $data->weighted_avg;
     }
 
     public function getSoldPerEventAttribute()
@@ -176,11 +180,20 @@ class Listing extends Model
     {
         $listing = $this;
 
-        // update weighted_sold
-        $listing->updateWeightedSold();
-
         // get data
-        $data = $listing->data->first();
+        //$data = $listing->data->first();
+        /* I am hacking this solution in for now where the $data isn't found in in this call for some reason.
+            It seems like it has be be gotten once, then passed around.  I don't understand why now, but will check
+            it out later.
+         */
+
+        // update weighted_sold
+        $data = $listing->updateWeightedSold();
+
+        if (!$data) {
+            Log::info('$$$$$ data not found $$$$$$$');
+            Log::info(print_r($data));
+        }
 
         // set to 0 if data is not there
         if ( !$data || ( $data->total_sold ) <= 0 ) {
@@ -207,15 +220,20 @@ class Listing extends Model
         if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
             $high_value = ($listing->high_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $high_value) / $high_value;
-            $high_roi = ceil($roi) > -1 ? ceil($roi) : 0;
+            $high_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
 
             $net_roi = ceil($high_roi * 40);
 
             if( $high_roi === 0 ) {
                 Log::info('---- problem high roi ----');
+                Log::info('listing id: ' . $listing->id);
+                Log::info('listing event: ' . $listing->event_name);
                 Log::info('ticket price: '  . $listing->high_ticket_price * 1.15);
                 Log::info('high_value: ' . $high_value);
                 Log::info('weighted_sold:' . $weighted_sold);
+            } else {
+                Log::info('--** high roi = ' . $high_roi);
+                Log::info('--** roi = ' . $roi);
             }
         }
 
@@ -223,10 +241,12 @@ class Listing extends Model
         if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
             $low_value = ($listing->low_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $low_value) / $low_value;
-            $low_roi = ceil($roi) > -1 ? ceil($roi) : 0;
+            $low_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
 
             if( $low_roi === 0 ) {
                 Log::info('---- problem high roi ----');
+                Log::info('listing id: ' . $listing->id);
+                Log::info('listing event: ' . $listing->event_name);
                 Log::info('ticket price: '  . $listing->low_ticket_price * 1.15);
                 Log::info('high_value: ' . $low_value);
                 Log::info('weighted_sold:' . $weighted_sold);
@@ -234,61 +254,11 @@ class Listing extends Model
         }
 
         // save data
+        Log::info('--** saving roi high at: ' . $high_roi);
         \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
             'roi_sh'     => $high_roi,
             'roi_low'    => $low_roi,
             'roi_net'    => $net_roi,
-            'listing_id' => $listing->id
-        ] );
-
-        return true;
-
-    }
-
-    public function calcRoiArchive($updateHigh = true, $updateLow = true)
-    {
-        $listing = $this;
-        $data = $listing->data->first();
-        $stats = $listing->stats()->first();
-        if ( !$data || ( $data->total_sold ) <= 0 ) {
-            \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
-                'roi_sh'     => 0,
-                'roi_low'    => 0,
-                'roi_net'    => 0,
-                'listing_id' => $listing->id
-            ] );
-            return 0;
-        }
-
-        if (!$stats) {
-            return 0;
-        }
-
-        $highRoi = 0;
-        $lowRoi = 0;
-        $netRoi = 0;
-        if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
-            $total = ( $this->getAvgSalePriceAttribute() * $data->total_sold )
-                    + ($stats->avg_sold_price_in_date_range * $stats->tix_sold_in_date_range);
-
-            $roi = ( $total / ( $data->total_sold + $stats->tix_sold_in_date_range )) / ( intval( $listing->high_ticket_price ) * 1.15 + 6 );
-            $highRoi = round( ( $roi - 1 ) * 100 );
-            $netRoi = max(0,round(($roi - 1) * ( intval( $listing->high_ticket_price ) * 1.15 + 6) * 40));
-        }
-
-        if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
-            $total =
-                ( $this->getAvgSalePriceAttribute() * $data->total_sold )
-                + ( $stats->avg_sold_price_in_date_range * $stats->tix_sold_in_date_range );
-
-            $roi = ( $total / ( $data->total_sold + $stats->tix_sold_in_date_range ) ) / ( intval( $listing->low_ticket_price ) * 1.15 + 6 );
-            $lowRoi = round( ( $roi - 1 ) * 100 );
-        }
-
-        \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
-            'roi_sh'     => $highRoi,
-            'roi_low'    => $lowRoi,
-            'roi_net'    => $netRoi,
             'listing_id' => $listing->id
         ] );
 
@@ -346,15 +316,19 @@ class Listing extends Model
         $listing = $this;
         $data = $listing->data()->first();
         if (!$data ) {
-            return;
+            Log::info('-- data for ' . $listing->event_name . ' not found--');
+            return false;
         }
 
-        $weightedSold = $this->getAvgSalePriceAttribute() * $data->weighted_avg;
+        $weightedSold = $this->getAvgSalePriceAttribute($data);
+        Log::info('--- weighted average calcuation for ' . $listing->event_name . ' ------');
+        Log::info('weighted_avg: ' . $data->weighted_avg);
+        Log::info('weighted sold:' . $weightedSold);
 
         $this->weighted_sold = $weightedSold;
         $this->save();
 
-        return true;
+        return $data;
     }
 
 }

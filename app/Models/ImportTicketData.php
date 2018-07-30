@@ -8,21 +8,43 @@ class ImportTicketData
 {
     public static function import()
     {
+
+        /* delete old lines */
+
+
+        if (($handle = fopen("test.csv", "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $num = count($data);
+                echo "<p> $num fields in line $row: <br /></p>\n";
+                $row++;
+                for ($c=0; $c < $num; $c++) {
+                    echo $data[$c] . "<br />\n";
+                }
+            }
+            fclose($handle);
+        }
+
+
         // set line counter
         $line_number = 1;
 
         // open file
-        $data = file_get_contents(storage_path('app/master_table.txt'), 'r');
+        //$data = file_get_contents(storage_path('app/Master_Table.csv'), 'r');
+        $handle = fopen(storage_path('app/Master_Table.csv'), 'r');
 
-        $lines = explode("\r", $data);
+        //$lines = explode("\r", $data);
 
-        echo count($lines) . " Entries Found For Importing";
+       /// echo count($lines) . " Entries Found For Importing";
 
         // process it line by line
-        foreach( $lines as $line)
+        foreach( $line = fgetcsv($handle, 2000, ","))
         {
             echo $line_number . "\n";
 
+            print_r($line);
+
+            if($line_number > 20) break;
+            /*
             $ticketItem = [];
 
             // assign line data to array
@@ -89,9 +111,12 @@ class ImportTicketData
             } else {
                 echo "|";
             }
-
+            */
             // increment line number
             $line_number++;
         }
+
+        // close file
+        fclose($handle);
     }
 }
