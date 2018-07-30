@@ -2,7 +2,7 @@
 
 namespace App\Console;
 
-use App\Console\Commands\ImportTicketData;
+use App\Console\Commands\ImportTicketDataMaster;
 use App\Console\Commands\ImportTicketNetwork;
 use App\Console\Commands\MatchEventData;
 use App\Console\Commands\FetchBoxOfficeData;
@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        ImportTicketData::class,
+        ImportTicketDataMaster::class,
         ImportTicketNetwork::class,
         MatchEventData::class,
         FetchBoxOfficeData::class,
@@ -38,23 +38,23 @@ class Kernel extends ConsoleKernel
         $schedule->command('tickets:boxoffice')->dailyAt('07:00');
         $schedule->command('tickets:match')->dailyAt('07:20');
         $schedule->command('tickets:clean')->dailyAt('07:28');
-        $schedule->command('tickets:importtn')->dailyAt('07:40');
-        $schedule->command('tickets:stats')->dailyAt('07:58');
-        $schedule->command('tickets:stats')->dailyAt('08:20');
+        //$schedule->command('tickets:importtn')->dailyAt('07:40');
+        //$schedule->command('tickets:stats')->dailyAt('07:58');
+        //$schedule->command('tickets:stats')->dailyAt('08:20');
 
         $schedule->command( 'tickets:boxoffice' )->dailyAt( '11:00' );
         $schedule->command( 'tickets:match' )->dailyAt( '11:20' );
         $schedule->command( 'tickets:clean' )->dailyAt( '11:28' );
-        $schedule->command( 'tickets:importtn' )->dailyAt( '11:40' );
-        $schedule->command( 'tickets:stats' )->dailyAt( '11:58' );
-        $schedule->command( 'tickets:stats' )->dailyAt( '12:20' );
+        //$schedule->command( 'tickets:importtn' )->dailyAt( '11:40' );
+        //$schedule->command( 'tickets:stats' )->dailyAt( '11:58' );
+        //$schedule->command( 'tickets:stats' )->dailyAt( '12:20' );
 
         $schedule->command( 'tickets:boxoffice' )->dailyAt( '16:00' );
         $schedule->command( 'tickets:match' )->dailyAt( '16:20' );
         $schedule->command( 'tickets:clean' )->dailyAt( '16:28' );
-        $schedule->command( 'tickets:importtn' )->dailyAt( '16:40' );
-        $schedule->command( 'tickets:stats' )->dailyAt( '16:58' );
-        $schedule->command( 'tickets:stats' )->dailyAt( '17:20' );
+        //$schedule->command( 'tickets:importtn' )->dailyAt( '16:40' );
+        //$schedule->command( 'tickets:stats' )->dailyAt( '16:58' );
+        //$schedule->command( 'tickets:stats' )->dailyAt( '17:20' );
     }
 
     /**

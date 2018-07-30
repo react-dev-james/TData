@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Data extends Model
+class DataMaster extends Model
 {
     protected $guarded = ['id'];
-    protected $table = 'data';
+    protected $table = 'data_master';
 
 
     public function listing()

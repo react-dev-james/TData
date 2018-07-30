@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class UpdateStats extends Command
 {
@@ -37,18 +38,23 @@ class UpdateStats extends Command
      */
     public function handle()
     {
-        //$listings = \App\Listing::where("id",4744)->get();
-        $listings = \App\Listing::all();
+        $this->info('handle');
+        //$listings = \App\Listing::where("id", '=', 84)->get();
+        $listings = \App\Listing::get();
+$this->info(count($listings));
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
             try {
                 $listing->calcRoi();
-                $listing->updateSoldPerEvent();
-                $listing->updateWeightedSold();
+                //$listing->updateSoldPerEvent();
+                //$listing->updateWeightedSold();
             } catch (\Exception $e) {
                 $this->error($e->getMessage());
                 $this->error($e->getTraceAsString());
+
+                Log::error($e->getMessage());
+                Log::error($e->getTraceAsString());
             }
 
             if ( $listing->stats->first() && ($listing->stats->roi_sh > 0 || $listing->stats->roi_low > 0)) {
@@ -56,6 +62,7 @@ class UpdateStats extends Command
                 $this->info( "Low ROI for " . $listing->event_name . " is " . $listing->stats->roi_low . "%" );
                 $this->info( "Sold Per Event for " . $listing->event_name . " is " . $listing->stats->sold_per_event );
             }
+
 
         }
     }

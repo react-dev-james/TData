@@ -204,23 +204,23 @@
                         <md-table-head v-if="columnActive('event_name')" md-sort-by="event_name">Event</md-table-head>
                         <md-table-head v-if="columnActive('performer')" md-sort-by="performer">Performer</md-table-head>
                         <md-table-head v-if="columnActive('venue')" md-sort-by="venue" >Venue</md-table-head>
-                        <md-table-head v-if="columnActive('roi_sh')" md-sort-by="roi_sh" >ROI (SH)</md-table-head>
+                        <md-table-head v-if="columnActive('roi_sh')" md-sort-by="roi_sh" >ROI</md-table-head>
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head v-if="columnActive('weighted_sold')" md-sort-by="weighted_sold">Weighted Sold</md-table-head>
-                        <md-table-head v-if="columnActive('avg_sale_price')" md-sort-by="avg_sale_price" >SH Sold</md-table-head>
-                        <md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>
-                        <md-table-head v-if="columnActive('avg_sold_price_in_date_range')" md-sort-by="avg_sold_price_in_date_range">TN Sold</md-table-head>
+                        <md-table-head v-if="columnActive('sh_sold')" md-sort-by="sh_sold" >SH Sold</md-table-head>
+                        <!--<md-table-head v-if="columnActive('avg_sale_price_past')" md-sort-by="avg_sale_price_past" >SH Past</md-table-head>-->
+                        <md-table-head v-if="columnActive('tn_avg_sale')" md-sort-by="tn_avg_sale">TN Sold</md-table-head>
                         <md-table-head v-if="columnActive('roi_net')" md-sort-by="roi_net" >Net</md-table-head>
-                        <md-table-head v-if="columnActive('sold_per_event')" md-sort-by="sold_per_event">Per Event</md-table-head>
-                        <md-table-head v-if="columnActive('total_sold_all')" md-sort-by="total_sold_all">Total Sales</md-table-head>
+                        <md-table-head v-if="columnActive('tot_per_event')" md-sort-by="tot_per_event">Per Event</md-table-head>
+                        <md-table-head v-if="columnActive('total_sold')" md-sort-by="total_sold">Total Sales</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
-                        <md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>
-                        <md-table-head v-if="columnActive('tix_sold_in_date_range')" md-sort-by="tix_sold_in_date_range" >TN Total</md-table-head>
+                        <!--<md-table-head v-if="columnActive('total_sales_past')" md-sort-by="total_sales_past" >SH Past</md-table-head>-->
+                        <md-table-head v-if="columnActive('tn_tix_sold')" md-sort-by="tn_tix_sold" >TN Total</md-table-head>
                         <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
                         <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
-                        <md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>
-                        <md-table-head v-if="columnActive('past_events')" md-sort-by="past_events" >Past</md-table-head>
-                        <md-table-head v-if="columnActive('tn_events')" md-sort-by="tn_events" >TN Events</md-table-head>
+                        <!--<md-table-head v-if="columnActive('upcoming_events')" md-sort-by="upcoming_events" >Upcoming</md-table-head>-->
+                        <!--<md-table-head v-if="columnActive('past_events')" md-sort-by="past_events" >Past</md-table-head>-->
+                        <!--<md-table-head v-if="columnActive('tn_events')" md-sort-by="tn_events" >TN Events</md-table-head>-->
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
                         <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
                         <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_date" >Date</md-table-head>
@@ -240,7 +240,7 @@
                                 <md-icon>attach_file</md-icon>
                             </button>
                             <button class="btn btn-small btn-success padding-5 targetListingButton"
-                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.stats ? listing.stats.sold_per_event : 'NA'}`"
+                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data ? listing.data.tot_per_event : 'NA'}`"
                                     @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
@@ -259,7 +259,6 @@
                         <md-table-cell v-if="columnActive('venue')">
                             {{ listing.venue|limitTo(20) }}
                             <md-tooltip md-direction="top">{{ listing.venue }}</md-tooltip>
-                            </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_sh')">
                             <span v-if="listing.stats && listing.stats.roi_sh >= 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
@@ -276,14 +275,19 @@
                         <md-table-cell v-if="columnActive('weighted_sold')">
                             <span class="">{{ listing.weighted_sold > 0 ? listing.weighted_sold : '-' }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('avg_sale_price')">
-                            <span class="">{{ listing.avg_sale_price > 0 ? listing.avg_sale_price : '-' }}</span>
+                        <md-table-cell v-if="columnActive('sh_sold')">
+                            <span class="">
+                                {{ listing.data.length > 0 ? Math.round(
+                                    (listing.data[0].total_vol - listing.data[0].tn_vol) /
+                                    (listing.data[0].total_sold - listing.data[0].tn_tix_sold)) :
+                                        '-' }}
+                            </span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('avg_sale_price_past')" >
-                            <span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : '-' }}</span>
-                        </md-table-cell>
-                        <md-table-cell v-if="columnActive('avg_sold_price_in_date_range')">
-                            <span class="">{{ listing.stats ? `${listing.stats.avg_sold_price_in_date_range}` : '-' }}</span>
+                        <!--<md-table-cell v-if="columnActive('avg_sale_price_past')" >-->
+                            <!--<span class="">{{ listing.avg_sale_price_past > 0 ? listing.avg_sale_price_past : '-' }}</span>-->
+                        <!--</md-table-cell>-->
+                        <md-table-cell v-if="columnActive('tn_avg_sale')">
+                            <span class="">{{ listing.data.length > 0 ? `${listing.data[0].tn_avg_sale}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_net')">
                             <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
@@ -293,23 +297,25 @@
                             <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
                             </span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('sold_per_event')" class="col-border-right">
+                        <md-table-cell v-if="columnActive('tot_per_event')" class="col-border-right">
 
-                            <span v-if="listing.stats && listing.stats.sold_per_event <= 9" class="label label label-danger" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.sold_per_event >= 20" class="label label label-success" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.sold_per_event > 9 && listing.stats.sold_per_event < 20"class="label bg-grey-400" >{{ listing.stats ? `${listing.stats.sold_per_event}` : '-' }}</span>
+                            <span v-if="listing.data[0] && listing.data[0].tot_per_event <= 9" class="label label label-danger" >{{ listing.data[0]? `${listing.data[0].tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.data[0] && listing.data[0].tot_per_event >= 20" class="label label label-success" >{{ listing.data[0] ? `${listing.data[0].tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.data[0] && listing.data[0].tot_per_event > 9 && listing.data[0].tot_per_event < 20"class="label bg-grey-400" >{{ listing.data[0] ? `${listing.data[0].tot_per_event}` : '-' }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('total_sold_all')">
-                            <span class="">{{listing.total_sold_all ? listing.total_sold_all : '-' }}</span>
+                        <md-table-cell v-if="columnActive('total_sold')">
+                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sold : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
-                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sales : '-' }}</span>
+                            <span class="">
+                                {{listing.data.length > 0 ? listing.data[0].total_sold - listing.data[0].tn_tix_sold : '-' }}
+                            </span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('total_sales_past')" >
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : '-' }}</span>
-                        </md-table-cell>
-                        <md-table-cell v-if="columnActive('tix_sold_in_date_range')" class="col-border-right">
-                            <span class="">{{ listing.stats ? `${listing.stats.tix_sold_in_date_range}` : '-' }}</span>
+                        <!--<md-table-cell v-if="columnActive('total_sales_past')" >-->
+                            <!--<span class="">{{ listing.data.length > 0 ? listing.data[0].total_sales_past : '-' }}</span>-->
+                        <!--</md-table-cell>-->
+                        <md-table-cell v-if="columnActive('tn_tix_sold')" class="col-border-right">
+                            <span class="">{{ listing.data.length > 0 ? `${listing.data[0].tn_tix_sold}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('high_ticket_price')">
                             <span class="">${{ listing.high_ticket_price }}</span>
@@ -317,15 +323,15 @@
                         <md-table-cell v-if="columnActive('low_ticket_price')" class="col-border-right">
                             <span class="">${{ listing.low_ticket_price }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('upcoming_events')">
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : '-' }}</span>
-                        </md-table-cell>
-                        <md-table-cell v-if="columnActive('past_events')">
-                            <span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : '-' }}</span>
-                        </md-table-cell>
-                        <md-table-cell v-if="columnActive('tn_events')">
-                            <span class="">{{ listing.stats ? `${listing.stats.tn_events}` : '-' }}</span>
-                        </md-table-cell>
+                        <!--<md-table-cell v-if="columnActive('upcoming_events')">-->
+                            <!--<span class="">{{ listing.data.length > 0 ? listing.data[0].upcoming_events : '-' }}</span>-->
+                        <!--</md-table-cell>-->
+                        <!--<md-table-cell v-if="columnActive('past_events')">-->
+                            <!--<span class="">{{ listing.data.length > 0 ? listing.data[0].past_events : '-' }}</span>-->
+                        <!--</md-table-cell>-->
+                        <!--<md-table-cell v-if="columnActive('tn_events')">-->
+                            <!--<span class="">{{ listing.stats ? `${listing.stats.tn_events}` : '-' }}</span>-->
+                        <!--</md-table-cell>-->
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
                         </md-table-cell>
@@ -393,7 +399,7 @@
             <md-list-item v-for="(item,index) in shared.dataSearch" :key="index">
                 <div class="md-list-text-container">
                     <span class="label label-info">{{ item.category }}  </span>
-                    <span>{{ item.upcoming_events }} Upcoming Events </span>
+                    <!--<span>{{ item.upcoming_events }} Upcoming Events </span>-->
 
                 </div>
 
@@ -444,10 +450,9 @@
 
             this.columns.forEach((column) => {
             	/* Hide some columns by default */
-            	if (column.name == 'upcoming_events' || column.name == 'past_events' ||
-                  column.name == 'event_name' || column.name == 'tn_events' || column.name == 'event_day' ||
-                  column.name == 'avg_sale_price' || column.name == 'avg_sale_price_past' || column.name == 'total_sales' ||
-                  column.name == 'total_sales_past' || column.name == 'tix_sold_in_date_range' || column.name == 'avg_sold_price_in_date_range'
+            	if (column.name == 'event_name' || column.name == 'event_day' ||
+                  column.name == 'sh_sold' || column.name == 'total_sales'
+                    || column.name == 'tn_tix_sold' || column.name == 'tn_avg_sale'
                 ) {
             		return;
                 }
@@ -482,12 +487,12 @@
                 {id : 1, name: 'event_name', title: 'Event'},
                 {id : 2, name: 'performer', title: 'Performer'},
                 {id : 3, name: 'venue', title: 'Venue'},
-                {id : 4, name: 'roi_sh', title: 'ROI (SH)'},
+                {id : 4, name: 'roi_sh', title: 'ROI'},
                 {id : 5, name: 'roi_low', title: 'ROI Low'},
-                {id : 6, name: 'avg_sale_price', title: 'SH Sold'},
-                {id : 7, name: 'avg_sale_price_past', title: 'Price Past'},
-                {id : 8, name: 'total_sales', title: 'Sales'},
-                {id : 9, name: 'total_sales_past', title: 'Sales Past'},
+                {id : 6, name: 'sh_sold', title: 'SH Sold'},
+               // {id : 7, name: 'avg_sale_price_past', title: 'Price Past'},
+                {id : 8, name: 'total_sales', title: 'SH Tix'},
+               // {id : 9, name: 'total_sales_past', title: 'Sales Past'},
                 {id : 10, name: 'high_ticket_price', title: 'High'},
                 {id : 11, name: 'low_ticket_price', title: 'Low'},
                 {id : 12, name: 'venue_capacity', title: 'Venue Capacity'},
@@ -495,13 +500,13 @@
                 {id : 14, name: 'sale_date', title: 'Date'},
                 {id : 15, name: 'venue_state', title: 'State'},
                 {id : 16, name: 'buy', title: 'Buy'},
-                {id : 17, name: 'sold_per_event', title: 'Sold Per Event'},
-                {id : 18, name: 'upcoming_events', title: 'Upcoming Events'},
-                {id : 19, name: 'past_events', title: 'Past Events'},
+                {id : 17, name: 'tot_per_event', title: 'Per Event'},
+                // {id : 18, name: 'upcoming_events', title: 'Upcoming Events'},
+                // {id : 19, name: 'past_events', title: 'Past Events'},
                 {id : 20, name: 'roi_net', title: 'Net'},
-                {id : 21, name: 'tix_sold_in_date_range', title: 'TN Total'},
-                {id : 22, name: 'avg_sold_price_in_date_range', title: 'TN Sold'},
-                {id : 23, name: 'tn_events', title: 'TN Events'},
+                {id : 21, name: 'tn_tix_sold', title: 'TN Total'},
+                {id : 22, name: 'tn_avg_sale', title: 'TN Sold'},
+                // {id : 23, name: 'tn_events', title: 'TN Events'},
                 {id : 24, name: 'weighted_sold', title: 'Weighted Sold'},
                 {id : 25, name: 'total_sold_all', title: 'Total Sales'},
             ],
@@ -623,7 +628,7 @@
         	    return active;
             },
             toggleTableView() {
-        	  let detailedColumns = ['avg_sale_price','avg_sale_price_past','total_sales','total_sales_past','tix_sold_in_date_range','avg_sold_price_in_date_range' ];
+        	  let detailedColumns = ['sh_sold','total_sales','tn_tix_sold','tn_avg_sale' ];
 
         	  let actualColumns = [];
               detailedColumns.forEach((detailColumn) => {

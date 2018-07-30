@@ -124,7 +124,7 @@ class ImportTicketNetwork extends Command
                     if (count($listings) > 0) {
                         $this->info( "Found " . count( $listings ) . " Matching " . $item['event'] );
                         foreach ($listings as $listing) {
-                            $listing->updateTicketNetworkStats($item['tix_sold_in_date_range'], $item['avg_sold_price_in_date_range'], $item['tn_events'], true);
+                            $listing->updateTicketNetworkStats($item['tix_sold_in_date_range'], $item['avg_sold_price_in_date_range'], true);
                         }
                     }
 

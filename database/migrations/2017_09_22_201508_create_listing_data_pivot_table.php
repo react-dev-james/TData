@@ -16,8 +16,8 @@ class CreateListingDataPivotTable extends Migration
         Schema::create( 'listing_data', function ( Blueprint $table ) {
             $table->integer( 'listing_id' )->unsigned()->index();
             $table->foreign( 'listing_id' )->references( 'id' )->on( 'listings' )->onDelete( 'cascade' );
-            $table->integer( 'data_id' )->unsigned()->index();
-            $table->foreign( 'data_id' )->references( 'id' )->on( 'data' )->onDelete( 'cascade' );
+            $table->integer( 'data_master_id' )->unsigned()->index();
+            $table->foreign( 'data_master_id' )->references( 'id' )->on( 'data_master' )->onDelete( 'cascade' );
             $table->integer('confidence')->default()->nullable();
             $table->primary( [ 'listing_id', 'data_id' ] );
         } );

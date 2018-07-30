@@ -89,7 +89,7 @@ class MatchEventData extends Command
      */
     public function handle()
     {
-        $data = \App\Data::all();
+        $data = \App\DataMaster::all();
         $listings = \App\Listing::all();
 
         /* Check lookups table first */
@@ -103,7 +103,7 @@ class MatchEventData extends Command
             /* Check lookups table */
             $lookup = \App\EventLookup::where( "event_name", $listing->event_name )->orderBy("is_auto",'ASC')->orderBy('confidence','DESC')->first();
             if ( $lookup ) {
-                $dataLookup = \App\Data::where("category", $lookup->match_name)->first();
+                $dataLookup = \App\DataMaster::where("category", $lookup->match_name)->first();
                 if ($dataLookup) {
 
                     $this->info("Manual lookup match found for" . $listing->event_name);
@@ -112,6 +112,7 @@ class MatchEventData extends Command
 
                     /* Create new entry in the listing_data pivot table */
                     $listing->data()->sync( [ $dataLookup->id ], [ 'confidence' => 100 ] );
+                    $listing->calcRoi();
                 }
             }
 
@@ -176,7 +177,7 @@ class MatchEventData extends Command
         $this->checkLookups();
     }
 
-    public function saveNewMatch(\App\Listing $listing, \App\Data $data, $confidence = 100)
+    public function saveNewMatch(\App\Listing $listing, \App\DataMaster $data, $confidence = 100)
     {
         /* Create new lookup in the lookups table */
         \App\EventLookup::firstOrCreate([ 'event_name' => $listing->event_name ],
@@ -193,6 +194,9 @@ class MatchEventData extends Command
         /* Create new entry in the listing_data pivot table */
         $listing->data()->sync([$data->id], ['confidence' => min( 100, $confidence * 3 ) ]);
 
+        /* Recalc ROI */
+        $listing->fresh();
+        $listing->calcRoi();
     }
 
     public function checkLookups() {
@@ -200,7 +204,7 @@ class MatchEventData extends Command
         $lookups = \App\EventLookup::all();
         $numListings = 0;
         foreach ($lookups as $lookup) {
-            $data = \App\Data::where("name", $lookup->match_name)->first();
+            $data = \App\DataMaster::where("category", $lookup->match_name)->first();
             if (!$data) {
                 continue;
             }

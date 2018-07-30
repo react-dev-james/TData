@@ -146,12 +146,12 @@ class ListingsController extends Controller
     public function dataSearch( Request $request )
     {
 
-        $query = \App\Data::where("id",">",0);
+        $query = \App\DataMaster::where("id",">",0);
 
         if ( $request->has( "dataSearch" ) && !empty( $request->dataSearch ) ) {
 
             $query->where( "category", "like", "%" . $request->dataSearch . "%" );
-            $query->orWhere( "name", "like", "%" . $request->dataSearch . "%" );
+            //$query->orWhere( "name", "like", "%" . $request->dataSearch . "%" );  category and name hold the same data
 
         }
 
@@ -185,7 +185,7 @@ class ListingsController extends Controller
         ] );
     }
 
-    public function associate( Request $request, Listing $listing, \App\Data $data )
+    public function associate( Request $request, Listing $listing, \App\DataMaster $data )
     {
         /* Create new lookup in the lookups table */
         $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name, 'match_slug' => str_slug( $data->category) ],
@@ -261,7 +261,7 @@ class ListingsController extends Controller
             case "sale_status":
             case "performer":
             case "performer_normalized":
-            case "event_name":
+            //case "event_name":
             case "venue":
             case "venue_capacity":
             case "venue_city":
@@ -281,19 +281,21 @@ class ListingsController extends Controller
             case "avg_sale_price":
             case "avg_sale_price_past":
             case "total_sales":
-            case "total_sales_past":
+            // case "total_sales_past":
             case "total_listed":
             case "upcoming_events":
+            /*
             case "past_events":
                 $query->join( 'listing_data', function ( $join ) {
                     $join->on( 'listing_data.listing_id', '=', 'listings.id' );
                 } )
-                    ->join( 'data', function ( $join ) {
-                        $join->on( 'data.id', '=', 'listing_data.data_id' );
+                    ->join( 'data_master', function ( $join ) {
+                        $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
                     } )
-                    ->orderBy( 'data.' . $field, $direction )
+                    ->orderBy( 'data_master.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
+            */
             case "sale_date":
                 $query->join( 'sales', function ( $join ) {
                     $join->on( 'sales.listing_id', '=', 'listings.id' )->orderBy('sale_date','ASC')->limit(1);
