@@ -176,19 +176,23 @@ class Listing extends Model
         $update->save();
     }
 
-    public function calcRoi($updateHigh = true, $updateLow = true)
+    public function calcRoi($data)
     {
         $listing = $this;
 
+        /* I am hacking this solution in for now where the Data model isn't found in in this call for some reason.
+            Especially in the children method calls.It appears to randomly not show up.
+            It is like there is a timing issue when the data is associated.
+            So, the simple solution here is to pass in the Data model as we always have it when calcRoi method
+            is called.
+
+            The real solution is to change the relationship to Data model to one to many
+         */
         // get data
         //$data = $listing->data->first();
-        /* I am hacking this solution in for now where the $data isn't found in in this call for some reason.
-            It seems like it has be be gotten once, then passed around.  I don't understand why now, but will check
-            it out later.
-         */
 
         // update weighted_sold
-        $data = $listing->updateWeightedSold();
+        $listing->updateWeightedSold($data);
 
         if (!$data) {
             Log::info('$$$$$ data not found $$$$$$$');
@@ -217,7 +221,7 @@ class Listing extends Model
         $net_roi = 0;
 
         // set roi high
-        if ($updateHigh && intval( $listing->high_ticket_price ) > 0) {
+        if ( intval( $listing->high_ticket_price ) > 0) {
             $high_value = ($listing->high_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $high_value) / $high_value;
             $high_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
@@ -238,7 +242,7 @@ class Listing extends Model
         }
 
         // set roi low
-        if ( $updateLow && intval( $listing->low_ticket_price ) > 0 ) {
+        if ( intval( $listing->low_ticket_price ) > 0 ) {
             $low_value = ($listing->low_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $low_value) / $low_value;
             $low_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
@@ -289,32 +293,10 @@ class Listing extends Model
 
     }
 
-    public function resetTicketNetwork() {
-        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
-            'tix_sold_in_date_range'       => 0,
-            'avg_sold_price_in_date_range' => 0
-        ] );
-    }
-
-    /* this function is not being used */
-    public function updateTicketNetworkStats($ticketsSold, $avgSoldPrice, $updateRoi = false)
-    {
-        return true;
-        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
-            'tix_sold_in_date_range'       => round( $ticketsSold ),
-            'avg_sold_price_in_date_range' => round( $avgSoldPrice )
-        ] );
-
-        if ($updateRoi) {
-            $this->calcRoi();
-            //$this->updateSoldPerEvent();
-        }
-    }
-
-    public function updateWeightedSold()
+    public function updateWeightedSold($data)
     {
         $listing = $this;
-        $data = $listing->data()->first();
+        //$data = $listing->data()->first();
         if (!$data ) {
             Log::info('-- data for ' . $listing->event_name . ' not found--');
             return false;
@@ -327,8 +309,6 @@ class Listing extends Model
 
         $this->weighted_sold = $weightedSold;
         $this->save();
-
-        return $data;
     }
 
 }

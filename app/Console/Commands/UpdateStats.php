@@ -41,12 +41,19 @@ class UpdateStats extends Command
         $this->info('handle');
         //$listings = \App\Listing::where("id", '=', 84)->get();
         $listings = \App\Listing::get();
-$this->info(count($listings));
+
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
             try {
-                $listing->calcRoi();
+                $data = $listing->data->first();
+
+                if( !$data ) {
+                    Log::error('/** Data object not found in UpdateStats.php */');
+                    continue;
+                }
+
+                $listing->calcRoi($data);
                 //$listing->updateSoldPerEvent();
                 //$listing->updateWeightedSold();
             } catch (\Exception $e) {

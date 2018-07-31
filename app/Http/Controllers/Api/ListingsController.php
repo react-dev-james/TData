@@ -204,8 +204,8 @@ class ListingsController extends Controller
         $listing->data()->sync( [ $data->id => [ 'confidence' => 100 ]] );
 
         /* Recalc ROI */
-        $listing->fresh();
-        $listing->calcRoi();
+        //$listing->fresh();
+        $listing->calcRoi($data);
 
         /* Load relations */
         $listing->load('data','sales','updates', 'stats');
@@ -223,8 +223,8 @@ class ListingsController extends Controller
             $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
 
             /* Recalc ROI */
-            $otherListing->fresh();
-            $otherListing->calcRoi();
+            //$otherListing->fresh();
+            $otherListing->calcRoi($data);
         }
 
         return response()->json( [

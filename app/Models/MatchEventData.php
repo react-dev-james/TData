@@ -90,8 +90,8 @@ class MatchEventData
 
                     /* Create new entry in the listing_data pivot table */
                     $listing->data()->sync( [ $dataLookup->id ], [ 'confidence' => 100 ] );
-                    $listing->fresh();
-                    $listing->calcRoi();
+                    //$listing->fresh();
+                    $listing->calcRoi($dataLookup);
                 }
             }
 
@@ -177,8 +177,8 @@ class MatchEventData
         $listing->data()->sync([$data->id], ['confidence' => min( 100, $confidence * 3 ) ]);
 
         /* Recalc ROI */
-        $listing->fresh();
-        $listing->calcRoi();
+        //$listing->fresh();
+        $listing->calcRoi($data);
     }
 
     public function checkLookups() {
@@ -211,8 +211,8 @@ class MatchEventData
                 $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
 
                 /* Recalc ROI */
-                $otherListing->fresh();
-                $otherListing->calcRoi();
+                //$otherListing->fresh();
+                $otherListing->calcRoi($data);
             }
         }
 
