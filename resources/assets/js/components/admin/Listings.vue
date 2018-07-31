@@ -298,14 +298,14 @@
                             <span v-if="listing.data[0] && listing.data[0].tot_per_event > 9 && listing.data[0].tot_per_event < 20"class="label bg-grey-400" >{{ listing.data[0] ? `${listing.data[0].tot_per_event}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi')">
-                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi > 20" class="label label-success">
-                                {{ listing.data.length > 0 ? `${listing.data[0].sfc_roi}` : '-' }}
+                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi > .20" class="label label-success">
+                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
                             </span>
-                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi >= 0 && listing.data[0].sfc_roi <= 20" class="label bg-grey-400">
-                                {{ listing.data.length > 0 ? `${listing.data[0].sfc_roi}` : '-' }}
+                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi >= 0 && listing.data[0].sfc_roi <= .20" class="label bg-grey-400">
+                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
                             </span>
                             <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi < 0" class="label label-danger">
-                                {{ listing.data.length > 0 ? `${listing.data[0].sfc_roi}` : '-' }}
+                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi_dollar')">
