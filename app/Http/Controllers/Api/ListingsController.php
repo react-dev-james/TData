@@ -11,6 +11,7 @@ use App\Listing;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ListingsController extends Controller
 {
@@ -482,13 +483,17 @@ class ListingsController extends Controller
 
     }
 
-    public function sendZapierWebHook(Listing $listing)
+    public function sendZapierWebHook($listing_id)
     {
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
+        //$zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
+
+        // get listing with data
+        $listing = Listing::where('id', '=', $listing_id)->with('stats')->firstOrFail()->toArray();
 
         // send request
-        $response = $this->sendHttpPostRequest($zapier_endpoint, $listing->with('stats', 'data')->toArray());
+        $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
 
         // return status of success
         if( $response !== null ) {
