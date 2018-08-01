@@ -488,7 +488,7 @@ class ListingsController extends Controller
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
 
         // send request
-        $response = $this->sendHttpPostRequest($zapier_endpoint, $listing->toArray());
+        $response = $this->sendHttpPostRequest($zapier_endpoint, $listing->with('stats', 'data')->toArray());
 
         // return status of success
         if( $response !== null ) {
