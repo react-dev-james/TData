@@ -224,7 +224,7 @@ class Listing extends Model
         if ( intval( $listing->high_ticket_price ) > 0) {
             $high_value = ($listing->high_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $high_value) / $high_value;
-            $high_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
+            $high_roi = ceil($roi) > 0 ? ceil($roi * 100) : 0;
 
             $net_roi = ceil($high_roi * 40);
 
@@ -245,7 +245,7 @@ class Listing extends Model
         if ( intval( $listing->low_ticket_price ) > 0 ) {
             $low_value = ($listing->low_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $low_value) / $low_value;
-            $low_roi = ceil($roi) > -1 ? ceil($roi * 100) : 0;
+            $low_roi = ceil($roi) > 0 ? ceil($roi * 100) : 0;
 
             if( $low_roi === 0 ) {
                 Log::info('---- problem high roi ----');
