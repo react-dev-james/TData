@@ -224,10 +224,11 @@ class Listing extends Model
         if ( intval( $listing->high_ticket_price ) > 0) {
             $high_value = ($listing->high_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $high_value) / $high_value;
-            $high_roi = ceil($roi) > 0 ? ceil($roi * 100) : 0;
+            $high_roi = ceil($roi * 100);
 
-            $net_roi = ceil($high_roi * 40);
+            $net_roi = $high_roi > 0 ? ceil($high_roi * 40) : 0;
 
+            /* disable logging for now
             if( $high_roi === 0 ) {
                 Log::info('---- problem high roi ----');
                 Log::info('listing id: ' . $listing->id);
@@ -239,14 +240,16 @@ class Listing extends Model
                 Log::info('--** high roi = ' . $high_roi);
                 Log::info('--** roi = ' . $roi);
             }
+            */
         }
 
         // set roi low
         if ( intval( $listing->low_ticket_price ) > 0 ) {
             $low_value = ($listing->low_ticket_price * 1.15) + 6;
             $roi = (($weighted_sold * .93) - $low_value) / $low_value;
-            $low_roi = ceil($roi) > 0 ? ceil($roi * 100) : 0;
+            $low_roi = ceil($roi);
 
+            /* disable logging for now
             if( $low_roi === 0 ) {
                 Log::info('---- problem high roi ----');
                 Log::info('listing id: ' . $listing->id);
@@ -255,6 +258,7 @@ class Listing extends Model
                 Log::info('high_value: ' . $low_value);
                 Log::info('weighted_sold:' . $weighted_sold);
             }
+            */
         }
 
         // save data
