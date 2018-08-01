@@ -482,5 +482,74 @@ class ListingsController extends Controller
 
     }
 
+    public function sendZapierWebHook(Listing $listing)
+    {
+        // set Zapier end point
+        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
+
+        // send request
+        $response = $this->sendHttpPostRequest($zapier_endpoint, $listing->toArray());
+
+        // return status of success
+        if( $response !== null ) {
+            return response()->json( [
+                'message' => "Zapier web hook sent successfully.",
+                'status'  => "success"
+            ] );
+        }
+
+        // return error status
+        else {
+            return response()->json( [
+                'message' => "Error sending Zapier web hook.",
+                'status'  => "error"
+            ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public function sendHttpPostRequest($endpoint, $payload = [])
+    {
+        //init curl object
+        $ch = curl_init();
+
+        //set header options
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'post');
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $request_headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+
+        // set postfield option
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+
+        //set payload length
+        $request_headers[] = 'Content-Length: ' . strlen(json_encode($payload));
+
+        //set header
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);
+
+        //set url
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+
+        //run request
+        $response = curl_exec($ch);
+
+        //check for curl error
+        if( curl_error($ch) ) {
+            Log::error('*** Curl Error ***');
+            Log::error('Request Route: ' . $endpoint);
+            Log::error('Curl Error: ' . curl_error($ch));
+
+            $response = null;
+        }
+
+        return $response;
+    }
+
 }
 

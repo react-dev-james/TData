@@ -238,7 +238,7 @@
                                 <md-icon>attach_file</md-icon>
                             </button>
                             <button class="btn btn-small btn-success padding-5 targetListingButton"
-                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data ? listing.data.tot_per_event : 'NA'}`"
+                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data.length > 0 ? listing.data[0].tot_per_event : 'NA'}`"
                                     @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
@@ -708,6 +708,7 @@
 					this.$root.showNotification(response.body.message);
 					this.$forceUpdate();
 					//this.refreshTable();
+                    this.sendZapierWebHook(listing);
 
 
 				}, (response) => {
@@ -715,6 +716,16 @@
 					console.log(response);
 				});
 			},
+            sendZapierWebHook(listing) {
+                this.$http.post(`/apiv1/listings/sendZapierWebHook/${listing.id}`).then((response) => {
+
+                    console.log(response);
+                    this.$root.showNotification(response.body.message);
+                }, (response) => {
+                    console.log("Error sending Zapier webhook.");
+                    console.log(response);
+                });
+            },
             associateListingWithData(listing, data) {
 				this.$http.post(`/apiv1/listings/associate/${listing.id}/${data.id}`).then((response) => {
 

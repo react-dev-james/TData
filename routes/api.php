@@ -25,6 +25,7 @@ Route::post( '/listings/updateOutlierStatus/{listing}', 'Api\ListingsController@
 Route::post( '/listings/create', 'Api\ListingsController@create' );
 Route::post( '/listings/delete/{listing}', 'Api\ListingsController@delete' );
 Route::post( '/lookups', 'Api\ListingsController@createLookup' );
+Route::post( '/listings/sendZapierWebHook/{listing}', 'Api\ListingsController@sendZapierWebHook' );
 
 
 /* Locations */

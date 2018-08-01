@@ -6,6 +6,7 @@ use \App\Listing;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class TicketService extends ScraperService implements IScraper
@@ -122,7 +123,7 @@ class TicketService extends ScraperService implements IScraper
 
         if (!$this->state('box_logged_in')) {
             if (!$this->boxOfficeLogin()) {
-                $this->display( "Error logging into box office." );
+                Log::Error( "Error logging into box office." );
                 return false;
             }
         }
@@ -135,21 +136,21 @@ class TicketService extends ScraperService implements IScraper
         $offset = $limit;
         $savedListings = collect();
 
-        $this->display("Using start date of " . $startDate->toDateTimeString() . " to " . $endDate->toDateTimeString());
+        Log::info("Using start date of " . $startDate->toDateTimeString() . " to " . $endDate->toDateTimeString());
 
         for ($i = 0; $i <= $maxPages; $i++) {
             $start = $offset * $i;
-            $this->display( "Fetching page " . $i . " from box office with start of " . $start );
+            echo "Fetching page " . $i . " from box office with start of " . $start ;
             $params = $this->boxOfficeSearchParams( $startDate, $endDate, $start, $limit );
             $results = $this->post( self::BOX_SEARCH_URL, $params );
             $results = @json_decode( $results, true );
 
             if ( $i == 0 && isset( $results['iTotalDisplayRecords']) ) {
-                $this->display( "Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing." );
+                echo "Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing." ;
             }
 
             if ( !isset( $results['iTotalDisplayRecords'] ) || $results['iTotalDisplayRecords'] <= 0 || $results['iTotalDisplayRecords'] <= ( $start + $offset ) ) {
-                $this->display( "No more records found from box office fox." );
+                Log::info( "No more records found from box office fox." );
                 return false;
             }
 
