@@ -14,7 +14,7 @@ class Listing extends Model
 
     const CANADA_ADJUSTMENT = 0.76;
     protected $guarded = ['id'];
-    protected $appends = ['nice_date','nice_sale_date','avg_sale_price','avg_sale_price_past','sold_per_event'];
+    protected $appends = ['nice_date','nice_sale_date','sold_per_event'];
     protected $dates = ['created_at','updated_at','event_date','first_onsale_date'];
 
     /* Adjustments for days of week */
@@ -28,7 +28,7 @@ class Listing extends Model
         'Saturday'  => 0.95
     ];
 
-    public function data(  )
+    public function data()
     {
         return $this->belongsToMany(\App\DataMaster::class, 'listing_data')->withPivot('confidence');
     }
@@ -82,10 +82,11 @@ class Listing extends Model
         return number_format( $value, 0, '.', '' );
     }
 
-    public function getAvgSalePriceAttribute($data)
+    public function getAvgSalePrice($data)
     {
         if ( !$data ) {
             Log::info('**** data not found for event: ' . $this->event_name);
+            throw new \Exception('**** data not found for event: ' . $this->event_name);
             return 0;
         }
 
@@ -306,7 +307,7 @@ class Listing extends Model
             return false;
         }
 
-        $weightedSold = $this->getAvgSalePriceAttribute($data);
+        $weightedSold = $this->getAvgSalePrice($data);
 
         /* disable logging for now
         Log::info('--- weighted average calcuation for ' . $listing->event_name . ' ------');
