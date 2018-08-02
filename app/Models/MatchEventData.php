@@ -70,6 +70,8 @@ class MatchEventData
         $data = \App\DataMaster::all();
         $listings = \App\Listing::all();
 
+        Log::info('------- start match: check lookup table --------');
+
         /* Check lookups table first */
         foreach ($listings as $listing) {
 
@@ -110,6 +112,10 @@ class MatchEventData
             }
 
         }
+
+        Log::info('------- end match: check lookup table --------');
+
+        Log::info('------- start match: based on event data names --------');
 
         /* Check for matches based on event data names */
         $numMatches = 0;
@@ -156,6 +162,8 @@ class MatchEventData
 
         Log::info( "Found Matches: " . $numMatches );
 
+        Log::info('------- end match: based on event data names --------');
+
         $this->checkLookups();
     }
 
@@ -182,6 +190,8 @@ class MatchEventData
     }
 
     public function checkLookups() {
+        Log::info('------- start match: checkLookups --------');
+
         /* Check lookups table for other matching listings */
         $lookups = \App\EventLookup::all();
         $numListings = 0;
@@ -212,11 +222,14 @@ class MatchEventData
 
                 /* Recalc ROI */
                 //$otherListing->fresh();
+                Log::info('-*-* checkloopup before calcRoi -*-*-');
+                Log::info('** data id is:' . $data->id);
                 $otherListing->calcRoi($data);
             }
         }
 
         Log::info("Found " . $numListings . " events that matched with lookups.");
+        Log::info('------- end match: checkLookups --------');
 
     }
 }

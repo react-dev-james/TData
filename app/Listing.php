@@ -307,9 +307,12 @@ class Listing extends Model
         }
 
         $weightedSold = $this->getAvgSalePriceAttribute($data);
+
+        /* disable logging for now
         Log::info('--- weighted average calcuation for ' . $listing->event_name . ' ------');
         Log::info('weighted_avg: ' . $data->weighted_avg);
         Log::info('weighted sold:' . $weightedSold);
+        */
 
         $this->weighted_sold = $weightedSold;
         $this->save();

@@ -31,9 +31,9 @@ class ListingsController extends Controller
     {
 
         if ($request->get('currentFilter','true') == 'true') {
-            $query = Listing::with( "sales", "data", "updates", "stats" );
+            $query = Listing::with( "sales", "updates", "stats" );
         } else {
-            $query = Listing::onlyTrashed()->with( "sales", "data", "updates", "stats" );
+            $query = Listing::onlyTrashed()->with( "sales", "updates", "stats" );
         }
 
 
@@ -286,47 +286,47 @@ class ListingsController extends Controller
             case "total_listed":
             case "upcoming_events":
             case "tot_per_event":
-                $query->join( 'listing_data', function ( $join ) {
-                    $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                } )
-                    ->join( 'data_master', function ( $join ) {
+                $query->leftJoin( 'listing_data', function ( $join ) {
+                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
+                    } )
+                    ->leftJoin( 'data_master', function ( $join ) {
                         $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
                     } )
                     ->orderBy( 'data_master.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
             case "sfc_roi":
-                $query->join( 'listing_data', function ( $join ) {
-                    $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                } )
-                    ->join( 'data_master', function ( $join ) {
+                $query->leftJoin( 'listing_data', function ( $join ) {
+                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
+                    } )
+                    ->leftJoin( 'data_master', function ( $join ) {
                         $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
                     } )
                     ->orderBy( 'data_master.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
             case "sfc_roi_dollar":
-                $query->join( 'listing_data', function ( $join ) {
-                    $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                } )
-                    ->join( 'data_master', function ( $join ) {
+                $query->leftJoin( 'listing_data', function ( $join ) {
+                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
+                    } )
+                    ->leftJoin( 'data_master', function ( $join ) {
                         $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
                     } )
                     ->orderBy( 'data_master.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
             case "sfc_cogs":
-                $query->join( 'listing_data', function ( $join ) {
-                    $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                } )
-                    ->join( 'data_master', function ( $join ) {
+                $query->leftJoin( 'listing_data', function ( $join ) {
+                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
+                    } )
+                    ->leftJoin( 'data_master', function ( $join ) {
                         $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
                     } )
                     ->orderBy( 'data_master.' . $field, $direction )
                     ->select( "listings.*" );
                 break;
             case "sale_date":
-                $query->join( 'sales', function ( $join ) {
+                $query->leftJoin( 'sales', function ( $join ) {
                     $join->on( 'sales.listing_id', '=', 'listings.id' )->orderBy('sale_date','ASC')->limit(1);
                 } )
                     ->orderBy( 'sales.' . $field, $direction )
@@ -339,7 +339,7 @@ class ListingsController extends Controller
             case 'avg_sold_price_in_date_range':
             case 'tix_sold_in_date_range':
             case 'tn_events':
-                $query->join( 'stats as statData', function ( $join ) {
+                $query->leftJoin( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )
                     ->orderBy( 'statData.' . $field, $direction )
