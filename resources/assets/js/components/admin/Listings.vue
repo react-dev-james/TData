@@ -102,7 +102,7 @@
                     </md-button>
 
                     <md-button class="md-icon-button" @click.native="openUploadDialog()">
-                        <md-icon>upload</md-icon>
+                        <md-icon>cloud_upload</md-icon>
                         <md-tooltip md-direction="top">Upload master data</md-tooltip>
                     </md-button>
 
@@ -381,10 +381,14 @@
     </md-dialog-confirm>
 
     <ui-modal ref="uploadDataModal" title="Upload master data" size="medium">
-        <p>Please select a file and click on upload.  This will upload the master data.</p>
-        <form>
-            <input type="file" ref="dataMaster" name="data-master">
-            <button type="button">Upload</button>
+        <p>Please select a file and the upload will start automatically</p>
+        <form style="display: flex;">
+            <ui-progress-circular
+                    style="margin-right: 10px;"
+                    color="primary"
+                    :size="18"
+                    v-show="state.dataUploadInProgress"></ui-progress-circular>
+            <input type="file" ref="dataMaster" name="data-master" @change="uploadData()" v-if="state.dataUploadReady">
         </form>
         <div slot="footer">
             <ui-button @click="$refs.uploadDataModal.close();">Cancel</ui-button>
@@ -489,7 +493,9 @@
                 selectedListings : null,
                 activeFilter: null,
                 reportItems: [],
-				addManualLookup: false
+				addManualLookup: false,
+                dataUploadInProgress: false,
+                dataUploadReady: true,
             },
             manualLookupName: '',
             _: window._,
@@ -756,6 +762,13 @@
 
             },
             openUploadDialog() {
+        	    // make sure loading icon is not displayed
+                this.state.dataUploadInProgress = false;
+
+                // clear files
+                this.clearDataUpload();
+
+                // open the dialog box
         	    this.$refs.uploadDataModal.open();
             },
             uploadData() {
@@ -767,15 +780,34 @@
                 // set header
                 const headers = {'Content-Type': 'multipart/form-data'};
 
+                // set loading spinner
+                this.state.dataUploadInProgress = true;
+
                 // send file
-                this.$http.post('/data-master/upload', formData, {headers: headers})
+                this.$http.post('/apiv1/data-master/upload', formData, {headers: headers})
                     .then((response) => {
-                        this.$root.showNotification(response.body.message);
-                        this.shared.listing = response.body.results;
+                        // send notification
+                        this.$root.showNotification('Data upload was successful. ' + response.body.message);
+
+                        // hide progress spinner and close dialog
+                        this.state.dataUploadInProgress = false;
+                        this.$refs.uploadDataModal.close();
                     }, (response) => {
-                        console.log("Error uploading data.");
                         console.log(response);
+
+                        // send error notification
+                        this.$root.showNotification('Error uploading data: ' + response.statusText);
+
+                        // hide progress spinner and close dialog
+                        this.state.dataUploadInProgress = false;
+                        this.$refs.uploadDataModal.close();
                     });
+            },
+            clearDataUpload() {
+                this.state.dataUploadReady = false;
+                this.$nextTick(() => {
+                    this.state.dataUploadReady = true;
+                })
             },
             clearFilters() {
               this.options.search = '';

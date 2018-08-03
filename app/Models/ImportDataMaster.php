@@ -1,23 +1,23 @@
 <?php
 Namespace App\Models;
 
-use Illuminate\Support\Facades\Request;
 use App\DataMaster;
+use Illuminate\Support\Facades\Log;
 
 class ImportDataMaster
 {
     public static function import()
     {
         // open file
-        $handle = fopen(storage_path('app/master-table.csv'), 'r');
+        $handle = fopen(storage_path('app/data-master.csv'), 'r');
 
         // set line counter
-        $line_number = 1;
+        $line_number = 0;
 
         // process it line by line
         while( ($line = fgetcsv($handle, 2000, ",")) !== false )
         {
-            echo $line_number . "\n";
+            //Log::info($line_number);
 
             // assign line data to array
             list(
@@ -49,7 +49,7 @@ class ImportDataMaster
             $category = $ticketItem['category'];
 
             // if there is no category or if it is the header line, then move to next line
-            if ( empty($category) || ($line_number ===1 && stripos($category, 'category') !== false) ) {
+            if ( empty($category) || ($line_number === 0 && stripos($category, 'category') !== false) ) {
                 continue;
             }
 
@@ -72,12 +72,14 @@ class ImportDataMaster
             // insert if new item or else update
             $record = DataMaster::updateOrCreate(['category_slug' => $ticketItem['category_slug']], $ticketItem);
 
+            /*
             // response of if it was created or updated
             if ($record->wasRecentlyCreated) {
                 echo ".";
             } else {
                 echo "|";
             }
+            */
 
             // increment line number
             $line_number++;
@@ -85,6 +87,9 @@ class ImportDataMaster
 
         // close file
         fclose($handle);
+
+        // log result
+        Log::info('------ Import Data Master success with records: ' . $line_number);
 
         return $line_number;
     }

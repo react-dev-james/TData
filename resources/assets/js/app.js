@@ -7,7 +7,7 @@ require('./bootstrap');
 //Vue.use(KeenUI);
 import vueSlider from 'vue-slider-component';
 
-var VueMaterial = require('vue-material')
+var VueMaterial = require('vue-material');
 Vue.use(VueMaterial);
 
 import KeenUI from 'keen-ui';

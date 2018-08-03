@@ -38,6 +38,6 @@ class ImportTicketDataMaster extends Command
      */
     public function handle()
     {
-        ImportTicketDataMaster::import();
+        ImportDataMaster::import();
     }
 }
