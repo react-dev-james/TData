@@ -101,6 +101,11 @@
                         <md-tooltip md-direction="top">Refresh Table</md-tooltip>
                     </md-button>
 
+                    <md-button class="md-icon-button" @click.native="openUploadDialog()">
+                        <md-icon>upload</md-icon>
+                        <md-tooltip md-direction="top">Upload master data</md-tooltip>
+                    </md-button>
+
                     <md-button v-if="isFiltered || state.searchSelected" class="md-icon-button" @click.native="clearFilters">
                         <md-icon>clear</md-icon>
                         <md-tooltip md-direction="top">Clear Search</md-tooltip>
@@ -374,6 +379,17 @@
             @close="deleteListing"
             ref="delete-listing">
     </md-dialog-confirm>
+
+    <ui-modal ref="uploadDataModal" title="Upload master data" size="medium">
+        <p>Please select a file and click on upload.  This will upload the master data.</p>
+        <form>
+            <input type="file" ref="dataMaster" name="data-master">
+            <button type="button">Upload</button>
+        </form>
+        <div slot="footer">
+            <ui-button @click="$refs.uploadDataModal.close();">Cancel</ui-button>
+        </div>
+    </ui-modal>
 
     <ui-modal ref="associateModal" title="Associate This Listing With Secondary Data" size="large">
         <ui-button size="small pull-right margin-top-10 margin-bottom-10" @click="state.addManualLookup = !state.addManualLookup">Add Manual Lookup</ui-button>
@@ -708,8 +724,9 @@
 					this.$root.showNotification(response.body.message);
 					this.$forceUpdate();
 					//this.refreshTable();
-                    this.sendZapierWebHook(listing);
 
+                    // only send webhook for targeted
+                    if( status === 'targeted' ) { this.sendZapierWebHook(listing); }
 
 				}, (response) => {
 					console.log("Error updating listing status. Try again.");
@@ -719,8 +736,8 @@
             sendZapierWebHook(listing) {
                 this.$http.post(`/apiv1/listings/sendZapierWebHook/${listing.id}`).then((response) => {
 
-                    console.log(response);
                     this.$root.showNotification(response.body.message);
+
                 }, (response) => {
                     console.log("Error sending Zapier webhook.");
                     console.log(response);
@@ -737,6 +754,28 @@
 					console.log(response);
 				});
 
+            },
+            openUploadDialog() {
+        	    this.$refs.uploadDataModal.open();
+            },
+            uploadData() {
+        	    // get file
+                const file = this.$refs.dataMaster.files[0];
+                const formData = new FormData();
+                formData.append('data-master', file);
+
+                // set header
+                const headers = {'Content-Type': 'multipart/form-data'};
+
+                // send file
+                this.$http.post('/data-master/upload', formData, {headers: headers})
+                    .then((response) => {
+                        this.$root.showNotification(response.body.message);
+                        this.shared.listing = response.body.results;
+                    }, (response) => {
+                        console.log("Error uploading data.");
+                        console.log(response);
+                    });
             },
             clearFilters() {
               this.options.search = '';

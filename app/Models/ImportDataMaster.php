@@ -4,12 +4,12 @@ Namespace App\Models;
 use Illuminate\Support\Facades\Request;
 use App\DataMaster;
 
-class ImportTicketData
+class ImportDataMaster
 {
     public static function import()
     {
         // open file
-        $handle = fopen(storage_path('app/Master_Table.csv'), 'r');
+        $handle = fopen(storage_path('app/master-table.csv'), 'r');
 
         // set line counter
         $line_number = 1;
@@ -85,5 +85,7 @@ class ImportTicketData
 
         // close file
         fclose($handle);
+
+        return $line_number;
     }
 }

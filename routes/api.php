@@ -49,3 +49,6 @@ Route::get( "/jobs", 'Api\JobsController@index' );
 Route::post( "/jobs/queue", 'Api\JobsController@queueJob' );
 Route::post( "/jobs/requeue", 'Api\JobsController@requeueJob' );
 Route::post( "/jobs/addToQueue", 'Api\JobsController@addToQueue' );
+
+/* Master Data Upload */
+Route::post('/data-master/upload', 'Api\DataUploadController@upload');

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\ImportTicketData;
+use App\Models\ImportDataMaster;
 
 class ImportTicketDataMaster extends Command
 {
@@ -38,6 +38,6 @@ class ImportTicketDataMaster extends Command
      */
     public function handle()
     {
-        ImportTicketData::import();
+        ImportTicketDataMaster::import();
     }
 }
