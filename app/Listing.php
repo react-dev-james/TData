@@ -223,7 +223,7 @@ class Listing extends Model
 
         // set roi high
         if ( intval( $listing->high_ticket_price ) > 0) {
-            $high_value = ($listing->high_ticket_price * 1.15) + 6;
+            $high_value = ($listing->high_ticket_price * 1.2) + 6;
             $roi = (($weighted_sold * .94) - $high_value) / $high_value;
             $high_roi = ceil($roi * 100);
 
@@ -246,7 +246,7 @@ class Listing extends Model
 
         // set roi low
         if ( intval( $listing->low_ticket_price ) > 0 ) {
-            $low_value = ($listing->low_ticket_price * 1.15) + 6;
+            $low_value = ($listing->low_ticket_price * 1.2) + 6;
             $roi = (($weighted_sold * .94) - $low_value) / $low_value;
             $low_roi = ceil($roi);
 
