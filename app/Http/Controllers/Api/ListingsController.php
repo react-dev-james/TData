@@ -135,6 +135,8 @@ class ListingsController extends Controller
             $query->where( 'status', '!=', 'excluded' );
         }
 
+        /* for testing */
+        $size = 100;
         return $query->paginate( $size );
     }
 
