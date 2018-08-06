@@ -48,18 +48,17 @@ class ImportAll extends Command
             $scraper = new \App\Services\TicketService();
             $listingData = $scraper->fetchBoxOfficeListings( 500, 10 );
             //print_r($listingData);
-
-            /* match events */
-            $match_event_data = new \App\Models\MatchEventData();
-            $match_event_data->match();
-
-            /* remove old listings */
-            \App\Models\RemoveOldListings::remove();
         } catch (\Exception $e) {
             $this->error($e->getMessage());
             echo $e->getTraceAsString();
         }
 
+        /* match events */
+        $match_event_data = new \App\Models\MatchEventData();
+        $match_event_data->match();
+
+        /* remove old listings */
+        \App\Models\RemoveOldListings::remove();
 
         $log = $scraper->getLog();
         foreach ($log as $entry) {
