@@ -18,6 +18,4 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
-<IfModule mod_php7.c>
-php_value max_execution_time 600
-</IfModule>
+

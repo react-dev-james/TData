@@ -31,11 +31,10 @@ class ListingsController extends Controller
     {
 
         if ($request->get('currentFilter','true') == 'true') {
-            $query = Listing::with( "sales", "updates", "stats" );
+            $query = Listing::with( "sales", "stats" );
         } else {
-            $query = Listing::onlyTrashed()->with( "sales", "updates", "stats" );
+            $query = Listing::onlyTrashed()->with( "sales", "stats" );
         }
-
 
         /* Handle custom sorting on relations */
         if ( $request->has( "sort" ) && !$request->has( 'multiSort' ) ) {
@@ -135,8 +134,6 @@ class ListingsController extends Controller
             $query->where( 'status', '!=', 'excluded' );
         }
 
-        /* for testing */
-        $size = 100;
         return $query->paginate( $size );
     }
 
