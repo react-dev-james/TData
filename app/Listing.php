@@ -227,7 +227,7 @@ class Listing extends Model
             $roi = (($weighted_sold * .94) - $high_value) / $high_value;
             $high_roi = ceil($roi * 100);
 
-            $net_roi = $high_roi > 0 ? ceil(($weighted_sold * .94) - $high_value) * 40) : 0;
+            $net_roi = $high_roi > 0 ? ceil((($weighted_sold * .94) - $high_value) * 40) : 0;
 
             /* disable logging for now
             if( $high_roi === 0 ) {
