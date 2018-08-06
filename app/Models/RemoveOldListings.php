@@ -15,6 +15,8 @@ class RemoveOldListings
 {
     public static function remove()
     {
+        Log::info('//-- Start remove old listings --//');
+
         $startDate = \Carbon\Carbon::now();
         $startDate->startOfWeek();
 
@@ -57,5 +59,6 @@ class RemoveOldListings
         }
 
         Log::info( "Moved  " . $numCurrent. " listings into current week." );
+        Log::info('//-- End remove old listings --//');
     }
 }
