@@ -153,6 +153,8 @@ class Listing extends Model
             return $this->first_onsale_date->format( 'D, M j, g:i A' );
         }
 
+        Log::info('--- no nice sale date ---');
+        Log::info($this->first_onsale_date);
         return "N/A";
     }
 

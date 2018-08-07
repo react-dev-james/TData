@@ -54,7 +54,10 @@ class ListingsController extends Controller
         }
 
         if ( $request->has( "pager" ) ) {
-            $page = $request->pager['page'];
+            // for some reason, this was not getting set in some cases
+            if( isset($request->pager['page'])) {
+                $page = $request->pager['page'];
+            }
             $size = $request->pager['size'];
         } else {
             $page = 1;
