@@ -38,7 +38,6 @@ class UpdateStats extends Command
      */
     public function handle()
     {
-        $this->info('handle');
         //$listings = \App\Listing::where("id", '=', 84)->get();
         $listings = \App\Listing::get();
 

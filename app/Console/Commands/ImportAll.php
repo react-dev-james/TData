@@ -49,21 +49,41 @@ class ImportAll extends Command
             $listingData = $scraper->fetchBoxOfficeListings( 500, 10 );
             //print_r($listingData);
         } catch (\Exception $e) {
-            $this->error($e->getMessage());
-            echo $e->getTraceAsString();
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
         }
 
         /* match events */
-        $match_event_data = new \App\Models\MatchEventData();
-        $match_event_data->match();
+        try {
+            $match_event_data = new \App\Models\MatchEventData();
+            $match_event_data->match();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
 
         /* remove old listings */
-        \App\Models\RemoveOldListings::remove();
+        try{
+            \App\Models\RemoveOldListings::remove();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
 
+        /* update stats */
+        try {
+            \App\Models\UpdateStats::update();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
+
+        /* this is not implemented yet
         $log = $scraper->getLog();
         foreach ($log as $entry) {
             $this->info($entry);
         }
+        */
 
         Log::info('-------- Import-All ended --------');
     }
