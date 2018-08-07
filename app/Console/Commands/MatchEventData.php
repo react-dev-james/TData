@@ -38,8 +38,13 @@ class MatchEventData extends Command
      */
     public function handle()
     {
-        $match_event_data = new \App\Models\MatchEventData();
-        $match_event_data->match();
+        try {
+            $match_event_data = new \App\Models\MatchEventData();
+            $match_event_data->match();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
     }
 
 }

@@ -149,7 +149,7 @@ class Listing extends Model
 
     public function getNiceSaleDateAttribute()
     {
-        if ( $this->first_onsale_date ) {
+        if ( $this->first_onsale_date !== null ) {
             return $this->first_onsale_date->format( 'D, M j, g:i A' );
         }
 
