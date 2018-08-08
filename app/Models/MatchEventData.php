@@ -61,7 +61,15 @@ class MatchEventData
         'TIFF Bell Lightbox',
         'Fast Lane',
         'Tribute',
-        'Mini Club Access'
+        'Mini Club Access',
+        'Preferred Viewing Area',
+        'Meet & Greet',
+        'Meet and Greet',
+        'Lawn Chair',
+        'Meal Voucher',
+        'Party Deck',
+        'Premium Box',
+        'Box Seats'
 
     ];
 
