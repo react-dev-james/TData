@@ -250,7 +250,7 @@ class Listing extends Model
         if ( intval( $listing->low_ticket_price ) > 0 ) {
             $low_value = ($listing->low_ticket_price * 1.2) + 6;
             $roi = (($weighted_sold * .94) - $low_value) / $low_value;
-            $low_roi = ceil($roi);
+            $low_roi = ceil($roi * 100);
 
             /* disable logging for now
             if( $low_roi === 0 ) {
