@@ -29,3 +29,11 @@ Route::get( '/admin/jobs', 'Admin\JobsController@index' )->middleware( [ 'auth',
 /* Deployment */
 Route::post('/bfC34RNEDYiC8Yc3C1c9LoB1Q9tHEEJE', 'DeploymentController@index');
 Route::get('/QVgyeQbqcLs0STkMUFcZTXshAM9IuWla', 'DeploymentController@index');
+
+/* testing */
+Route::get('/job/clean', function() {
+    $test = new \App\Models\RemoveOldListings();
+    $test->remove();
+
+   // \App\Models\RemoveOldListings::remove();
+});

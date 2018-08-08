@@ -219,7 +219,7 @@
                         <md-table-head v-if="columnActive('sfc_roi')" md-sort-by="sfc_roi" >SFC ROI</md-table-head>
                         <md-table-head v-if="columnActive('sfc_roi_dollar')" md-sort-by="sfc_roi_dollar" >SFC ROI $</md-table-head>
                         <md-table-head v-if="columnActive('sfc_cogs')" md-sort-by="sfc_cogs">SFC COGS</md-table-head>
-                        <md-table-head v-if="columnActive('total_sold')" md-sort-by="total_sold">Total Sales</md-table-head>
+                        <md-table-head v-if="columnActive('total_sold')" md-sort-by="total_sold">Total Sold All</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('tn_tix_sold')" md-sort-by="tn_tix_sold" >TN Total</md-table-head>
                         <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
@@ -526,7 +526,7 @@
                 {id : 20, name: 'tn_tix_sold', title: 'TN Total'},
                 {id : 21, name: 'tn_avg_sale', title: 'TN Sold'},
                 {id : 22, name: 'weighted_sold', title: 'Weighted Sold'},
-                {id : 23, name: 'total_sold_all', title: 'Total Sales'},
+                {id : 23, name: 'total_sold', title: 'Total Sold All'},
             ],
             options: {
                 pager: {

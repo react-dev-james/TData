@@ -354,6 +354,9 @@ class ListingsController extends Controller
 
         $query->orderBy("weighted_sold", "desc");
 
+        // add event name as sort
+        $query->orderBy('event_name');
+
         return $query;
     }
 

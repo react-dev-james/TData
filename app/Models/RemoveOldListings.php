@@ -23,10 +23,15 @@ class RemoveOldListings
         /* Remove all listings from the previous weeek */
         $listings = \App\Listing::whereDate('created_at','<',$startDate);
         Log::info("Found " .$listings->count() . " to soft delete.");
-        \App\Listing::whereDate( 'created_at', '<', $startDate )->delete();
+        $listings->delete();
+
+        /* Update first on sale date for all listings */
+        //$result = DB::update('UPDATE listings join sales on listings.id = sales.listing_id set listings.first_onsale_date = sales.sale_date');
+
 
         /* Update first on sale date for all listings */
         $listings = \App\Listing::withTrashed()->with('sales')->get();
+
         $numUpdated = 0;
         Log::info("Updating on sale dates for " . $listings->count() . " listings.");
         foreach ($listings as $listing) {
