@@ -90,12 +90,8 @@ class Listing extends Model
             return 0;
         }
 
-        Log::info('event day: ' . $this->event_day);
-        Log::info('day of the week and day: ' . $this->daysOfWeek[$this->event_day]);
         if ( isset( $this->daysOfWeek[$this->event_day] ) ) {
             $dayAdjustment = $this->daysOfWeek[$this->event_day];
-
-            Log::info('day adjustment: ' . $this->daysOfWeek[$this->event_day]);
             return round( $data->weighted_avg * $dayAdjustment );
         }
 
@@ -153,8 +149,8 @@ class Listing extends Model
             return $this->first_onsale_date->format( 'D, M j, g:i A' );
         }
 
-        Log::info('--- no nice sale date ---');
-        Log::info($this->first_onsale_date);
+        //Log::info('--- no nice sale date ---');
+        //Log::info($this->first_onsale_date);
         return "N/A";
     }
 
@@ -199,7 +195,6 @@ class Listing extends Model
 
         if (!$data) {
             Log::info('$$$$$ data not found $$$$$$$');
-            Log::info(print_r($data));
         }
 
         // set to 0 if data is not there
@@ -265,7 +260,7 @@ class Listing extends Model
         }
 
         // save data
-        Log::info('--** saving roi high at: ' . $high_roi);
+        //Log::info('--** saving roi high at: ' . $high_roi);
         \App\Stat::updateOrCreate( [ 'listing_id' => $listing->id ], [
             'roi_sh'     => $high_roi,
             'roi_low'    => $low_roi,
