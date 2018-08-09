@@ -519,11 +519,19 @@ class ListingsController extends Controller
     public function sendZapierWebHook($listing_id)
     {
         // set Zapier end point
-        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
-        //$zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
+        //$zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
+        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
 
         // get listing with data
         $listing = Listing::where('id', '=', $listing_id)->with('stats')->firstOrFail()->toArray();
+
+        // flatten data or else Zapier wont' get it
+        if( count($listing['data']) > 0 ) {
+            $listing['data'] = $listing['data'][0];
+        }
+
+        Log::info('----- data sent to Zapier web hook ----');
+        Log::info(print_r($listing, true));
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
