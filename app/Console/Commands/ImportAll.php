@@ -53,18 +53,18 @@ class ImportAll extends Command
             Log::error($e->getTraceAsString());
         }
 
-        /* match events */
-        try {
-            $match_event_data = new \App\Models\MatchEventData();
-            $match_event_data->match();
+        /* remove old listings */
+        try{
+            \App\Models\RemoveOldListings::remove();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
         }
 
-        /* remove old listings */
-        try{
-            \App\Models\RemoveOldListings::remove();
+        /* match events */
+        try {
+            $match_event_data = new \App\Models\MatchEventData();
+            $match_event_data->match();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
