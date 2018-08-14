@@ -69,7 +69,9 @@ class MatchEventData
         'Meal Voucher',
         'Party Deck',
         'Premium Box',
-        'Box Seats'
+        'Box Seats',
+        'Live Nation Blanket',
+        'NOT A CONCERT TICKET'
 
     ];
 
