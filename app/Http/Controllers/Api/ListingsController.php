@@ -530,8 +530,8 @@ class ListingsController extends Controller
             $listing['data'] = $listing['data'][0];
         }
 
-        Log::info('----- data sent to Zapier web hook ----');
-        Log::info(print_r($listing, true));
+        //Log::info('----- data sent to Zapier web hook ----');
+        //Log::info(print_r($listing, true));
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
