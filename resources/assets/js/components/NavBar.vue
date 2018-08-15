@@ -32,7 +32,7 @@ Properties: current-page [Declares which page should be active in navigation.]
                             <md-menu-item v-if="shared.user.is_admin" href="/admin/users">
                                 Manage Users
                             </md-menu-item>
-                            <md-menu-item v-if="shared.user.is_admin" href="/admin/jobs">
+                            <md-menu-item v-if="shared.user.is_admin" href="/admin/logs">
                                 View Logs
                             </md-menu-item>
                             <md-menu-item v-if="shared.user.is_admin" @click.native.prevent="$root.showNotification('Placeholder')" href="">

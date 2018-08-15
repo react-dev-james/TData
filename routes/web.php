@@ -25,6 +25,7 @@ Route::get( '/admin/listings', 'Admin\ListingsController@index' )->middleware( [
 Route::get( '/admin/users', 'Admin\UsersController@index' )->middleware( [ 'auth', 'admin' ] );
 Route::get( "/admin/users/loginAs/{user}", 'Api\UsersController@loginAsUser' )->middleware( [ 'auth', 'admin' ] );
 Route::get( '/admin/jobs', 'Admin\JobsController@index' )->middleware( [ 'auth', 'admin' ] );
+Route::get('/admin/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 /* Deployment */
 Route::post('/bfC34RNEDYiC8Yc3C1c9LoB1Q9tHEEJE', 'DeploymentController@index');
