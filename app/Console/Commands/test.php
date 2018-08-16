@@ -48,6 +48,7 @@ class test extends Command
 //
 //
 //        $this->logAlert('--after all code run---');
+        return;
 
     }
 }
