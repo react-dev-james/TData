@@ -6,6 +6,7 @@ use App\Console\Commands\ImportTicketDataMaster;
 use App\Console\Commands\ImportTicketNetwork;
 use App\Console\Commands\MatchEventData;
 use App\Console\Commands\FetchBoxOfficeData;
+use App\Console\Commands\test;
 use App\Console\Commands\UpdateStats;
 use App\Console\Commands\RemoveOldListings;
 use App\Console\Commands\ImportAll;
@@ -26,7 +27,8 @@ class Kernel extends ConsoleKernel
         FetchBoxOfficeData::class,
         UpdateStats::class,
         RemoveOldListings::class,
-        ImportAll::class
+        ImportAll::class,
+        test::class,
     ];
 
     /**
@@ -43,7 +45,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command('tickets:importtn')->dailyAt('07:40');
         //$schedule->command('tickets:stats')->dailyAt('07:58');
         //$schedule->command('tickets:stats')->dailyAt('08:20');
-        $schedule->command('tickets:import-all')->dailyAt('07:00');
+        $schedule->command('tickets:import-all')->dailyAt('07:00')->sendOutputTo(storage_path('logs/jobs'));
 
         //$schedule->command( 'tickets:boxoffice' )->dailyAt( '11:00' );
         //$schedule->command( 'tickets:match' )->dailyAt( '11:20' );
@@ -51,7 +53,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command( 'tickets:importtn' )->dailyAt( '11:40' );
         //$schedule->command( 'tickets:stats' )->dailyAt( '11:58' );
         //$schedule->command( 'tickets:stats' )->dailyAt( '12:20' );
-        $schedule->command('tickets:import-all')->dailyAt('11:00');
+        $schedule->command('tickets:import-all')->dailyAt('11:00')->sendOutputTo(storage_path('logs/jobs'));
 
         //$schedule->command( 'tickets:boxoffice' )->dailyAt( '16:00' );
         //$schedule->command( 'tickets:match' )->dailyAt( '16:20' );
@@ -59,7 +61,7 @@ class Kernel extends ConsoleKernel
         //$schedule->command( 'tickets:importtn' )->dailyAt( '16:40' );
         //$schedule->command( 'tickets:stats' )->dailyAt( '16:58' );
         //$schedule->command( 'tickets:stats' )->dailyAt( '17:20' );
-        $schedule->command('tickets:import-all')->dailyAt('16:00');
+        $schedule->command('tickets:import-all')->dailyAt('16:00')->sendOutputTo(storage_path('logs/jobs'));
     }
 
     /**
