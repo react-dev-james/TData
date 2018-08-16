@@ -28,7 +28,6 @@ class DeploymentController extends Controller
             //'git submodule sync',
             //'git submodule update',
             //'git submodule status',
-            //'test -e /usr/share/update-notifier/notify-reboot-required && echo "system restart required"',
         );
 
         $output = '';
