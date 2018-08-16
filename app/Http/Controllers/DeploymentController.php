@@ -28,6 +28,7 @@ class DeploymentController extends Controller
             //'git submodule sync',
             //'git submodule update',
             //'git submodule status',
+
         );
 
         $output = '';
