@@ -8,14 +8,13 @@
 
 namespace App\Models;
 
-use Mockery\Exception;
-
 class TestLogging
 {
 
-    public function test($logable)
+    public function test()
     {
         echo 'in test function';
-        $logable->logInfo('in test function');
+        trigger_error("Custom Error 1", E_USER_WARNING);
+        trigger_error("Custom Error 2", E_USER_WARNING);
     }
 }

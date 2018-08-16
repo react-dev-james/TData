@@ -3,12 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminated\Console\Loggable;
 use App\Models\TestLogging;
 
 class test extends Command
 {
-    use Loggable;
 
     /**
      * The name and signature of the console command.
@@ -41,13 +39,15 @@ class test extends Command
      */
     public function handle()
     {
-        $this->info('test handle fired');
-        $this->logAlert('alert from test command');
-
-        $test_logging = new TestLogging();
-        $test_logging->test($this);
-
-        $this->logAlert('--after all code run---');
+//        $this->info('test handle fired');
+//        $this->logAlert('alert from test command');
+//
+//        $test_logging = new TestLogging();
+//            $test_logging->test();
+//
+//
+//
+//        $this->logAlert('--after all code run---');
 
     }
 }
