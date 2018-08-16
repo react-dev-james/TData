@@ -24,7 +24,7 @@ class DeploymentController extends Controller
             'git fetch --all',
             'git reset --hard origin/master',
             'git status',
-            '../composer update',
+            'cd ..; composer update',
             //'git submodule sync',
             //'git submodule update',
             //'git submodule status',
