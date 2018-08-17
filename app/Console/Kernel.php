@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         UpdateStats::class,
         RemoveOldListings::class,
         ImportAll::class,
+        test::class,
     ];
 
     /**

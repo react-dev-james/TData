@@ -194,7 +194,7 @@ class Listing extends Model
         $listing->updateWeightedSold($data);
 
         if (!$data) {
-            Log::info('$$$$$ data not found $$$$$$$');
+            Log::info('$$$$$ data not found in calcRoi $$$$$$$');
         }
 
         // set to 0 if data is not there

@@ -51,6 +51,8 @@ class ImportAll extends Command
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
+            $this->error($e->getMessage());
         }
 
         /* remove old listings */
@@ -59,6 +61,8 @@ class ImportAll extends Command
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
+            $this->error($e->getMessage());
         }
 
         /* match events */
@@ -68,6 +72,8 @@ class ImportAll extends Command
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
+            $this->error($e->getMessage());
         }
 
         /* update stats */
@@ -76,6 +82,8 @@ class ImportAll extends Command
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
+            $this->error($e->getMessage());
         }
 
         /* this is not implemented yet

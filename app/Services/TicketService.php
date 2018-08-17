@@ -136,21 +136,23 @@ class TicketService extends ScraperService implements IScraper
         $offset = $limit;
         $savedListings = collect();
 
-        Log::info("Using start date of " . $startDate->toDateTimeString() . " to " . $endDate->toDateTimeString());
-
         for ($i = 0; $i <= $maxPages; $i++) {
             $start = $offset * $i;
-            echo "Fetching page " . $i . " from box office with start of " . $start ;
+            echo "Fetching page " . $i . " from box office with start of " . $start . "\n";
+            Log::info("Fetching page " . $i . " from box office with start of " . $start);
+
             $params = $this->boxOfficeSearchParams( $startDate, $endDate, $start, $limit );
             $results = $this->post( self::BOX_SEARCH_URL, $params );
             $results = @json_decode( $results, true );
 
             if ( $i == 0 && isset( $results['iTotalDisplayRecords']) ) {
-                echo "Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing." ;
+                echo "Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing.\n";
+                Log::info("Found " . $results['iTotalDisplayRecords'] . " from box office fox, starting parsing.");
             }
 
             if ( !isset( $results['iTotalDisplayRecords'] ) || $results['iTotalDisplayRecords'] <= 0 || $results['iTotalDisplayRecords'] <= ( $start + $offset ) ) {
-                Log::info( "No more records found from box office fox." );
+                echo "No more records found from box office fox.\n";
+                Log::info("No more records found from box office fox.");
                 return false;
             }
 

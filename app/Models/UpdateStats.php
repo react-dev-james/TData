@@ -21,21 +21,15 @@ class UpdateStats
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
-            try {
-                $data = $listing->data->first();
+            $data = $listing->data->first();
 
-                if ( !$data ) {
-                    Log::error('/** Data object not found in UpdateStats.php */');
-                    continue;
-                }
-
-                $listing->calcRoi($data);
-                //$listing->updateSoldPerEvent();
-                //$listing->updateWeightedSold();
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-                Log::error($e->getTraceAsString());
+            if ( !$data ) {
+                echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";
+                Log::info('/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . ' **/');
+                continue;
             }
+
+            $listing->calcRoi($data);
         }
     }
 }

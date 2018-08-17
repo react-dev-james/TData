@@ -80,6 +80,7 @@ class MatchEventData
         $data = \App\DataMaster::all();
         $listings = \App\Listing::all();
 
+        echo "------- start match: check lookup table --------\n";
         Log::info('------- start match: check lookup table --------');
 
         /* Check lookups table first */
@@ -95,8 +96,6 @@ class MatchEventData
             if ( $lookup ) {
                 $dataLookup = \App\DataMaster::where("category", $lookup->match_name)->first();
                 if ($dataLookup) {
-
-                    Log::info("Manual lookup match found for" . $listing->event_name);
                     $listing->performer = $dataLookup->category;
                     $listing->save();
 
@@ -123,8 +122,10 @@ class MatchEventData
 
         }
 
+        echo "------- end match: check lookup table --------\n";
         Log::info('------- end match: check lookup table --------');
 
+        echo "------- start match: based on event data names --------\n";
         Log::info('------- start match: based on event data names --------');
 
         /* Check for matches based on event data names */
@@ -154,24 +155,26 @@ class MatchEventData
                 /* Calculate string similarity */
                 $distance = levenshtein(strtolower($item->category), strtolower($listing->event_name));
                 $similarity = similar_text( strtolower($item->category), strtolower($listing->event_name));
-                $confidence = max(0,($similarity / max(1, (strlen($listing->event_name) - strlen($item->category)))) * 100 - $distance);
+                $confidence = round(max(0,($similarity / max(1, (strlen($listing->event_name) - strlen($item->category)))) * 100 - $distance));
 
                 if ($confidence >= 5 || strtolower($item->category) == strtolower($listing->event_name)) {
                     $numMatches++;
                     //Log::info( "Matching data found for " . $listing->event_name . " matched with " . $item->category );
                     //Log::info( "Distance: " . $distance . " Similarity: " . $similarity );
                     //Log::info( "Confidence: " . $confidence );
-                    echo "Matching data found for " . $listing->event_name . " matched with " . $item->category;
-                    echo "Distance: " . $distance . " Similarity: " . $similarity;
-                    echo "Confidence: " . $confidence;
+                    //echo "Matching data found for " . $listing->event_name . " matched with " . $item->category ;
+                    //echo "Distance: " . $distance . " Similarity: " . $similarity;
+                    //echo "Confidence: " . $confidence;
 
                     $this->saveNewMatch($listing, $item, $confidence);
                 }
             }
         }
 
+        echo  "Found Matches: " . $numMatches . "\n";
         Log::info( "Found Matches: " . $numMatches );
 
+        echo "------- end match: based on event data names --------\n";
         Log::info('------- end match: based on event data names --------');
 
         $this->checkLookups();
@@ -185,7 +188,7 @@ class MatchEventData
                 'match_name' => $data->category,
                 'event_slug' => str_slug($listing->event_name),
                 'match_slug' => str_slug($data->category),
-                'confidence' => min(100, $confidence * 3)
+                'confidence' => round(min(100, $confidence * 3))
             ]);
 
         $listing->performer = $data->category;
@@ -200,8 +203,6 @@ class MatchEventData
     }
 
     public function checkLookups() {
-        Log::info('------- start match: checkLookups --------');
-
         /* Check lookups table for other matching listings */
         $lookups = \App\EventLookup::all();
         $numListings = 0;
@@ -232,14 +233,14 @@ class MatchEventData
 
                 /* Recalc ROI */
                 //$otherListing->fresh();
-                Log::info('-*-* checkloopup before calcRoi -*-*-');
-                Log::info('** data id is:' . $data->id);
+                //Log::info('-*-* checkloopup before calcRoi -*-*-');
+                //Log::info('** data id is:' . $data->id);
                 $otherListing->calcRoi($data);
             }
         }
 
+        echo "Found " . $numListings . " events that matched with lookups.\n";
         Log::info("Found " . $numListings . " events that matched with lookups.");
-        Log::info('------- end match: checkLookups --------');
 
     }
 }

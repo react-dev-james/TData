@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class MatchEventData extends Command
 {
@@ -44,6 +45,8 @@ class MatchEventData extends Command
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
+
+            echo $e->getMessage();
         }
     }
 

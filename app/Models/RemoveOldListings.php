@@ -15,6 +15,7 @@ class RemoveOldListings
 {
     public static function remove()
     {
+        echo "//-- Start remove old listings --//\n";
         Log::info('//-- Start remove old listings --//');
 
         $startDate = \Carbon\Carbon::now();
@@ -22,8 +23,10 @@ class RemoveOldListings
 
         /* Remove all listings from the previous weeek */
         $listings = \App\Listing::whereDate('created_at','<',$startDate);
-        Log::info("Found " .$listings->count() . " to soft delete.");
         $listings->delete();
+
+        echo "Found " .$listings->count() . " to soft delete.\n";
+        Log::info("Found " .$listings->count() . " to soft delete.");
 
         /* Update first on sale date for all listings */
         //$result = DB::update('UPDATE listings join sales on listings.id = sales.listing_id set listings.first_onsale_date = sales.sale_date');
@@ -32,8 +35,10 @@ class RemoveOldListings
         /* Update first on sale date for all listings */
         $listings = \App\Listing::withTrashed()->with('sales')->get();
 
-        $numUpdated = 0;
+        echo "Updating on sale dates for " . $listings->count() . " listings.\n";
         Log::info("Updating on sale dates for " . $listings->count() . " listings.");
+
+        $numUpdated = 0;
         foreach ($listings as $listing) {
             if ($listing->sales->count() > 0) {
                 $listing->first_onsale_date = $listing->sales->first()->sale_date;
@@ -41,6 +46,8 @@ class RemoveOldListings
                 $numUpdated++;
             }
         }
+
+        echo "Updated on sale dates for " . $numUpdated . " listings.\n";
         Log::info("Updated on sale dates for " . $numUpdated . " listings.");
 
         /* Move any listings with a current onsale/presale into current listings */
@@ -56,14 +63,14 @@ class RemoveOldListings
             }
 
             if ($sale->sale_date->gte($startDate) && $sale->sale_date->lte($endDate)) {
-                Log::info( "Listing " . $listing->id . " has a current onsale, moving it to current list." );
-                Log::info( "Sale date is " . $sale->sale_date->toDateTimeString());
                 $listing->restore();
                 $numCurrent++;
             }
         }
 
-        Log::info( "Moved  " . $numCurrent. " listings into current week." );
+        echo "Moved  " . $numCurrent. " listings into current week.\n";
+        echo "//-- End remove old listings --//\n";
+        Log::info("Moved  " . $numCurrent. " listings into current week.");
         Log::info('//-- End remove old listings --//');
     }
 }
