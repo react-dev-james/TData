@@ -16,7 +16,7 @@ class UpdateStats
 
     public static function update()
     {
-        $listings = \App\Listing::whereNotNull('data_master_id')->get();
+        $listings = \App\Listing::whereNotNull('data_master_id')->with('data')->get();
 
         foreach ($listings as $listing) {
 
