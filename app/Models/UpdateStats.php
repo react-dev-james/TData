@@ -21,7 +21,7 @@ class UpdateStats
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
-            $data = $listing->data->first();
+            $data = $listing->data;
 
             if ( !$data ) {
                 echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";

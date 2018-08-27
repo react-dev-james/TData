@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class RemaneListingDataColumn extends Migration
+class AddDataMasterForeignKeyToListings extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class RemaneListingDataColumn extends Migration
      */
     public function up()
     {
-        Schema::table('listing_data', function(Blueprint $table) {
-            $table->renameColumn('data_id', 'data_master_id');
+        Schema::table('listings', function (Blueprint $table) {
+            $table->foreign('data_master_id')->references('id')->on('data_master');
         });
     }
 
@@ -25,8 +25,10 @@ class RemaneListingDataColumn extends Migration
      */
     public function down()
     {
-        Schema::table('listing_data', function(Blueprint $table) {
-            $table->renameColumn('data_master_id', 'data_id');
+        Schema::table('listings', function (Blueprint $table) {
+            $table->dropForeign([
+                'data_master_id',
+            ]);
         });
     }
 }

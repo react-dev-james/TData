@@ -31,9 +31,9 @@ class ListingsController extends Controller
     {
 
         if ($request->get('currentFilter','true') == 'true') {
-            $query = Listing::with( "sales", "stats" );
+            $query = Listing::with( "sales", "stats", "data" );
         } else {
-            $query = Listing::onlyTrashed()->with( "sales", "stats" );
+            $query = Listing::onlyTrashed()->with( "sales", "stats", "data" );
         }
 
         /* Handle custom sorting on relations */
@@ -80,7 +80,7 @@ class ListingsController extends Controller
         if ( $request->has( "dateFilter" ) && !empty( $request->dateFilter ) ) {
             switch ($request->dateFilter) {
                 case "monday":
-                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 0' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings.first_onsale_date) = 1' );
                     /*
                     $query->join( 'sales as salesDate', function ( $join ) {
                         $join->on( 'salesDate.listing_id', '=', 'listings.id' )->where( 'salesDate.day', 'Monday' )->limit( 1 );
@@ -90,16 +90,16 @@ class ListingsController extends Controller
                     */
                     break;
                 case "tuesday":
-                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 1' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings.first_onsale_date) = 2' );
                     break;
                 case "wednesday":
-                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 2' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings.first_onsale_date) = 3' );
                     break;
                 case "thursday":
-                    $query->whereRaw( 'weekday(listings.first_onsale_date) = 3' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings.first_onsale_date) = 4' );
                     break;
                 case "weekend":
-                    $query->whereRaw( 'weekday(listings.first_onsale_date) >= 4' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings.first_onsale_date) >= 5' );
                     break;
                 case "new":
                     /* Select the most recent entry and use the date to look for other entries */
@@ -136,6 +136,9 @@ class ListingsController extends Controller
         } else {
             $query->where( 'status', '!=', 'excluded' );
         }
+
+        // testing
+        $query->whereNotNull('data_master_id');
 
         return $query->paginate( $size );
     }
@@ -201,10 +204,9 @@ class ListingsController extends Controller
             ] );
 
         $listing->performer = $data->category;
+        $listing->data_master_id = $data->id;
+        $listing->confidence = 100;
         $listing->save();
-
-        /* Create new entry in the listing_data pivot table */
-        $listing->data()->sync( [ $data->id => [ 'confidence' => 100 ]] );
 
         /* Recalc ROI */
         //$listing->fresh();
@@ -220,10 +222,9 @@ class ListingsController extends Controller
         foreach ($listings as $otherListing) {
             $numListings++;
             $otherListing->performer = $lookup->match_name;
+            $listing->data_master_id = $data->id;
+            $listing->confidence = 100;
             $otherListing->save();
-
-            /* Create new entry in the listing_data pivot table */
-            $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
 
             /* Recalc ROI */
             //$otherListing->fresh();
@@ -249,9 +250,9 @@ class ListingsController extends Controller
 
         /* Reverse sort order so default sorting is in descending order */
         if ( $direction == 'asc' ) {
-            $direction = "desc";
+            $direction = " DESC NULLS LAST";
         } else {
-            $direction = 'asc';
+            $direction = ' asc';
         }
 
         switch ($field) {
@@ -278,60 +279,35 @@ class ListingsController extends Controller
             case "updated_at":
             case "first_onsale_date":
             case "weighted_sold":
-            case "total_sold":
                 $query->orderBy( $field, $direction );
                 break;
+            case "tn_tix_sold":
+            case "total_sold":
             case "avg_sale_price":
             case "avg_sale_price_past":
-            case "total_sales":
-            // case "total_sales_past":
             case "total_listed":
             case "upcoming_events":
             case "tot_per_event":
-                $query->leftJoin( 'listing_data', function ( $join ) {
-                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                    } )
-                    ->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
-                    } )
-                    ->orderBy( 'data_master.' . $field, $direction )
-                    ->select( "listings.*" );
-                break;
             case "sfc_roi":
-                $query->leftJoin( 'listing_data', function ( $join ) {
-                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                    } )
-                    ->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
-                    } )
-                    ->orderBy( 'data_master.' . $field, $direction )
-                    ->select( "listings.*" );
-                break;
-            case "sfc_roi_dollar":
-                $query->leftJoin( 'listing_data', function ( $join ) {
-                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
-                    } )
-                    ->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
-                    } )
-                    ->orderBy( 'data_master.' . $field, $direction )
-                    ->select( "listings.*" );
-                break;
             case "sfc_cogs":
-                $query->leftJoin( 'listing_data', function ( $join ) {
-                        $join->on( 'listing_data.listing_id', '=', 'listings.id' );
+                $query->leftJoin( 'data_master', function ( $join ) {
+                        $join->on( 'data_master.id', '=', 'listing.data_master_id' );
                     } )
-                    ->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing_data.data_master_id' );
+                    ->orderByRaw( '"data_master"."' . $field . '"' . $direction )
+                    ->select( "listings.*" );
+                break;
+            case "total_sales":
+                $query->leftJoin( 'data_master', function ( $join ) {
+                        $join->on( 'data_master.id', '=', 'listing.data_master_id' );
                     } )
-                    ->orderBy( 'data_master.' . $field, $direction )
+                    ->orderByRaw( '"data_master"."total_sold" - "data_master"."tn_tix_sold"' . $direction )
                     ->select( "listings.*" );
                 break;
             case "sale_date":
                 $query->leftJoin( 'sales', function ( $join ) {
                     $join->on( 'sales.listing_id', '=', 'listings.id' )->orderBy('sale_date','ASC')->limit(1);
                 } )
-                    ->orderBy( 'sales.' . $field, $direction )
+                    ->orderByRaw( '"sales"."' . $field . '"' . $direction )
                     ->select( "listings.*" );
                 break;
             case 'roi_sh':
@@ -344,18 +320,18 @@ class ListingsController extends Controller
                 $query->leftJoin( 'stats as statData', function ( $join ) {
                     $join->on( 'statData.listing_id', '=', 'listings.id' );
                 } )
-                    ->orderBy( 'statData.' . $field, $direction )
+                    ->orderByRaw( '"statData"."' . $field . '"' . $direction )
                     ->select( "listings.*" );
                 break;
             default:
-                $query->orderBy( "created_at", "desc" );
+                $query->orderByRaw( "created_at DESC NULLS LAST" );
                 break;
         }
 
-        $query->orderBy("weighted_sold", "desc");
+        $query->orderByRaw("weighted_sold DESC NULLS LAST");
 
         // add event name as sort
-        $query->orderBy('event_name');
+        $query->orderByRaw('event_name');
 
         return $query;
     }
@@ -520,15 +496,14 @@ class ListingsController extends Controller
     {
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
-        //$zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
+
+        /* change it to local so we don't send it to the production webhook for testing */
+        if( env('APP_ENV') === 'local') {
+            $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
+        }
 
         // get listing with data
-        $listing = Listing::where('id', '=', $listing_id)->with('stats')->firstOrFail()->toArray();
-
-        // flatten data or else Zapier wont' get it
-        if( count($listing['data']) > 0 ) {
-            $listing['data'] = $listing['data'][0];
-        }
+        $listing = Listing::where('id', '=', $listing_id)->with('stats', 'data')->firstOrFail()->toArray();
 
         //Log::info('----- data sent to Zapier web hook ----');
         //Log::info(print_r($listing, true));

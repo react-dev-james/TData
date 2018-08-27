@@ -243,7 +243,7 @@
                                 <md-icon>attach_file</md-icon>
                             </button>
                             <button class="btn btn-small btn-success padding-5 targetListingButton"
-                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data.length > 0 ? listing.data[0].tot_per_event : 'NA'}`"
+                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data ? listing.data.tot_per_event : 'NA'}`"
                                     @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
@@ -280,14 +280,14 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sh_sold')">
                             <span class="">
-                                {{ listing.data.length > 0 ? Math.round(
-                                    (listing.data[0].total_vol - listing.data[0].tn_vol) /
-                                    (listing.data[0].total_sold - listing.data[0].tn_tix_sold)) :
+                                {{ listing.data ? Math.round(
+                                    (listing.data.total_vol - listing.data.tn_vol) /
+                                    (listing.data.total_sold - listing.data.tn_tix_sold)) :
                                         '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tn_avg_sale')">
-                            <span class="">{{ listing.data.length > 0 ? `${listing.data[0].tn_avg_sale}` : '-' }}</span>
+                            <span class="">{{ listing.data ? `${listing.data.tn_avg_sale}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_net')">
                             <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
@@ -298,37 +298,37 @@
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tot_per_event')">
-                            <span v-if="listing.data[0] && listing.data[0].tot_per_event <= 9" class="label label label-danger" >{{ listing.data[0]? `${listing.data[0].tot_per_event}` : '-' }}</span>
-                            <span v-if="listing.data[0] && listing.data[0].tot_per_event >= 20" class="label label label-success" >{{ listing.data[0] ? `${listing.data[0].tot_per_event}` : '-' }}</span>
-                            <span v-if="listing.data[0] && listing.data[0].tot_per_event > 9 && listing.data[0].tot_per_event < 20"class="label bg-grey-400" >{{ listing.data[0] ? `${listing.data[0].tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.data && listing.data.tot_per_event <= 9" class="label label label-danger" >{{ listing.data ? `${listing.data.tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.data  && listing.data.tot_per_event >= 20" class="label label label-success" >{{ listing.data  ? `${listing.data.tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.data  && listing.data.tot_per_event > 9 && listing.data.tot_per_event < 20"class="label bg-grey-400" >{{ listing.data ? `${listing.data.tot_per_event}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi')">
-                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi > .20" class="label label-success">
-                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.data && listing.data.sfc_roi > .20" class="label label-success">
+                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
                             </span>
-                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi >= 0 && listing.data[0].sfc_roi <= .20" class="label bg-grey-400">
-                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.data && listing.data.sfc_roi >= 0 && listing.data.sfc_roi <= .20" class="label bg-grey-400">
+                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
                             </span>
-                            <span v-if="listing.data.length > 0 && listing.data[0].sfc_roi < 0" class="label label-danger">
-                                {{ listing.data.length > 0 ? `${Math.ceil(listing.data[0].sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.data && listing.data.sfc_roi < 0" class="label label-danger">
+                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi_dollar')">
-                            <span class="">{{ listing.data.length > 0 ? `$${listing.data[0].sfc_roi_dollar}` : '-' }}</span>
+                            <span class="">{{ listing.data ? `$${listing.data.sfc_roi_dollar}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_cogs')">
-                            <span class="">{{ listing.data.length > 0 ? `$${listing.data[0].sfc_cogs}` : '-' }}</span>
+                            <span class="">{{ listing.data ? `$${listing.data.sfc_cogs}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sold')">
-                            <span class="">{{listing.data.length > 0 ? listing.data[0].total_sold : '-' }}</span>
+                            <span class="">{{listing.data ? listing.data.total_sold : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">
-                                {{listing.data.length > 0 ? listing.data[0].total_sold - listing.data[0].tn_tix_sold : '-' }}
+                                {{listing.data ? listing.data.total_sold - listing.data.tn_tix_sold : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tn_tix_sold')">
-                            <span class="">{{ listing.data.length > 0 ? `${listing.data[0].tn_tix_sold}` : '-' }}</span>
+                            <span class="">{{ listing.data ? `${listing.data.tn_tix_sold}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('high_ticket_price')" class="col-border-left">
                             <span class="">${{ listing.high_ticket_price }}</span>
@@ -407,7 +407,7 @@
             <md-button class="pull-right md-primary md-raised" @click="saveManualLookup(shared.listing)">Save</md-button>
         </div>
         <div class="clearfix"></div>
-        <span v-if="shared.listing.data.length > 0">This listing is already associated with <span class="text-underline">{{ shared.listing.data[0].category }} </span> <span class="label label-info pull-right font-size-12">{{ shared.listing.data[0].pivot.confidence }}% Confidence</span></span>
+        <span v-if="shared.listing.data">This listing is already associated with <span class="text-underline">{{ shared.listing.data.category }} </span> <span class="label label-info pull-right font-size-12">{{ shared.listing.confidence }}% Confidence</span></span>
 
         <md-input-container class="margin-top-10">
             <label>Search for matching data</label>

@@ -33,6 +33,7 @@ class RemoveOldListings
 
 
         /* Update first on sale date for all listings */
+        /* No longer needed as this is set when the listing is created
         $listings = \App\Listing::withTrashed()->with('sales')->get();
 
         echo "Updating on sale dates for " . $listings->count() . " listings.\n";
@@ -47,8 +48,10 @@ class RemoveOldListings
             }
         }
 
+
         echo "Updated on sale dates for " . $numUpdated . " listings.\n";
         Log::info("Updated on sale dates for " . $numUpdated . " listings.");
+        */
 
         /* Move any listings with a current onsale/presale into current listings */
         $listings = \App\Listing::onlyTrashed()->with( 'sales' )->get();
