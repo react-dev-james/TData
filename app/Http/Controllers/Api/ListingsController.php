@@ -137,9 +137,6 @@ class ListingsController extends Controller
             $query->where( 'status', '!=', 'excluded' );
         }
 
-        // testing
-        $query->whereNotNull('data_master_id');
-
         return $query->paginate( $size );
     }
 
