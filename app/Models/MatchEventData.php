@@ -87,7 +87,7 @@ class MatchEventData
         foreach ($listings as $listing) {
 
             /* If listing has match, skip it */
-            if ($listing->data->count() > 0) {
+            if ($listing->data) {
                 continue;
             }
 
@@ -97,11 +97,10 @@ class MatchEventData
                 $dataLookup = \App\DataMaster::where("category", $lookup->match_name)->first();
                 if ($dataLookup) {
                     $listing->performer = $dataLookup->category;
+                    $listing->data_master_id = $dataLookup->id;
+                    $listing->confidence = 100;
                     $listing->save();
 
-                    /* Create new entry in the listing_data pivot table */
-                    $listing->data()->sync( [ $dataLookup->id ], [ 'confidence' => 100 ] );
-                    //$listing->fresh();
                     $listing->calcRoi($dataLookup);
                 }
             }
@@ -192,13 +191,11 @@ class MatchEventData
             ]);
 
         $listing->performer = $data->category;
+        $listing->data_master_id = $data->id;
+        $listing->confidence = min( 100, $confidence * 3 );
         $listing->save();
 
-        /* Create new entry in the listing_data pivot table */
-        $listing->data()->sync([$data->id], ['confidence' => min( 100, $confidence * 3 ) ]);
-
         /* Recalc ROI */
-        //$listing->fresh();
         $listing->calcRoi($data);
     }
 
@@ -222,19 +219,13 @@ class MatchEventData
                     }
                 }
 
-                //$this->info("Matching new event based on lookups.");
-
                 $numListings++;
                 $otherListing->performer = $lookup->match_name;
+                $otherListing->data_master_id = $data->id;
+                $otherListing->confidence = 100;
                 $otherListing->save();
 
-                /* Create new entry in the listing_data pivot table */
-                $otherListing->data()->sync( [ $data->id => [ 'confidence' => 100 ] ] );
-
                 /* Recalc ROI */
-                //$otherListing->fresh();
-                //Log::info('-*-* checkloopup before calcRoi -*-*-');
-                //Log::info('** data id is:' . $data->id);
                 $otherListing->calcRoi($data);
             }
         }

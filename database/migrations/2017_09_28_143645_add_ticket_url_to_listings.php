@@ -18,8 +18,7 @@ class AddTicketUrlToListings extends Migration
             $table->string( 'date_hash' )->default( '' )->nullable();
         } );
 
-        DB::statement( 'ALTER TABLE `listings`
-ADD INDEX `Listings_Date_Index` (`date_hash`);' );
+        //DB::statement( 'ALTER TABLE `listings` ADD INDEX `Listings_Date_Index` (`date_hash`);' );
 
 
         /* ALTER TABLE `listings`

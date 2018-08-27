@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateListingDataPivotTable extends Migration
+class CreateListingDataPivotTable1 extends Migration
 {
     /**
      * Run the migrations.
@@ -19,7 +19,7 @@ class CreateListingDataPivotTable extends Migration
             $table->integer( 'data_master_id' )->unsigned()->index();
             $table->foreign( 'data_master_id' )->references( 'id' )->on( 'data_master' )->onDelete( 'cascade' );
             $table->integer('confidence')->default()->nullable();
-            $table->primary( [ 'listing_id', 'data_id' ] );
+            $table->primary( [ 'listing_id', 'data_master_id' ] );
         } );
     }
 

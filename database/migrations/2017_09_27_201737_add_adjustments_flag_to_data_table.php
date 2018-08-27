@@ -13,10 +13,6 @@ class AddAdjustmentsFlagToDataTable extends Migration
      */
     public function up()
     {
-        Schema::table( 'data', function ( Blueprint $table ) {
-            $table->boolean('adjusted')->default(false)->nullable();
-        } );
-
         Schema::table( 'listings', function ( Blueprint $table ) {
             $table->boolean( 'adjusted' )->default( false )->nullable();
         } );
@@ -30,9 +26,6 @@ class AddAdjustmentsFlagToDataTable extends Migration
      */
     public function down()
     {
-        Schema::table( 'data', function ( Blueprint $table ) {
-            $table->dropColumn( [ 'adjusted' ] );
-        } );
         Schema::table( 'listings', function ( Blueprint $table ) {
             $table->dropColumn( [ 'adjusted' ] );
         } );

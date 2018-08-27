@@ -208,11 +208,12 @@ class TicketService extends ScraperService implements IScraper
             $newRecord['avg_ticket_price'] = round(($highPrice + $lowPrice) / 2);
 
             /* debug pricing issue */
-            if( $lowPrice <= 0 || $highPrice <= 0 ) {
-                Log::info('/***** box office listing price problem ***/');
-                Log::info('-- event name: ' . $result['event_name']);
-                Log::info($newRecord);
-            }
+            //if( $lowPrice <= 0 || $highPrice <= 0 ) {
+            //    Log::info('/***** box office listing price problem ***/');
+            //    Log::info('-- event name: ' . $result['event_name']);
+            //    Log::info($newRecord);
+            //}
+
 
             /* Extract ticket sale data */
             $parser = new Crawler($result['ticket_sale_start']);
@@ -428,6 +429,9 @@ class TicketService extends ScraperService implements IScraper
 
             $sale = $listing['sale'];
             unset($listing['sale']);
+
+            // set on sale date here
+            $listing['first_onsale_date'] = $sale['sale_date'];
 
             $newListing = Listing::firstOrCreate([
                 'slug' => $listing['slug'],

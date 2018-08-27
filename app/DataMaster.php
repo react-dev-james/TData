@@ -12,7 +12,7 @@ class DataMaster extends Model
 
     public function listing()
     {
-        return $this->belongsToMany( \App\Listing::class, 'listing_data' );
+        return $this->hasMany( Listing::class, 'data_master_id', 'id' );
     }
 
     public function getTotalSalesAttribute( $value )

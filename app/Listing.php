@@ -30,7 +30,7 @@ class Listing extends Model
 
     public function data()
     {
-        return $this->belongsToMany(\App\DataMaster::class, 'listing_data')->withPivot('confidence');
+        return $this->belongsTo( DataMaster::class, 'data_master_id', 'id' );
     }
 
     public function stats()
@@ -100,7 +100,7 @@ class Listing extends Model
 
     public function getSoldPerEventAttribute()
     {
-        $data = $this->data->first();
+        $data = $this->data()->first();
         if ( !$data ) {
             return 0;
         }
@@ -111,7 +111,7 @@ class Listing extends Model
 
     public function getAvgSalePricePastAttribute( )
     {
-        $data = $this->data->first();
+        $data = $this->data()->first();
         if ( !$data ) {
             return 0;
         }
@@ -269,29 +269,6 @@ class Listing extends Model
         ] );
 
         return true;
-
-    }
-
-    /* not being used */
-    public function updateSoldPerEvent()
-    {
-        return true;
-        $data = $this->data->first();
-        $stats = $this->stats()->first();
-        if ( !$data || !$stats) {
-            return 0;
-        }
-
-        $soldPerEvent = ( $data->total_sold + $stats->tix_sold_in_date_range  ) /
-                        max( 1, ( $data->total_events + $stats->tn_events ) );
-        $soldPerEvent = round( $soldPerEvent );
-
-        \App\Stat::updateOrCreate( [ 'listing_id' => $this->id ], [
-            'sold_per_event' => $soldPerEvent,
-            'listing_id' => $this->id
-        ] );
-
-        return $soldPerEvent;
 
     }
 
