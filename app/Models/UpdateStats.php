@@ -16,17 +16,11 @@ class UpdateStats
 
     public static function update()
     {
-        $listings = \App\Listing::get();
+        $listings = \App\Listing::whereNotNull('data_master_id')->get();
 
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
-            if ( !isset($listing->data) || $listing->data === null ) {
-                echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";
-                Log::info('/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . ' **/');
-                continue;
-            }
-
             $listing->calcRoi($listing->data);
         }
     }
