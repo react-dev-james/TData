@@ -21,15 +21,13 @@ class UpdateStats
         foreach ($listings as $listing) {
 
             /* Calculate ROI for listing */
-            $data = $listing->data;
-
-            if ( !$data ) {
+            if ( !isset($listing->data) || $listing->data === null ) {
                 echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";
                 Log::info('/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . ' **/');
                 continue;
             }
 
-            $listing->calcRoi($data);
+            $listing->calcRoi($listing->data;);
         }
     }
 }
