@@ -519,7 +519,7 @@ class ListingsController extends Controller
     public function sendZapierWebHook($listing_id)
     {
         // set Zapier end point
-        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/ghqt25/';
+        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
         //$zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
 
         // get listing with data
