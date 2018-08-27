@@ -27,7 +27,7 @@ class UpdateStats
                 continue;
             }
 
-            $listing->calcRoi($listing->data;);
+            $listing->calcRoi($listing->data);
         }
     }
 }
