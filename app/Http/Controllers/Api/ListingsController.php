@@ -288,14 +288,14 @@ class ListingsController extends Controller
             case "sfc_roi":
             case "sfc_cogs":
                 $query->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing.data_master_id' );
+                        $join->on( 'data_master.id', '=', 'listings.data_master_id' );
                     } )
                     ->orderByRaw( '"data_master"."' . $field . '"' . $direction )
                     ->select( "listings.*" );
                 break;
             case "total_sales":
                 $query->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listing.data_master_id' );
+                        $join->on( 'data_master.id', '=', 'listings.data_master_id' );
                     } )
                     ->orderByRaw( '"data_master"."total_sold" - "data_master"."tn_tix_sold"' . $direction )
                     ->select( "listings.*" );
