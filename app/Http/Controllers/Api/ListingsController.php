@@ -67,11 +67,11 @@ class ListingsController extends Controller
         if ( $request->has( "search" ) && !empty( $request->search ) ) {
             $searchField = $request->get( 'searchField', 'all' );
             if ( $searchField == 'all' ) {
-                $query->where( "event_name", "like", "%" . $request->search . "%" );
-                $query->orWhere( "venue", "like", "%" . $request->search . "%" );
-                $query->orWhere( "venue_city", "like", "%" . $request->search . "%" );
+                $query->where( "event_name", "ilike", "%" . $request->search . "%" );
+                $query->orWhere( "venue", "ilike", "%" . $request->search . "%" );
+                $query->orWhere( "venue_city", "ilike", "%" . $request->search . "%" );
             } else if ( !empty( $searchField ) ) {
-                    $query->where( $searchField, "like", "%" . $request->search . "%" );
+                    $query->where( $searchField, "ilike", "%" . $request->search . "%" );
             }
 
         }
@@ -153,7 +153,7 @@ class ListingsController extends Controller
 
         if ( $request->has( "dataSearch" ) && !empty( $request->dataSearch ) ) {
 
-            $query->where( "category", "like", "%" . $request->dataSearch . "%" );
+            $query->where( "category", "ilike", "%" . $request->dataSearch . "%" );
             //$query->orWhere( "name", "like", "%" . $request->dataSearch . "%" );  category and name hold the same data
 
         }
