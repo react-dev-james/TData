@@ -29,11 +29,16 @@ class ImportData
         // --todo -- if api call limit is close, change to another api key -> do in the curl call
 
         // run for each day of the week
-        for( $day = 0; $day < 7; $day++ )
+        for( $day_of_week = 0; $day_of_week < 7; $day_of_week++ )
         {
-            echo "--- TM.Import data for date: " . $start_date->addDays($day)->toDateString() . "---------\n";
-            $event_start_date = $start_date->addDays($day)->toDateString();
+            // set start date
+            $event_start_date = $start_date->toDateString();
+            echo "--- TM.Import data for date: " . $event_start_date . "---------\n";
+
             $this->loadEvents($event_start_date);
+
+            // increment date
+            $start_date->addDays(1);
         }
 
         echo "-------- total calls made = " . $this->ticket_master->calls_made . "---------\n";
