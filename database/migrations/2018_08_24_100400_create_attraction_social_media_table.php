@@ -24,7 +24,7 @@ class CreateAttractionSocialMediaTable extends Migration
         Schema::table('social_medias', function (Blueprint $table) {
             $table->unique(['attraction_id', 'social_media_type_id']);
             $table->foreign('attraction_id')->references('id')->on('attractions')->onDelete('cascade');
-            $table->foreign('social_media_type_id')->references('id')->on('social_media_type')->onDelete('cascade');
+            $table->foreign('social_media_type_id')->references('id')->on('social_media_types')->onDelete('cascade');
         });
     }
 
