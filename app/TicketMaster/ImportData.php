@@ -141,8 +141,10 @@ class ImportData
                     || (new \App\EventPrice())->where('event_id', '=', $event->id)->count() === 0 ) {
 
                     // check to see if it was a create or update
-                    echo '-- was created recently = ' . $event->wasRecentlyCreated . " : " . $event->id . "---\n";
-                    echo '* event price count = ' . (new \App\EventPrice())->where('event_id', '=', $event->id)->count() . "\n";
+                    if( env('API_DEBUG') ) {
+                        echo '-- was created recently = ' . $event->wasRecentlyCreated . " : " . $event->id . "---\n";
+                        echo '* event price count = ' . (new \App\EventPrice())->where('event_id', '=', $event->id)->count() . "\n";
+                    }
 
                     $this->setPrices($event->id, $tm_event_id);
                 }
