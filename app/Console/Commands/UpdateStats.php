@@ -38,7 +38,7 @@ class UpdateStats extends Command
      */
     public function handle()
     {
-        $update_stats = new \App\Models\UpdateStats();
+        $update_stats = new \App\Import\UpdateStats();
         $update_stats->update();
     }
 

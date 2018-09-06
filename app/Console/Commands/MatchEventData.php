@@ -40,7 +40,7 @@ class MatchEventData extends Command
     public function handle()
     {
         try {
-            $match_event_data = new \App\Models\MatchEventData();
+            $match_event_data = new \App\Import\MatchEventData();
             $match_event_data->match();
         } catch (\Exception $e) {
             Log::error($e->getMessage());

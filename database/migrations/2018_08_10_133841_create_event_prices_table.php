@@ -13,7 +13,7 @@ class CreateEventPricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_prices', function ( Blueprint $table ) {
+        Schema::create('event_prices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('event_id');
             $table->smallInteger('price_zone');
@@ -21,6 +21,10 @@ class CreateEventPricesTable extends Migration
             $table->decimal('value');
             $table->decimal('total');
             $table->timestamps();
+        });
+
+        Schema::table('event_prices', function (Blueprint $table) {
+            $table->unique(['event_id', 'price_zone']);
         });
     }
 

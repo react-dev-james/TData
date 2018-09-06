@@ -57,7 +57,7 @@ class ImportAll extends Command
 
         /* remove old listings */
         try{
-            \App\Models\RemoveOldListings::remove();
+            \App\Import\RemoveOldListings::remove();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());
@@ -67,7 +67,7 @@ class ImportAll extends Command
 
         /* match events */
         try {
-            $match_event_data = new \App\Models\MatchEventData();
+            $match_event_data = new \App\Import\MatchEventData();
             $match_event_data->match();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -78,7 +78,7 @@ class ImportAll extends Command
 
         /* update stats */
         try {
-            \App\Models\UpdateStats::update();
+            \App\Import\UpdateStats::update();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             Log::error($e->getTraceAsString());

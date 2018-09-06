@@ -16,6 +16,7 @@ class CreateEventVenue extends Migration
         Schema::create('event_venue', function ( Blueprint $table ) {
             $table->integer('event_id');
             $table->integer('venue_id');
+            $table->boolean('primary');
         });
     }
 

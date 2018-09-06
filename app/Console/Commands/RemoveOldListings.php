@@ -38,6 +38,6 @@ class RemoveOldListings extends Command
      */
     public function handle()
     {
-        \App\Models\RemoveOldListings::remove();
+        \App\Import\RemoveOldListings::remove();
     }
 }

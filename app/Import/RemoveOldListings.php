@@ -6,7 +6,7 @@
  * Time: 16:40
  */
 
-namespace App\Models;
+namespace App\Import;
 
 use Illuminate\Support\Facades\Log;
 

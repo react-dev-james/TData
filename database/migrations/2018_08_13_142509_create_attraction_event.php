@@ -13,9 +13,10 @@ class CreateAttractionEvent extends Migration
      */
     public function up()
     {
-        Schema::create('attraction_event', function ( Blueprint $table ) {
-            $table->integer('attraction_id');
+        Schema::create('event_attraction', function ( Blueprint $table ) {;
             $table->integer('event_id');
+            $table->integer('attraction_id');
+            $table->boolean('primary');
         });
     }
 
@@ -26,6 +27,6 @@ class CreateAttractionEvent extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('attraction_event');
+        Schema::dropIfExists('event_attraction');
     }
 }

@@ -1,5 +1,5 @@
 <?php
-Namespace App\Models;
+Namespace App\Import;
 
 use App\DataMaster;
 use Illuminate\Support\Facades\Log;

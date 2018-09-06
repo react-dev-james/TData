@@ -17,14 +17,14 @@ class CreateAttractionsTable extends Migration
             $table->increments('id');
             $table->string('tm_id', 50);
             $table->string('name', 1000);
-            $table->string('type', 100);
-            $table->string('url', 500);
-            $table->string('local', 50);
-            $table->integer('segment_id');
-            $table->integer('genre_id');
-            $table->integer('sub_genre_id');
-            $table->integer('upcoming_events');
-            $table->integer('api_url', 500);
+            $table->string('type', 100)->nullable();
+            $table->string('url', 1024)->nullable();
+            $table->string('locale', 50)->nullable();
+            $table->integer('segment_id')->nullable();
+            $table->integer('genre_id')->nullable();
+            $table->integer('sub_genre_id')->nullable();
+            $table->integer('upcoming_events')->nullable();
+            $table->string('api_url', 1024)->nullable();
             $table->timestamps();
         });
     }

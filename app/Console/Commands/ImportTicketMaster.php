@@ -3,23 +3,23 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Import\ImportDataMaster;
+use App\TicketMaster\ImportData;
 
-class ImportTicketDataMaster extends Command
+class ImportTicketMaster extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tickets:import_master_data';
+    protected $signature = 'tickets:ticket-master';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import master ticket data.';
+    protected $description = 'Import ticket master data';
 
     /**
      * Create a new command instance.
@@ -38,6 +38,7 @@ class ImportTicketDataMaster extends Command
      */
     public function handle()
     {
-        ImportDataMaster::import();
+        $import = new ImportData();
+        $import->loadAllData();
     }
 }

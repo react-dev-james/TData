@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\ImportTicketDataMaster;
+use App\Console\Commands\ImportTicketMaster;
 use App\Console\Commands\ImportTicketNetwork;
 use App\Console\Commands\MatchEventData;
 use App\Console\Commands\FetchBoxOfficeData;
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
         RemoveOldListings::class,
         ImportAll::class,
         test::class,
+        ImportTicketMaster::class,
     ];
 
     /**
@@ -41,28 +43,8 @@ class Kernel extends ConsoleKernel
     {
         $path = storage_path('logs/jobs/');
 
-        //$schedule->command('tickets:boxoffice')->dailyAt('07:00');
-        //$schedule->command('tickets:match')->dailyAt('07:20');
-        //$schedule->command('tickets:clean')->dailyAt('07:28');
-        //$schedule->command('tickets:importtn')->dailyAt('07:40');
-        //$schedule->command('tickets:stats')->dailyAt('07:58');
-        //$schedule->command('tickets:stats')->dailyAt('08:20');
         $schedule->command('tickets:import-all')->dailyAt('07:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-8am.txt');
-
-        //$schedule->command( 'tickets:boxoffice' )->dailyAt( '11:00' );
-        //$schedule->command( 'tickets:match' )->dailyAt( '11:20' );
-        //$schedule->command( 'tickets:clean' )->dailyAt( '11:28' );
-        //$schedule->command( 'tickets:importtn' )->dailyAt( '11:40' );
-        //$schedule->command( 'tickets:stats' )->dailyAt( '11:58' );
-        //$schedule->command( 'tickets:stats' )->dailyAt( '12:20' );
         $schedule->command('tickets:import-all')->dailyAt('11:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-noon.txt');
-
-        //$schedule->command( 'tickets:boxoffice' )->dailyAt( '16:00' );
-        //$schedule->command( 'tickets:match' )->dailyAt( '16:20' );
-        //$schedule->command( 'tickets:clean' )->dailyAt( '16:28' );
-        //$schedule->command( 'tickets:importtn' )->dailyAt( '16:40' );
-        //$schedule->command( 'tickets:stats' )->dailyAt( '16:58' );
-        //$schedule->command( 'tickets:stats' )->dailyAt( '17:20' );
         $schedule->command('tickets:import-all')->dailyAt('16:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-5pm.txt');
     }
 
