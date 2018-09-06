@@ -45,7 +45,7 @@ class CreateTmIdIndexes extends Migration
             $table->index('tm_id');
         });
 
-        Schema::table('social_media', function (Blueprint $table) {
+        Schema::table('social_medias', function (Blueprint $table) {
             $table->index('attraction_id');
         });
     }
