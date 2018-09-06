@@ -44,6 +44,7 @@ class Kernel extends ConsoleKernel
         $path = storage_path('logs/jobs/');
 
         $schedule->command('tickets:import-all')->dailyAt('07:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-8am.txt');
+        $schedule->command('tickets:ticket-master')->dailyAt('08:00')->sendOutputTo($path . 'tm-api.' . date("Y-m-d") . '-9am.txt');
         $schedule->command('tickets:import-all')->dailyAt('11:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-noon.txt');
         $schedule->command('tickets:import-all')->dailyAt('16:00')->sendOutputTo($path . 'import-all.' . date("Y-m-d") . '-5pm.txt');
     }

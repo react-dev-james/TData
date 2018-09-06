@@ -29,7 +29,7 @@ class ImportData
         // --todo -- if api call limit is close, change to another api key -> do in the curl call
 
         // run for each day of the week
-        for( $day = 0; $day < 2; $day++ )
+        for( $day = 0; $day < 7; $day++ )
         {
             echo "--- TM.Import data for date: " . $start_date->addDays($day)->toDateString() . "---------\n";
             $event_start_date = $start_date->addDays($day)->toDateString();
