@@ -38,6 +38,7 @@ class ImportData
             // run for each country
             foreach( config('api.ticket_master.country_codes') as $country_code )
             {
+                echo "- For country: $country_code -\n";
                 $this->loadEvents($event_start_date, $country_code);
             }
 
