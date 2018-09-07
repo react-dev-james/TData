@@ -100,7 +100,7 @@ class ImportData
                     'type'                 => $event_data->type,
                     'url'                  => $event_data->url,
                     'locale'               => $event_data->locale,
-                    'currency'             => isset($event_data->priceRanges->currency) ? $event_data->priceRanges->currency : null,
+                    'currency'             => isset($event_data->priceRanges[0]->currency) ? $event_data->priceRanges[0]->currency : null,
                     'public_sale_datetime' => $event_data->sales->public->startDateTime,
                     'presale_name'         => isset($event_data->sales->presales->name) ? $event_data->sales->presales->name : null,
                     'presale_datetime'     => isset($event_data->sales->presales->startDateTime) ? $event_data->sales->presales->startDateTime : null,
