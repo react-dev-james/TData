@@ -492,14 +492,14 @@ class ListingsController extends Controller
     public function sendZapierWebHook($listing_id)
     {
         // set Zapier end point
-        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
+        $zapier_endpoint = 'https://hook.integromat.com/znewwagjbdaqvnpa7t1h715evuqomqmm';
 
         // get listing with data
         $listing = Listing::where('id', '=', $listing_id)->with('stats')->firstOrFail()->toArray();
 
         /* change it to local so we don't send it to the production webhook for testing */
         if( env('APP_ENV') === 'local') {
-            $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/3592924/g5u56f/';
+            $zapier_endpoint = 'https://hook.integromat.com/znewwagjbdaqvnpa7t1h715evuqomqmm';
         }
 
         // get listing with data
