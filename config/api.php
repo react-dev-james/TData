@@ -8,7 +8,7 @@ return [
         ],
         'country_codes' => [
             'us',
-            'ca'
+            'ca',
         ],
         'page_size' => 100,
     ],

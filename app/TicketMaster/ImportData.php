@@ -35,7 +35,11 @@ class ImportData
             $event_start_date = $start_date->toDateString();
             echo "--- TM.Import data for date: " . $event_start_date . "---------\n";
 
-            $this->loadEvents($event_start_date);
+            // run for each country
+            foreach( config('api.ticket_master.country_codes') as $country_code )
+            {
+                $this->loadEvents($event_start_date, $country_code);
+            }
 
             // increment date
             $start_date->addDays(1);
@@ -44,7 +48,7 @@ class ImportData
         echo "-------- total calls made = " . $this->ticket_master->calls_made . "---------\n";
     }
 
-    private function loadEvents($day)
+    private function loadEvents($day, $country_code)
     {
         /** we need to loop for each country? */
         // init page variable
@@ -56,7 +60,7 @@ class ImportData
             // set payload
             $payload = [
                 'onsaleOnStartDate'  => $day,
-                'countryCode'        => 'us',
+                'countryCode'        => $country_code,
                 'size'               => config('api.ticket_master.page_size'),
                 'page'               => $current_page,
                 // -- todo -- add more exclusions here --//
