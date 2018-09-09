@@ -10,7 +10,7 @@ return [
             'us',
             'ca',
         ],
-        'page_size' => 100,
+        'page_size' => 200,
     ],
     'event_exclusions' => [
         'fast lane',

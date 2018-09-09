@@ -9,6 +9,7 @@
 namespace App\TicketMaster;
 
 use App\Event;
+use App\Presale;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -102,8 +103,6 @@ class ImportData
                     'locale'               => $event_data->locale,
                     'currency'             => isset($event_data->priceRanges[0]->currency) ? $event_data->priceRanges[0]->currency : null,
                     'public_sale_datetime' => $event_data->sales->public->startDateTime,
-                    'presale_name'         => isset($event_data->sales->presales->name) ? $event_data->sales->presales->name : null,
-                    'presale_datetime'     => isset($event_data->sales->presales->startDateTime) ? $event_data->sales->presales->startDateTime : null,
                     'sales_start_tbd'      => $event_data->sales->public->startTBD,
                     'event_local_date'     => $event_data->dates->start->localDate,
                     'event_local_time'     => isset($event_data->dates->start->localTime) ? $event_data->dates->start->localTime : null,
@@ -146,6 +145,12 @@ class ImportData
                 // get/set attractions
                 $this->setAttractions($event->id, $event_data);
 
+                // set presales if it has any
+                if( isset($event_data->sales->presales[0]) ) {
+
+                    $this->setPreSales($event->id, $event_data->sales->presales);
+                }
+
                 // get/set prices only if the event was created or if no prices were set
                 if( $event->wasRecentlyCreated === true
                     || (new \App\EventPrice())->where('event_id', '=', $event->id)->count() === 0 ) {
@@ -156,7 +161,7 @@ class ImportData
                         echo '* event price count = ' . (new \App\EventPrice())->where('event_id', '=', $event->id)->count() . "\n";
                     }
 
-                    $this->setPrices($event->id, $tm_event_id);
+                    $this->setPrices($event, $tm_event_id);
                 }
             }
 
@@ -197,6 +202,25 @@ class ImportData
         );
 
         return $sub_genre;
+    }
+
+    private function setPreSales($event_id, $presales)
+    {
+        // delete all the old presales
+        $result = DB::table('event_presales')->where('event_id', '=', $event_id)->delete();
+
+        // add all the presales
+        foreach( $presales as $presale )
+        {
+            DB::table('event_presales')->insert([
+                'event_id' => $event_id,
+                'start_datetime' => $presale->startDateTime,
+                'end_datetime' => $presale->endDateTime,
+                'name' => $presale->name,
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s"),
+            ]);
+        }
     }
 
     private function setVenues($event_id, $event_data)
@@ -380,13 +404,20 @@ class ImportData
         }
     }
 
-    private function setPrices($event_id, $tm_event_id)
+    private function setPrices($event, $tm_event_id)
     {
         // get the offers
         $offer_data = $this->ticket_master->getEventOffers($tm_event_id);
 
         // only process if there is data
         if( isset($offer_data->offers[0]) ) {
+
+            // set ticket limit if set
+            if( isset($offer_data->limits->max) ) {
+
+                $event->ticket_max_number = $offer_data->limits->max;
+                $event->save();
+            }
 
             // check each offer for the default
             foreach( $offer_data->offers as $offer )
@@ -403,7 +434,7 @@ class ImportData
                     foreach( $offer->attributes->prices as $price )
                     {
                         (new \App\EventPrice())->create([
-                            'event_id' => $event_id,
+                            'event_id' => $event->id,
                             'price_zone' => $price->priceZone,
                             'currency' => $offer->attributes->currency,
                             'value' => $price->value,
