@@ -154,9 +154,9 @@ class MatchEventData
             $listings = \App\Listing::where( "event_name", $lookup->event_name )->with('data')->get();
             foreach ($listings as $otherListing) {
                 /* If listing has match, skip it */
-                if ( $otherListing->data->count() > 0) {
-                    $listingData = $otherListing->data->first();
-                    if ($listingData->pivot->confidence >= 100) {
+                if ( $otherListing->data() !== null ) {
+                    $listingData = $otherListing->data();
+                    if ($otherListing->confidence >= 100) {
                         continue;
                     }
                 }
