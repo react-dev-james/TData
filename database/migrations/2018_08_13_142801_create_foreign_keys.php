@@ -14,9 +14,9 @@ class CreateForeignKeys extends Migration
     public function up()
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->foreign('segment_id')->references('id')->on('segments');
-            $table->foreign('genre_id')->references('id')->on('genres');
-            $table->foreign('sub_genre_id')->references('id')->on('sub_genres');
+            $table->foreign('segment_id')->references('id')->on('segments')->onDelete('cascade');
+            $table->foreign('genre_id')->references('id')->on('genres')->onDelete('cascade');
+            $table->foreign('sub_genre_id')->references('id')->on('sub_genres')->onDelete('cascade');
             $table->foreign('data_master_id')->references('id')->on('data_master');
         });
 
@@ -25,13 +25,13 @@ class CreateForeignKeys extends Migration
         });
 
         Schema::table('event_attraction', function (Blueprint $table) {
-            $table->foreign('attraction_id')->references('id')->on('attractions');
-            $table->foreign('event_id')->references('id')->on('events');
+            $table->foreign('attraction_id')->references('id')->on('attractions')->onDelete('cascade');
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
         });
 
         Schema::table('event_venue', function (Blueprint $table) {
-            $table->foreign('event_id')->references('id')->on('events');
-            $table->foreign('venue_id')->references('id')->on('venues');
+            $table->foreign('event_id')->references('id')->on('events')->onDelete('cascade');
+            $table->foreign('venue_id')->references('id')->on('venues')->onDelete('cascade');
         });
     }
 
