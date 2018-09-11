@@ -213,12 +213,12 @@ class ImportData
         foreach( $presales as $presale )
         {
             DB::table('event_presales')->insert([
-                'event_id' => $event_id,
+                'event_id'       => $event_id,
                 'start_datetime' => $presale->startDateTime,
-                'end_datetime' => $presale->endDateTime,
-                'name' => $presale->name,
-                'created_at' => date("Y-m-d H:i:s"),
-                'updated_at' => date("Y-m-d H:i:s"),
+                'end_datetime'   => $presale->endDateTime,
+                'name'           => $presale->name,
+                'created_at'     => date("Y-m-d H:i:s"),
+                'updated_at'     => date("Y-m-d H:i:s"),
             ]);
         }
     }
@@ -233,19 +233,19 @@ class ImportData
                 $venue = (new \App\Venue())->updateOrCreate(
                     ['tm_id' => $venue_data->id],
                     [
-                        'name' => $venue_data->name,
-                        'url' => isset($venue_data->url) ? $venue_data->url : null,
-                        'locale' => isset($venue_data->locale) ? $venue_data->locale : null,
-                        'postal_code' => isset($venue_data->postalCode) ? $venue_data->postalCode : null,
-                        'time_zone' => isset($venue_data->timezone) ? $venue_data->timezone : null,
-                        'city' => isset($venue_data->city->name) ? $venue_data->city->name : null,
-                        'state_name' => isset($venue_data->state->name) ? $venue_data->state->name : null,
-                        'state_code' => isset($venue_data->state->stateCode) ? $venue_data->state->stateCode : null,
+                        'name'         => $venue_data->name,
+                        'url'          => isset($venue_data->url) ? $venue_data->url : null,
+                        'locale'       => isset($venue_data->locale) ? $venue_data->locale : null,
+                        'postal_code'  => isset($venue_data->postalCode) ? $venue_data->postalCode : null,
+                        'time_zone'    => isset($venue_data->timezone) ? $venue_data->timezone : null,
+                        'city'         => isset($venue_data->city->name) ? $venue_data->city->name : null,
+                        'state_name'   => isset($venue_data->state->name) ? $venue_data->state->name : null,
+                        'state_code'   => isset($venue_data->state->stateCode) ? $venue_data->state->stateCode : null,
                         'country_code' => isset($venue_data->country->countryCode) ? $venue_data->country->countryCode : null,
-                        'address' => isset($venue_data->address->line1) ? $venue_data->address->line1 : null,
-                        'longitude' => isset($venue_data->location->longitude) ? $venue_data->location->longitude : null,
-                        'latitude' => isset($venue_data->location->latitude) ? $venue_data->location->latitude : null,
-                        'api_url' => isset($venue_data->_links->self->href) ? $venue_data->_links->self->href : null,
+                        'address'      => isset($venue_data->address->line1) ? $venue_data->address->line1 : null,
+                        'longitude'    => isset($venue_data->location->longitude) ? $venue_data->location->longitude : null,
+                        'latitude'     => isset($venue_data->location->latitude) ? $venue_data->location->latitude : null,
+                        'api_url'      => isset($venue_data->_links->self->href) ? $venue_data->_links->self->href : null,
                     ]
                 );
 
@@ -279,13 +279,13 @@ class ImportData
             {
                 // set basic data
                 $payload = [
-                    'name' => $attraction_data->name,
-                    'type' => isset($attraction_data->type) ? $attraction_data->type : null,
-                    'url' => isset($attraction_data->url) ? $attraction_data->url : null,
-                    'locale' => isset($attraction_data->locale) ? $attraction_data->locale : null,
+                    'name'            => $attraction_data->name,
+                    'type'            => isset($attraction_data->type) ? $attraction_data->type : null,
+                    'url'             => isset($attraction_data->url) ? $attraction_data->url : null,
+                    'locale'          => isset($attraction_data->locale) ? $attraction_data->locale : null,
                     'upcoming_events' => isset($attraction_data->upcomingEvents->_total) ?
                         $attraction_data->upcomingEvents->_total : null,
-                    'api_url' => isset($attraction_data->_links->self->href) ? $attraction_data->_links->self->href : null,
+                    'api_url'         => isset($attraction_data->_links->self->href) ? $attraction_data->_links->self->href : null,
                 ];
 
                 /* get classifications */
@@ -382,10 +382,10 @@ class ImportData
                     if( $social_media === null ) {
                         DB::table('social_medias')->insert([
                             'social_media_type_id' => $social_media_type->id,
-                            'attraction_id' => $attraction_id,
-                            'url' => $value[0]->url,
-                            'created_at' => date("Y-m-d H:i:s"),
-                            'updated_at' => date("Y-m-d H:i:s"),
+                            'attraction_id'        => $attraction_id,
+                            'url'                  => $value[0]->url,
+                            'created_at'           => date("Y-m-d H:i:s"),
+                            'updated_at'           => date("Y-m-d H:i:s"),
                         ]);
                     }
 
@@ -395,7 +395,7 @@ class ImportData
                             ->where('social_media_type_id', '=', $social_media_type->id)
                             ->where('attraction_id', '=', $attraction_id)
                             ->update([
-                                'url' => $value[0]->url,
+                                'url'        => $value[0]->url,
                                 'updated_at' => date("Y-m-d H:i:s"),
                             ]);
                     }
@@ -434,11 +434,11 @@ class ImportData
                     foreach( $offer->attributes->prices as $price )
                     {
                         (new \App\EventPrice())->create([
-                            'event_id' => $event->id,
+                            'event_id'   => $event->id,
                             'price_zone' => $price->priceZone,
-                            'currency' => $offer->attributes->currency,
-                            'value' => $price->value,
-                            'total' => $price->total,
+                            'currency'   => $offer->attributes->currency,
+                            'value'      => $price->value,
+                            'total'      => $price->total,
                         ]);
                     }
 
