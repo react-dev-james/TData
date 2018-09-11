@@ -559,7 +559,7 @@ Log::info($response);
 
         //run request
         $response = curl_exec($ch);
-
+Log::info(json_encode($payload));
         //check for curl error
         if( curl_error($ch) ) {
             Log::error('*** Curl Error ***');
