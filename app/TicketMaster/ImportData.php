@@ -65,8 +65,7 @@ class ImportData
                 'countryCode'        => $country_code,
                 'size'               => config('api.ticket_master.page_size'),
                 'page'               => $current_page,
-                // -- todo -- add more exclusions here --//
-                'classificationName' => '-sports'
+                'classificationName' => implode(',', config('api.ticket_master.classification_filters'))
             ];
 
             // get events

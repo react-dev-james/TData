@@ -11,6 +11,11 @@ return [
             'ca',
         ],
         'page_size' => 200,
+        'classification_filters' => [
+            '-sports',
+            '-Food and Drink',
+            '-Film',
+        ],
     ],
     'event_exclusions' => [
         'fast lane',

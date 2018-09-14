@@ -26,7 +26,6 @@ SELECT  evt.tm_id,
         evt.ticket_max_number,
         evt.created_at AS event_created_at,
         evt.updated_at AS event_updated_at,
-        evt.data_master_id,
         evt.currency,
         min(evt_prc.total) AS min_price,
         max(evt_prc.total) AS max_price,
@@ -36,7 +35,50 @@ SELECT  evt.tm_id,
                    SELECT total FROM event_prices 
                    WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
         ) AS second_highest_price,
-        round(avg(evt_prc.total)) AS average_price
+        round(avg(evt_prc.total)) AS average_price,
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL AND min(evt_prc.total) > 0
+            THEN
+                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total)  / min(evt_prc.total)
+            ELSE
+                0
+        END AS roi_low,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
+            THEN
+                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total)  / max(evt_prc.total)
+            ELSE
+                0
+        END AS roi_second_highest,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
+            THEN
+                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))
+            ELSE
+                0
+        END AS roi_high,  
+        evt.data_master_id,
+        dm.total_events,
+        dm.total_sold,
+        dm.total_vol,
+        dm.weighted_avg,
+        dm.tot_per_event,
+        dm.td_events,
+        dm.td_tix_sold,
+        dm.td_vol,
+        dm.tn_events,
+        dm.tn_tix_sold,
+        dm.tn_vol,
+        dm.tn_avg_sale,
+        dm.levi_events,
+        dm.levi_tix_sold,
+        dm.levi_vol,
+        dm.si_events,
+        dm.si_tix_sold,
+        dm.si_vol,
+        dm.sfc_roi,
+        dm.sfc_roi_dollar,
+        dm.sfc_cogs
 FROM events evt
     LEFT JOIN segments seg
         ON evt.segment_Id = seg.id
@@ -84,10 +126,31 @@ GROUP BY
         sub_gen.name,
         evt.ticket_limit,
         evt.ticket_max_number,
-        evt.data_master_id,
         evt.created_at,
         evt.updated_at,
-        evt_psl.name 
+        evt_psl.name,
+        evt.data_master_id, 
+        dm.total_events,
+        dm.total_sold,
+        dm.total_vol,
+        dm.weighted_avg,
+        dm.tot_per_event,
+        dm.td_events,
+        dm.td_tix_sold,
+        dm.td_vol,
+        dm.tn_events,
+        dm.tn_tix_sold,
+        dm.tn_vol,
+        dm.tn_avg_sale,
+        dm.levi_events,
+        dm.levi_tix_sold,
+        dm.levi_vol,
+        dm.si_events,
+        dm.si_tix_sold,
+        dm.si_vol,
+        dm.sfc_roi,
+        dm.sfc_roi_dollar,
+        dm.sfc_cogs
    
 /*   
     create or replace function array_min(anyarray) returns anyelement
