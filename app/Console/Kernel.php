@@ -7,6 +7,7 @@ use App\Console\Commands\ImportTicketMaster;
 use App\Console\Commands\ImportTicketNetwork;
 use App\Console\Commands\MatchEventData;
 use App\Console\Commands\FetchBoxOfficeData;
+use App\Console\Commands\MatchEventTicketMaster;
 use App\Console\Commands\test;
 use App\Console\Commands\UpdateStats;
 use App\Console\Commands\RemoveOldListings;
@@ -31,6 +32,7 @@ class Kernel extends ConsoleKernel
         ImportAll::class,
         test::class,
         ImportTicketMaster::class,
+        MatchEventTicketMaster::class,
     ];
 
     /**
