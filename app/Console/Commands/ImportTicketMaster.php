@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\TicketMaster\ImportData;
+use App\TicketMaster\MatchEvent;
 
 class ImportTicketMaster extends Command
 {
@@ -38,7 +39,11 @@ class ImportTicketMaster extends Command
      */
     public function handle()
     {
+        // import data
         $import = new ImportData();
         $import->loadAllData();
+
+        // match
+        MatchEvent::runMatch();
     }
 }

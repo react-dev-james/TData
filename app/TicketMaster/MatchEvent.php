@@ -61,7 +61,7 @@ class MatchEvent
                     // calculate confidence by the % of matching string
                     $confidence = ceil(($string_length - $not_same / $string_length));
 
-                    echo $confidence . ';';
+                    //echo $confidence . ';';
                     if( $confidence > $matched_confidence ) {
                         $matched_data_master_id = $data_master->id;
                         $matched_confidence = $confidence;
