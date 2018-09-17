@@ -28,32 +28,32 @@ SELECT  evt.tm_id,
         evt.updated_at AS event_updated_at,
         evt.currency,
         min(evt_prc.total) AS min_price,
-        max(evt_prc.total) AS max_price,
         array_min
         (
             ARRAY ( 
                    SELECT total FROM event_prices 
                    WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
         ) AS second_highest_price,
+        max(evt_prc.total) AS max_price,
         round(avg(evt_prc.total)) AS average_price,
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND min(evt_prc.total) > 0
             THEN
-                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total)  / min(evt_prc.total)
+                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100)
             ELSE
                 0
         END AS roi_low,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
-                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total)  / max(evt_prc.total)
+                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100)
             ELSE
                 0
         END AS roi_second_highest,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
-                (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))
+                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100)
             ELSE
                 0
         END AS roi_high,  
