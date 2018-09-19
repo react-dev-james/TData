@@ -276,6 +276,11 @@ class ImportData
 
             foreach( $event_data->_embedded->attractions as $attraction_data)
             {
+                // it looks like there are empty attractions without names.  Skip these
+                if( !isset($attraction_data->name) ) {
+                    continue;
+                }
+
                 // set basic data
                 $payload = [
                     'name'            => $attraction_data->name,

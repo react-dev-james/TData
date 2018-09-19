@@ -12,6 +12,13 @@ SELECT  evt.tm_id,
         evt.locale,
         evt.public_sale_datetime,
         min(evt_psl.start_datetime) AS presale_datetime,
+        CASE
+            WHEN evt.public_sale_datetime < min(evt_psl.start_datetime) OR min(evt_psl.start_datetime) IS NULL
+            THEN
+                evt.public_sale_datetime
+            ELSE
+                min(evt_psl.start_datetime)
+        END AS first_onsale_datetime,        
         evt_psl.name AS presale_name,
         evt.sales_start_tbd,
         evt.event_local_date,
@@ -102,7 +109,7 @@ FROM events evt
         ON evt.data_master_id = dm.id    
 WHERE evt_att.primary = TRUE    
 AND evt_ven.primary = TRUE    
-GROUP BY 
+GROUP BY
         evt.id,
         evt.tm_id,
         evt."fromBoxOfficeFox",
