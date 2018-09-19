@@ -1,7 +1,10 @@
---CREATE VIEW listings_view AS
+--drop view listings_view;
+
+CREATE VIEW listings_view AS
 
 
-SELECT  evt.tm_id,
+SELECT  evt.id,
+        evt.tm_id,
         evt."fromBoxOfficeFox",
         evt.name,
         att.name AS attraction_name,
@@ -19,7 +22,7 @@ SELECT  evt.tm_id,
             ELSE
                 min(evt_psl.start_datetime)
         END AS first_onsale_datetime,        
-        evt_psl.name AS presale_name,
+        --evt_psl.name AS presale_name,
         evt.sales_start_tbd,
         evt.event_local_date,
         evt.event_local_time,
@@ -135,7 +138,7 @@ GROUP BY
         evt.ticket_max_number,
         evt.created_at,
         evt.updated_at,
-        evt_psl.name,
+        --evt_psl.name,
         evt.data_master_id, 
         dm.total_events,
         dm.total_sold,

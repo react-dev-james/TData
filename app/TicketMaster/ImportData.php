@@ -214,8 +214,8 @@ class ImportData
             DB::table('event_presales')->insert([
                 'event_id'       => $event_id,
                 'start_datetime' => $presale->startDateTime,
-                'end_datetime'   => $presale->endDateTime,
-                'name'           => $presale->name,
+                'end_datetime'   => isset($presale->endDateTime) ? $presale->endDateTime : null,
+                'name'           => isset($presale->name) ? $presale->name : null,
                 'created_at'     => date("Y-m-d H:i:s"),
                 'updated_at'     => date("Y-m-d H:i:s"),
             ]);
