@@ -1,7 +1,6 @@
 --drop view listings_view;
 
-CREATE VIEW listings_view AS
-
+--CREATE VIEW listings_view AS
 
 SELECT  evt.id,
         evt.tm_id,
@@ -37,7 +36,14 @@ SELECT  evt.id,
         evt.created_at AS event_created_at,
         evt.updated_at AS event_updated_at,
         evt.currency,
-        min(evt_prc.total) AS min_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                min(evt_prc.total) AS min_price,
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                min(evt_prc.total) * (SELECT rate FROM currency_conversion WHERE code = 'CAD')
+        END AS min_price,
         array_min
         (
             ARRAY ( 
