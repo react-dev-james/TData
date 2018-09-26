@@ -21,7 +21,7 @@ class CreateVenueCapacityTable extends Migration
             $table->integer('song_kick_capacity')->nullable();
             $table->string('box_office_fox_name', 2000)->nullable();
             $table->integer('song_kick_id')->nullable();
-            $table->string('song_kick+name', 2000)->nullable();
+            $table->string('song_kick_name', 2000)->nullable();
             $table->timestamps();
         });
 
