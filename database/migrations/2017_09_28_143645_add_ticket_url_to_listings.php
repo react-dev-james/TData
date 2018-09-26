@@ -14,7 +14,7 @@ class AddTicketUrlToListings extends Migration
     public function up()
     {
         Schema::table( 'listings', function ( Blueprint $table ) {
-            $table->string( 'ticket_url' )->default( '' )->nullable();
+            $table->string( 'ticket_url', 2000 )->default( '' )->nullable();
             $table->string( 'date_hash' )->default( '' )->nullable();
         } );
 

@@ -27,5 +27,8 @@ Route::get( "/admin/users/loginAs/{user}", 'Api\UsersController@loginAsUser' )->
 Route::get( '/admin/jobs', 'Admin\JobsController@index' )->middleware( [ 'auth', 'admin' ] );
 Route::get('/admin/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->middleware( [ 'auth', 'admin' ] );
 
+/* New ticket master view */
+Route::get( '/admin/listings-ticket-master', 'Admin\ListingsTicketMasterController@index' )->middleware( [ 'auth' ] );
+
 /* Deployment */
 Route::post('/bfC34RNEDYiC8Yc3C1c9LoB1Q9tHEEJE', 'DeploymentController@index');

@@ -1,14 +1,17 @@
---drop view listings_view;
+DROP VIEW listings_view;
 
---CREATE VIEW listings_view AS
+CREATE VIEW listings_view AS
 
-SELECT  evt.id,
+SELECT  evt.id AS event_id,
         evt.tm_id,
         evt."fromBoxOfficeFox",
-        evt.name,
+        evt.name AS event_name,
+        att.id AS attraction_id,
         att.name AS attraction_name,
         att.upcoming_events,
+        ven.id AS venue_id,
         ven.name AS venue_name,
+        ven.city AS venue_city,
         evt.type,
         evt.url,
         evt.locale,
@@ -36,40 +39,91 @@ SELECT  evt.id,
         evt.created_at AS event_created_at,
         evt.updated_at AS event_updated_at,
         evt.currency,
+        min(evt_prc.total) AS raw_min_price,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
-                min(evt_prc.total) AS min_price,
+                min(evt_prc.total)
             WHEN evt.currency ILIKE 'CAD'
             THEN
-                min(evt_prc.total) * (SELECT rate FROM currency_conversion WHERE code = 'CAD')
+                round(min(evt_prc.total) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
         END AS min_price,
-        array_min
-        (
-            ARRAY ( 
-                   SELECT total FROM event_prices 
-                   WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
-        ) AS second_highest_price,
-        max(evt_prc.total) AS max_price,
-        round(avg(evt_prc.total)) AS average_price,
+        max(evt_prc.total) AS raw_max_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                array_min
+                (
+                    ARRAY ( 
+                           SELECT total FROM event_prices 
+                           WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
+                ) 
+            WHEN evt.currency ILIKE 'CAD'
+            THEN  
+                round(
+                    array_min
+                    (
+                        ARRAY ( 
+                               SELECT total FROM event_prices 
+                               WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
+                    ) / (SELECT rate FROM currency_conversion WHERE code = 'CAD')
+                 )
+        END AS second_highest_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                max(evt_prc.total)
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                round(max(evt_prc.total) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
+        END AS max_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                round(avg(evt_prc.total))
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                round(avg(evt_prc.total) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
+        END AS average_price,
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND min(evt_prc.total) > 0
             THEN
-                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100)
+                CASE
+                    WHEN evt.currency ILIKE 'USD'
+                    THEN
+                        ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100)
+                    WHEN evt.currency ILIKE 'CAD'
+                    THEN
+                        round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))  
+                 END        
             ELSE
                 0
         END AS roi_low,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
-                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100)
+                CASE
+                    WHEN evt.currency ILIKE 'USD'
+                    THEN
+                        ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100)
+                    WHEN evt.currency ILIKE 'CAD'
+                    THEN
+                        round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
+                END    
             ELSE
                 0
         END AS roi_second_highest,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
-                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100)
+                CASE
+                    WHEN evt.currency ILIKE 'USD'
+                    THEN
+                        ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100)
+                    WHEN evt.currency ILIKE 'CAD'
+                    THEN
+                        round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
+                END    
             ELSE
                 0
         END AS roi_high,  
@@ -116,6 +170,29 @@ FROM events evt
         ON evt.id = evt_psl.event_id        
     LEFT JOIN data_master dm
         ON evt.data_master_id = dm.id    
+    JOIN (
+            SELECT  evt.name AS event_name,
+                    min(evt.event_datetime) AS event_datetime,
+                    att.id AS attraction_id,
+                    ven.id AS venue_id
+            FROM events evt
+                LEFT JOIN event_attraction evt_att
+                    ON evt.id = evt_att.event_id
+                LEFT JOIN attractions att
+                    ON evt_att.attraction_id = att.id
+                LEFT JOIN event_venue evt_ven
+                    ON evt.id = evt_ven.event_id
+                LEFT JOIN venues ven
+                    ON evt_ven.venue_id = ven.id    
+            WHERE evt_att.primary = TRUE    
+            AND evt_ven.primary = TRUE   
+            --and evt.name = 'A Bronx Tale: The Musical (Touring)'
+            GROUP BY att.id, ven.id, ven.name, evt.name
+        ) first_event_date 
+        ON first_event_date.event_name = evt."name"
+            AND first_event_date.event_datetime = evt.event_datetime
+            AND first_event_date.attraction_id = att.id
+            AND first_event_date.venue_id = ven.id
 WHERE evt_att.primary = TRUE    
 AND evt_ven.primary = TRUE    
 GROUP BY
@@ -123,7 +200,9 @@ GROUP BY
         evt.tm_id,
         evt."fromBoxOfficeFox",
         evt.name,
+        ven.id,
         ven.name,
+        att.id,
         att.name,
         att.upcoming_events,
         evt.type,

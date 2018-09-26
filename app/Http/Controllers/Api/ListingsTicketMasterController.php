@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ListingsViewController extends Controller
+class ListingsTicketMasterController extends Controller
 {
 
     public function __construct()
@@ -70,11 +70,12 @@ class ListingsViewController extends Controller
             $size = 25;
         }
 
+        // -- todo -- verify other search fields
         if ( $request->has( "search" ) && !empty( $request->search ) ) {
             $searchField = $request->get( 'searchField', 'all' );
             if ( $searchField == 'all' ) {
                 $query->where( "event_name", "ilike", "%" . $request->search . "%" );
-                $query->orWhere( "venue", "ilike", "%" . $request->search . "%" );
+                $query->orWhere( "venue_name", "ilike", "%" . $request->search . "%" );
                 $query->orWhere( "venue_city", "ilike", "%" . $request->search . "%" );
             } else if ( !empty( $searchField ) ) {
                     $query->where( $searchField, "ilike", "%" . $request->search . "%" );
@@ -117,12 +118,13 @@ class ListingsViewController extends Controller
             }
         }
 
+        // -- todo -- set statuses
         if ( $request->has( "filter" ) && !empty( $request->filter ) ) {
             switch ($request->filter) {
                 case "filter-on-sale":
                     $query->where( function($query) {
-                        $query->where('sale_status', 'OnSale');
-                        $query->orWhere( 'sale_status', 'OnPresale');
+                        $query->where('event_status_code', 'onsale');
+                        $query->orWhere( 'event_status_code', 'onpresale');
                     } );
                     break;
                 case "filter-targeted":
@@ -132,7 +134,7 @@ class ListingsViewController extends Controller
                     $query->where( 'status', 'excluded' );
                     break;
                 case "filter-future":
-                    $query->where( 'sale_status', 'Future' );
+                    $query->where( 'event_status_code', 'future' );
                     break;
                 case "filter-all":
                 default:
@@ -266,11 +268,8 @@ class ListingsViewController extends Controller
             case "event_day":
             case "event_date":
             case "sale_status":
-            case "performer":
-            case "performer_normalized":
-            //case "event_name":
+            case "attraction_name":
             case "venue":
-            case "venue_capacity":
             case "venue_city":
             case "venue_state":
             case "venue_country":
@@ -282,8 +281,6 @@ class ListingsViewController extends Controller
             case "updated_at":
             case "first_onsale_date":
             case "weighted_sold":
-                $query->orderBy( $field, $direction );
-                break;
             case "tn_tix_sold":
             case "total_sold":
             case "avg_sale_price":
@@ -293,26 +290,8 @@ class ListingsViewController extends Controller
             case "tot_per_event":
             case "sfc_roi":
             case "sfc_cogs":
-                $query->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listings_view.data_master_id' );
-                    } )
-                    ->orderByRaw( '"data_master"."' . $field . '"' . $direction )
-                    ->select( "listings_view.*" );
-                break;
             case "total_sales":
-                $query->leftJoin( 'data_master', function ( $join ) {
-                        $join->on( 'data_master.id', '=', 'listings_view.data_master_id' );
-                    } )
-                    ->orderByRaw( '"data_master"."total_sold" - "data_master"."tn_tix_sold"' . $direction )
-                    ->select( "listings_view.*" );
-                break;
             case "sale_date":
-                $query->leftJoin( 'sales', function ( $join ) {
-                    $join->on( 'sales.listing_id', '=', 'listings_view.id' )->orderBy('sale_date','ASC')->limit(1);
-                } )
-                    ->orderByRaw( '"sales"."' . $field . '"' . $direction )
-                    ->select( "listings_view.*" );
-                break;
             case 'roi_sh':
             case 'roi_low':
             case 'roi_net':
@@ -320,11 +299,7 @@ class ListingsViewController extends Controller
             case 'avg_sold_price_in_date_range':
             case 'tix_sold_in_date_range':
             case 'tn_events':
-                $query->leftJoin( 'stats as statData', function ( $join ) {
-                    $join->on( 'statData.listing_id', '=', 'listings_view.id' );
-                } )
-                    ->orderByRaw( '"statData"."' . $field . '"' . $direction )
-                    ->select( "listings_view.*" );
+                $query->orderBy( $field, $direction );
                 break;
             default:
                 $query->orderByRaw( "created_at DESC NULLS LAST" );
@@ -339,21 +314,6 @@ class ListingsViewController extends Controller
         return $query;
     }
 
-    /**
-     * Load an existing listing
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function fetch( Request $request, Listing $listing )
-    {
-
-        $listing->load("stats","sales","updates");
-        return response()->json( [
-            'message' => "Listing loaded for editing.",
-            'status'  => "success",
-            'results' => $listing
-        ] );
-    }
 
     /**
      * Update an existing listing status
@@ -384,59 +344,6 @@ class ListingsViewController extends Controller
 
         if ( $listing->update( ['status' => $status] ) ) {
             $listing->load( "sales", "data", "updates", "stats" );
-            return response()->json( [
-                'message' => "Listing updated successfully.",
-                'new'     => false,
-                'status'  => "success",
-                'results' => $listing
-            ] );
-        }
-
-        return response()->json( [
-            'message' => "Error saving listing. Please Try Again.",
-            'status'  => "error"
-        ],
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
-
-    }
-
-    /**
-     * Update an existing listing
-     * @param Request $request
-     * @param Listing $listing
-     * @return mixed
-     */
-    public function update( Request $request, Listing $listing )
-    {
-        $canEdit = false;
-        if (\Auth::user()->isAdmin() )
-        {
-            $canEdit = true;
-        }
-
-        if ( !$canEdit ) {
-            return response()->json( [
-                'message' => "You do not have permission to edit this listing.",
-                'status'  => "error"
-            ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-
-        /* Default validators */
-        $validators = [
-            'name'       => 'required|min:5|max:255',
-        ];
-
-        $this->validate( $request, $validators );
-
-        $update = $request->except(
-            "id"
-        );
-
-
-        if ( $listing->update( $update ) ) {
             return response()->json( [
                 'message' => "Listing updated successfully.",
                 'new'     => false,
@@ -495,28 +402,26 @@ class ListingsViewController extends Controller
 
     }
 
-    public function sendZapierWebHook($listing_id)
+    public function sendZapierWebHook($event_id)
     {
         // set Zapier end point
-        $zapier_endpoint = 'https://hook.integromat.com/znewwagjbdaqvnpa7t1h715evuqomqmm';
+        $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
 
         // get listing with data
-        $listing = Listing::where('id', '=', $listing_id)->with('stats')->firstOrFail()->toArray();
+        $listing = DB::table('listings_view')
+            ->where('event_id', '=', $event_id)->first()->toArray();
 
-        /* change it to local so we don't send it to the production webhook for testing */
+        /* if local, don't send, but just log the data */
         if( env('APP_ENV') === 'local') {
-            $zapier_endpoint = 'https://hook.integromat.com/znewwagjbdaqvnpa7t1h715evuqomqmm';
+            Log::info(print_r($listing, true));
         }
-
-        // get listing with data
-        $listing = Listing::where('id', '=', $listing_id)->with('stats', 'data')->firstOrFail()->toArray();
-
-        //Log::info('----- data sent to Zapier web hook ----');
-        //Log::info(print_r($listing, true));
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
-Log::info($response);
+
+        /* -- debug --*/
+        // Log::info($response);
+
         // return status of success
         if( $response !== null ) {
             return response()->json( [
@@ -565,7 +470,9 @@ Log::info($response);
 
         //run request
         $response = curl_exec($ch);
-Log::info(json_encode($payload));
+
+        //Log::info(json_encode($payload));
+
         //check for curl error
         if( curl_error($ch) ) {
             Log::error('*** Curl Error ***');

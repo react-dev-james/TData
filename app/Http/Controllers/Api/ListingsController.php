@@ -510,7 +510,10 @@ class ListingsController extends Controller
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
-Log::info($response);
+
+        /* debug */
+        //Log::info($response);
+
         // return status of success
         if( $response !== null ) {
             return response()->json( [
