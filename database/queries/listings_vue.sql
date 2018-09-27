@@ -31,6 +31,8 @@ SELECT  evt.id AS event_id,
         evt.event_time_zone,
         evt.event_datetime,
         evt.event_status_code,
+        evt.event_state_id,
+        evt_st.title AS event_state,
         seg.name AS segment_name,
         gen.name AS genre_name,
         sub_gen.name AS sub_genre_name,
@@ -39,7 +41,9 @@ SELECT  evt.id AS event_id,
         evt.created_at AS event_created_at,
         evt.updated_at AS event_updated_at,
         evt.currency,
-        min(evt_prc.total) AS raw_min_price,
+        evt.price_range_min,
+        evt.price_range_max,
+        --min(evt_prc.total) AS raw_min_price,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
@@ -48,7 +52,7 @@ SELECT  evt.id AS event_id,
             THEN
                 round(min(evt_prc.total) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
         END AS min_price,
-        max(evt_prc.total) AS raw_max_price,
+        --max(evt_prc.total) AS raw_max_price,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
@@ -150,6 +154,8 @@ SELECT  evt.id AS event_id,
         dm.sfc_roi_dollar,
         dm.sfc_cogs
 FROM events evt
+    LEFT JOIN event_states evt_st
+        ON evt.event_state_id = evt_st.id
     LEFT JOIN segments seg
         ON evt.segment_Id = seg.id
     LEFT JOIN genres gen
@@ -198,6 +204,8 @@ AND evt_ven.primary = TRUE
 GROUP BY
         evt.id,
         evt.tm_id,
+        evt.event_state_id,
+        evt_st.title,
         evt."fromBoxOfficeFox",
         evt.name,
         ven.id,

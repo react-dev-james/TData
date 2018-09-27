@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Event;
 use App\Reference;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Listing;
+use App\EventState;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -118,7 +120,9 @@ class ListingsTicketMasterController extends Controller
             }
         }
 
-        // -- todo -- set statuses
+        // get states
+        $event_state = new EventState();
+
         if ( $request->has( "filter" ) && !empty( $request->filter ) ) {
             switch ($request->filter) {
                 case "filter-on-sale":
@@ -128,14 +132,14 @@ class ListingsTicketMasterController extends Controller
                     } );
                     break;
                 case "filter-targeted":
-                    $query->where( 'status', 'targeted' );
+                    $query->where( 'event_state_id', $event_state->targeted_state_id() );
                     break;
                 case "filter-excluded":
-                    $query->where( 'status', 'excluded' );
+                    $query->where( 'event_state_id', $event_state->excluded_state_id() );
                     break;
                 case "filter-all":
                 default:
-                $query->where( 'status','!=','excluded' );
+                $query->where( 'event_state_id', '!=', $event_state->excluded_state_id() );
                 break;                    
             }
         } else {

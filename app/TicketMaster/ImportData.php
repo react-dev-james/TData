@@ -58,7 +58,7 @@ class ImportData
         $total_pages = 1;
 
         // get event state id for active
-        $event_state_active_id = EventState::where('slug', '=', 'active')->value('id');
+        $event_state_active_id = (new EventState())->active_state_id();
 
         // loop to paginate
         do {
