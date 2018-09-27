@@ -133,9 +133,6 @@ class ListingsTicketMasterController extends Controller
                 case "filter-excluded":
                     $query->where( 'status', 'excluded' );
                     break;
-                case "filter-future":
-                    $query->where( 'event_status_code', 'future' );
-                    break;
                 case "filter-all":
                 default:
                 $query->where( 'status','!=','excluded' );
@@ -306,9 +303,10 @@ class ListingsTicketMasterController extends Controller
                 break;
         }
 
+        // always order by weighted sold
         $query->orderByRaw("weighted_sold DESC NULLS LAST");
 
-        // add event name as sort
+        // then order by event name
         $query->orderByRaw('event_name');
 
         return $query;

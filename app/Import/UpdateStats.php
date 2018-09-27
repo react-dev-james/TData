@@ -22,8 +22,8 @@ class UpdateStats
 
             /* Calculate ROI for listing */
             if ( !isset($listing->data) || $listing->data === null ) {
-                echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";
-                Log::info('/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . ' **/');
+                //echo '/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . " **/\n";
+                //Log::info('/** Data object not found in UpdateStats.php for listing id: ' . $listing->id . ' **/');
                 continue;
             }
 
