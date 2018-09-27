@@ -28,7 +28,7 @@ class TicketMaster
 
         //set header options
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'get');
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 45);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $request_headers = [
