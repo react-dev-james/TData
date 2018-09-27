@@ -9,6 +9,7 @@
 namespace App\TicketMaster;
 
 use App\Event;
+use App\EventState;
 use App\Presale;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -52,10 +53,12 @@ class ImportData
 
     private function loadEvents($day, $country_code)
     {
-        /** we need to loop for each country? */
         // init page variable
         $current_page = 0;
         $total_pages = 1;
+
+        // get event state id for active
+        $event_state_active_id = EventState::where('slug', '=', 'active')->value('id');
 
         // loop to paginate
         do {
@@ -96,6 +99,7 @@ class ImportData
 
                 // set basic data
                 $payload = [
+                    'event_state_id'       => $event_state_active_id,
                     'name'                 => $event_data->name,
                     'type'                 => $event_data->type,
                     'url'                  => $event_data->url,
@@ -110,6 +114,13 @@ class ImportData
                     'event_status_code'    => $event_data->dates->status->code,
                     'ticket_limit'         => isset($event_data->ticketLimit->info) ? $event_data->ticketLimit->info : null,
                 ];
+
+                // add price ranges
+                if( isset($event_data->priceRanges[0]) ) {
+
+                    $payload['price_range_min'] = isset($event_data->priceRanges[0]->min) ? $event_data->priceRanges[0]->min : null;
+                    $payload['price_range_max'] = isset($event_data->priceRanges[0]->max) ? $event_data->priceRanges[0]->max : null;
+                }
 
                 // set segment
                 $payload['segment_id'] = isset($event_data->classifications[0]->segment->id) ?

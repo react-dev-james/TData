@@ -25,7 +25,7 @@
     <div style=" padding-top: 20px; padding-bottom: 20px; height: auto; margin-right: 0px;">
 
         <div class="col-lg-12 no-padding">
-            <trans-admin-listings ></trans-admin-listings>
+            <trans-admin-listings-ticket-master></trans-admin-listings-ticket-master>
 
         </div>
         <div class="clearfix"></div>

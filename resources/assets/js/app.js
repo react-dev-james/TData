@@ -43,6 +43,7 @@ Vue.component('bomb-sidenav', require('./components/nav/SideNav.vue'));
 
 /* Admin Components */
 Vue.component('trans-admin-listings', require('./components/admin/Listings.vue'));
+Vue.component('trans-admin-listings-ticket-master', require('./components/admin/ListingsTicketMaster.vue'));
 Vue.component('trans-admin-users', require('./components/admin/Users.vue'));
 Vue.component('trans-table-sort', require('./components/admin/TableSort.vue'));
 

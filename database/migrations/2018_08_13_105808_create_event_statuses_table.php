@@ -13,7 +13,7 @@ class CreateEventStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('event_statuses', function ( Blueprint $table ) {
+        Schema::create('event_states', function ( Blueprint $table ) {
             $table->increments('id');
             $table->string('title', 100);
             $table->string('slug', 100);
@@ -28,6 +28,6 @@ class CreateEventStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('event_statuses');
+        Schema::dropIfExists('event_states');
     }
 }
