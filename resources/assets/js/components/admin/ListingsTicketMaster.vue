@@ -210,6 +210,7 @@
                         <md-table-head v-if="columnActive('attraction_name')" md-sort-by="attraction_name">Performer</md-table-head>
                         <md-table-head v-if="columnActive('venue_name')" md-sort-by="venue_name" >Venue</md-table-head>
                         <md-table-head v-if="columnActive('roi_high')" md-sort-by="roi_high" >ROI</md-table-head>
+                        <md-table-head v-if="columnActive('roi_second_highest')" md-sort-by="roi_second_highest" >ROI 2nd</md-table-head>
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head v-if="columnActive('weighted_sold')" md-sort-by="weighted_sold">Weighted Sold</md-table-head>
                         <md-table-head v-if="columnActive('sh_sold')" md-sort-by="sh_sold" >SH Sold</md-table-head>
@@ -269,6 +270,12 @@
                             <span v-if="listing.roi_high >= 20 && listing.roi_high < 40" class="label label-success-light">{{ `${listing.roi_high}%` }}</span>
                             <span v-if="listing.roi_high < 20 && listing.roi_high > 0" class="label bg-grey-400">{{ `${listing.roi_high}%` }}</span>
                             <span v-if="listing.roi_high < 0" class="label label-danger">{{ `${listing.roi_high}%` }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('roi_second_highest')">
+                            <span v-if="listing.roi_second_highest >= 40" class="label label-success">{{ `${listing.roi_second_highest}%` }}</span>
+                            <span v-if="listing.roi_second_highest >= 20 && listing.roi_second_highest < 40" class="label label-success-light">{{ `${listing.roi_second_highest}%` }}</span>
+                            <span v-if="listing.roi_second_highest < 20 && listing.roi_second_highest > 0" class="label bg-grey-400">{{ `${listing.roi_second_highest}%` }}</span>
+                            <span v-if="listing.roi_second_highest < 0" class="label label-danger">{{ `${listing.roi_second_highest}%` }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_low')">
                             <span v-if="listing.roi_low >= 200" class="label label-success">{{ `${listing.roi_low}%` }}</span>
@@ -529,6 +536,7 @@
                 {id : 22, name: 'weighted_sold', title: 'Weighted Sold'},
                 {id : 23, name: 'total_sold', title: 'Total Sold All'},
                 {id : 24, name: 'second_highest_price', title: '2nd High'},
+                {id : 25, name: 'roi_second_highest', title: 'ROI 2nd'},
             ],
             options: {
                 pager: {

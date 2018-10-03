@@ -297,6 +297,7 @@ class ListingsTicketMasterController extends Controller
             case 'roi_sh':
             case 'roi_low':
             case 'roi_net':
+            case 'roi_second_highest':
             case 'sold_per_event':
             case 'avg_sold_price_in_date_range':
             case 'tix_sold_in_date_range':
