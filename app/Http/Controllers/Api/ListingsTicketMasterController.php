@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ListingsTicketMasterController extends Controller
 {
@@ -34,7 +35,7 @@ class ListingsTicketMasterController extends Controller
 
         if ($request->get('currentFilter','true') == 'true') {
             // get dates
-            $start_date = Carbon::now()>startOfWeek();
+            $start_date = Carbon::now()->startOfWeek();
             $end_date = Carbon::now()->endOfWeek();
 
             $query = DB::table('listings_view')
@@ -89,7 +90,7 @@ class ListingsTicketMasterController extends Controller
         if ( $request->has( "dateFilter" ) && !empty( $request->dateFilter ) ) {
             switch ($request->dateFilter) {
                 case "monday":
-                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_date) = 1' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_datetime) = 1' );
                     /*
                     $query->join( 'sales as salesDate', function ( $join ) {
                         $join->on( 'salesDate.listing_id', '=', 'listings_view.id' )->where( 'salesDate.day', 'Monday' )->limit( 1 );
@@ -99,22 +100,22 @@ class ListingsTicketMasterController extends Controller
                     */
                     break;
                 case "tuesday":
-                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_date) = 2' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_datetime) = 2' );
                     break;
                 case "wednesday":
-                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_date) = 3' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_datetime) = 3' );
                     break;
                 case "thursday":
-                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_date) = 4' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_datetime) = 4' );
                     break;
                 case "weekend":
-                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_date) >= 5' );
+                    $query->whereRaw( 'EXTRACT(dow FROM listings_view.first_onsale_datetime) >= 5' );
                     break;
                 case "new":
                     /* Select the most recent entry and use the date to look for other entries */
-                    $newest = \App\Listing::orderBy('created_at','DESC')->first();
+                    $newest = DB::table('listings_view')->orderBy('event_created_at','DESC')->first();
                     if ($newest) {
-                        $query->whereDay( "listings_view.created_at", $newest->created_at->day );
+                        $query->whereDate( "listings_view.event_created_at", $newest->event_created_at );
                     }
                     break;
             }
@@ -143,7 +144,7 @@ class ListingsTicketMasterController extends Controller
                 break;                    
             }
         } else {
-            $query->where( 'status', '!=', 'excluded' );
+            $query->where( 'event_state_id', '!=', $event_state->excluded_state_id() );
         }
 
         return $query->paginate( $size );
@@ -246,12 +247,12 @@ class ListingsTicketMasterController extends Controller
     }
 
     /**
-     * @param Builder $query
+     * @param $query
      * @param string $field
      * @param string $direction
      * @return Builder
      */
-    private function sort( Builder $query, $field = "id", $direction = "asc" )
+    private function sort( $query, $field = "id", $direction = "asc" )
     {
 
         /* Reverse sort order so default sorting is in descending order */
@@ -265,22 +266,22 @@ class ListingsTicketMasterController extends Controller
 
             case "status":
             case "event_name":
-            case "category":
             case "event_day":
             case "event_date":
             case "sale_status":
             case "attraction_name":
-            case "venue":
+            case "venue_name":
             case "venue_city":
             case "venue_state":
             case "venue_country":
             case "avg_ticket_price":
-            case "low_ticket_price":
-            case "high_ticket_price":
+            case "min_price":
+            case "second_highest_price":
+            case "max_price":
             case "total_value":
-            case "created_at":
+            case "event_created_at":
             case "updated_at":
-            case "first_onsale_date":
+            case "first_onsale_datetime":
             case "weighted_sold":
             case "tn_tix_sold":
             case "total_sold":
@@ -300,10 +301,10 @@ class ListingsTicketMasterController extends Controller
             case 'avg_sold_price_in_date_range':
             case 'tix_sold_in_date_range':
             case 'tn_events':
-                $query->orderBy( $field, $direction );
+                $query->orderByRaw( $field . $direction );
                 break;
             default:
-                $query->orderByRaw( "created_at DESC NULLS LAST" );
+                $query->orderByRaw( "event_created_at DESC NULLS LAST" );
                 break;
         }
 

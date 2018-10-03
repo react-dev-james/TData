@@ -12,8 +12,9 @@ SELECT  evt.id AS event_id,
         ven.id AS venue_id,
         ven.name AS venue_name,
         ven.city AS venue_city,
+        ven.state_code AS venue_state_code,
         evt.type,
-        evt.url,
+        evt.url AS ticket_url,
         evt.locale,
         evt.public_sale_datetime,
         min(evt_psl.start_datetime) AS presale_datetime,
@@ -23,13 +24,21 @@ SELECT  evt.id AS event_id,
                 evt.public_sale_datetime
             ELSE
                 min(evt_psl.start_datetime)
-        END AS first_onsale_datetime,        
+        END AS first_onsale_datetime,   
+        CASE
+            WHEN evt.public_sale_datetime < min(evt_psl.start_datetime) OR min(evt_psl.start_datetime) IS NULL
+            THEN
+                EXTRACT(epoch FROM evt.public_sale_datetime)
+            ELSE
+                EXTRACT(epoch FROM min(evt_psl.start_datetime))
+        END AS first_onsale_timestamp,      
         --evt_psl.name AS presale_name,
         evt.sales_start_tbd,
         evt.event_local_date,
         evt.event_local_time,
         evt.event_time_zone,
         evt.event_datetime,
+        to_char(evt.event_datetime, 'day') AS event_day,
         evt.event_status_code,
         evt.event_state_id,
         evt_st.title AS event_state,
@@ -131,8 +140,41 @@ SELECT  evt.id AS event_id,
             ELSE
                 0
         END AS roi_high,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
+            THEN
+                CASE
+                    WHEN evt.currency ILIKE 'USD'
+                    THEN
+                        ceil(((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total)) * 40)
+                    WHEN evt.currency ILIKE 'CAD'
+                    THEN
+                        round(ceil(((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total) * 40) / (SELECT rate FROM currency_conversion WHERE code = 'CAD'))
+                END    
+            ELSE
+                0
+        END AS roi_net,  
         evt.data_master_id,
         dm.total_events,
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL
+            THEN
+              ceil(dm.weighted_avg * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date)))             
+        ELSE
+            0
+        END AS weighted_sold,  
+        CASE 
+            WHEN dm.tn_vol IS NOT NULL 
+                 AND dm.tn_tix_sold IS NOT NULL 
+                 AND dm.total_sold IS NOT NULL 
+                 AND dm.total_vol IS NOT NULL 
+                 AND (dm.total_vol - dm.tn_vol) > 0 
+                 AND (dm.total_sold - dm.tn_tix_sold) > 0
+            THEN
+               round((dm.total_vol - dm.tn_vol) / (dm.total_sold - dm.tn_tix_sold))
+        ELSE
+           NULL
+        END AS sh_sold,   
         dm.total_sold,
         dm.total_vol,
         dm.weighted_avg,
@@ -210,6 +252,7 @@ GROUP BY
         evt.name,
         ven.id,
         ven.name,
+        ven.state_code,
         att.id,
         att.name,
         att.upcoming_events,
@@ -253,7 +296,9 @@ GROUP BY
         dm.si_vol,
         dm.sfc_roi,
         dm.sfc_roi_dollar,
-        dm.sfc_cogs
+        dm.sfc_cogs;
+        
+GRANT SELECT ON listings_view TO tickets;
    
 /*   
     create or replace function array_min(anyarray) returns anyelement

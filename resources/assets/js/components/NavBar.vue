@@ -18,6 +18,12 @@ Properties: current-page [Declares which page should be active in navigation.]
                            :class="currentPage == 'listings' ? 'link-primary' : 'link-accent' ">
                     Event Listings
                 </md-button>
+                <md-button  v-if="shared.user.id"
+                            class=""
+                            href="/admin/listings-ticket-master"
+                            :class="currentPage == 'listings' ? 'link-primary' : 'link-accent' ">
+                    Event Listings - Ticket Master
+                </md-button>
             </div>
             <div class="pull-right">
                     <md-menu md-align-trigger v-if="shared.user.email" class="hidden-xs hidden-sm">

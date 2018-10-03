@@ -26,7 +26,6 @@
 
         <div class="col-lg-12 no-padding">
             <trans-admin-listings-ticket-master></trans-admin-listings-ticket-master>
-
         </div>
         <div class="clearfix"></div>
 

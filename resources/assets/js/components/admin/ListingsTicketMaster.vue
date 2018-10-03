@@ -144,7 +144,7 @@
                             <md-option value="all">All Fields</md-option>
                             <md-option value="event_name">Event Name</md-option>
                             <md-option value="venue_city">Venue City</md-option>
-                            <md-option value="venue">Venue Name</md-option>
+                            <md-option value="venue_name">Venue Name</md-option>
                         </md-select>
                     </md-input-container>
                 </div>
@@ -207,9 +207,9 @@
                     <md-table-row>
                         <md-table-head>Options</md-table-head>
                         <md-table-head v-if="columnActive('event_name')" md-sort-by="event_name">Event</md-table-head>
-                        <md-table-head v-if="columnActive('performer')" md-sort-by="performer">Performer</md-table-head>
-                        <md-table-head v-if="columnActive('venue')" md-sort-by="venue" >Venue</md-table-head>
-                        <md-table-head v-if="columnActive('roi_sh')" md-sort-by="roi_sh" >ROI</md-table-head>
+                        <md-table-head v-if="columnActive('attraction_name')" md-sort-by="attraction_name">Performer</md-table-head>
+                        <md-table-head v-if="columnActive('venue_name')" md-sort-by="venue_name" >Venue</md-table-head>
+                        <md-table-head v-if="columnActive('roi_high')" md-sort-by="roi_high" >ROI</md-table-head>
                         <md-table-head v-if="columnActive('roi_low')" md-sort-by="roi_low">ROI Low</md-table-head>
                         <md-table-head v-if="columnActive('weighted_sold')" md-sort-by="weighted_sold">Weighted Sold</md-table-head>
                         <md-table-head v-if="columnActive('sh_sold')" md-sort-by="sh_sold" >SH Sold</md-table-head>
@@ -222,12 +222,13 @@
                         <md-table-head v-if="columnActive('total_sold')" md-sort-by="total_sold">Total Sold All</md-table-head>
                         <md-table-head v-if="columnActive('total_sales')" md-sort-by="total_sales" >SH Tix</md-table-head>
                         <md-table-head v-if="columnActive('tn_tix_sold')" md-sort-by="tn_tix_sold" >TN Total</md-table-head>
-                        <md-table-head v-if="columnActive('high_ticket_price')" md-sort-by="high_ticket_price">High</md-table-head>
-                        <md-table-head v-if="columnActive('low_ticket_price')" md-sort-by="low_ticket_price" >Low</md-table-head>
+                        <md-table-head v-if="columnActive('max_price')" md-sort-by="max_price">High</md-table-head>
+                        <md-table-head v-if="columnActive('second_highest_price')" md-sort-by="second_highest_price">2nd High</md-table-head>
+                        <md-table-head v-if="columnActive('min_price')" md-sort-by="min_price" >Low</md-table-head>
                         <md-table-head v-if="columnActive('venue_capacity')" md-sort-by="venue_capacity" >Capacity</md-table-head>
                         <md-table-head v-if="columnActive('event_day')" md-sort-by="event_day" >Day</md-table-head>
-                        <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_date" >Date</md-table-head>
-                        <md-table-head v-if="columnActive('venue_state')" md-sort-by="venue_state" >State</md-table-head>
+                        <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_datetime" >Date</md-table-head>
+                        <md-table-head v-if="columnActive('venue_state_code')" md-sort-by="venue_state_code" >State</md-table-head>
                         <md-table-head v-if="columnActive('buy')">Buy</md-table-head>
                     </md-table-row>
                 </md-table-header>
@@ -243,7 +244,7 @@
                                 <md-icon>attach_file</md-icon>
                             </button>
                             <button class="btn btn-small btn-success padding-5 targetListingButton"
-                                    :data-clipboard-text="`${listing.performer ? listing.performer : 'N/A'} ${listing.venue_state} (${listing.stats ? listing.stats.roi_sh : 'NA'}%) - ${listing.data ? listing.data.tot_per_event : 'NA'}`"
+                                    :data-clipboard-text="`${listing.attraction_name ? listing.attraction_name : 'N/A'} ${listing.venue_state_code} (${listing.roi_high ? listing.roi_high : 'NA'}%) - ${listing.tot_per_event ? listing.tot_per_event : 'NA'}`"
                                     @click="updateStatus(listing, 'targeted', rowIndex)">
                                 <md-icon>stars</md-icon>
                             </button>
@@ -255,98 +256,98 @@
                         </span>
 
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('performer')">
-                            {{ listing.performer ? listing.performer : '-'|limitTo(20) }}
-                            <md-tooltip md-direction="top">{{ listing.performer ? listing.performer : '-' }}</md-tooltip>
+                        <md-table-cell v-if="columnActive('attraction_name')">
+                            {{ listing.attraction_name ? listing.attraction_name : '-'|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.attraction_name ? listing.attraction_name : '-' }}</md-tooltip>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('venue')">
-                            {{ listing.venue|limitTo(20) }}
-                            <md-tooltip md-direction="top">{{ listing.venue }}</md-tooltip>
+                        <md-table-cell v-if="columnActive('venue_name')">
+                            {{ listing.venue_name|limitTo(20) }}
+                            <md-tooltip md-direction="top">{{ listing.venue_name }}</md-tooltip>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('roi_sh')">
-                            <span v-if="listing.stats && listing.stats.roi_sh >= 40" class="label label-success">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh >= 20 && listing.stats.roi_sh < 40" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh < 20 && listing.stats.roi_sh > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_sh < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_sh}%` : '-' }}</span>
+                        <md-table-cell v-if="columnActive('roi_high')">
+                            <span v-if="listing.roi_high >= 40" class="label label-success">{{ `${listing.roi_high}%` }}</span>
+                            <span v-if="listing.roi_high >= 20 && listing.roi_high < 40" class="label label-success-light">{{ `${listing.roi_high}%` }}</span>
+                            <span v-if="listing.roi_high < 20 && listing.roi_high > 0" class="label bg-grey-400">{{ `${listing.roi_high}%` }}</span>
+                            <span v-if="listing.roi_high < 0" class="label label-danger">{{ `${listing.roi_high}%` }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_low')">
-                            <span v-if="listing.stats && listing.stats.roi_low >= 200" class="label label-success">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low >= 100 && listing.stats.roi_low < 200" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low < 100 && listing.stats.roi_low > 0" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
-                            <span v-if="listing.stats && listing.stats.roi_low < 0" class="label label-danger">{{ listing.stats ? `${listing.stats.roi_low}%` : '-' }}</span>
+                            <span v-if="listing.roi_low >= 200" class="label label-success">{{ `${listing.roi_low}%` }}</span>
+                            <span v-if="listing.roi_low >= 100 && listing.roi_low < 200" class="label label-success-light">{{`${listing.roi_low}%` }}</span>
+                            <span v-if="listing.roi_low < 100 && listing.roi_low > 0" class="label bg-grey-400">{{ `${listing.roi_low}%` }}</span>
+                            <span v-if="listing.roi_low < 0" class="label label-danger">{{ `${listing.roi_low}%` }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('weighted_sold')">
                             <span class="">{{ listing.weighted_sold > 0 ? listing.weighted_sold : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sh_sold')">
                             <span class="">
-                                {{ listing.data ? Math.round(
-                                    (listing.data.total_vol - listing.data.tn_vol) /
-                                    (listing.data.total_sold - listing.data.tn_tix_sold)) :
-                                        '-' }}
+                                {{ listing.sh_sold !== null ? listing.sh_sold : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tn_avg_sale')">
-                            <span class="">{{ listing.data ? `${listing.data.tn_avg_sale}` : '-' }}</span>
+                            <span class="">{{ listing.tn_avg_sale !== null ? `${listing.tn_avg_sale}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_net')">
-                            <span v-if="listing.stats && listing.stats.roi_net >= 1500" class="label label-success">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
+                            <span v-if="listing.roi_net >= 1500" class="label label-success">{{ listing.roi_net !== null ? `${listing.roi_net}` : '-' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net >= 800 && listing.stats.roi_net < 1500" class="label label-success-light">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
+                            <span v-if="listing.roi_net >= 800 && listing.roi_net < 1500" class="label label-success-light">{{ listing.roi_net !== null ? `${listing.roi_net}` : '-' }}
                             </span>
-                            <span v-if="listing.stats && listing.stats.roi_net < 800" class="label bg-grey-400">{{ listing.stats ? `${listing.stats.roi_net}` : '-' }}
+                            <span v-if="listing.roi_net < 800" class="label bg-grey-400">{{ listing.roi_net !== null ? `${listing.roi_net}` : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tot_per_event')">
-                            <span v-if="listing.data && listing.data.tot_per_event <= 9" class="label label label-danger" >{{ listing.data ? `${listing.data.tot_per_event}` : '-' }}</span>
-                            <span v-if="listing.data  && listing.data.tot_per_event >= 20" class="label label label-success" >{{ listing.data  ? `${listing.data.tot_per_event}` : '-' }}</span>
-                            <span v-if="listing.data  && listing.data.tot_per_event > 9 && listing.data.tot_per_event < 20"class="label bg-grey-400" >{{ listing.data ? `${listing.data.tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.tot_per_event <= 9" class="label label label-danger" >{{ listing.tot_per_event !== null ? `${listing.tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.tot_per_event >= 20" class="label label label-success" >{{ listing.tot_per_event !== null  ? `${listing.tot_per_event}` : '-' }}</span>
+                            <span v-if="listing.tot_per_event > 9 && listing.tot_per_event < 20"class="label bg-grey-400" >{{ listing.tot_per_event !== null ? `${listing.tot_per_event}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi')">
-                            <span v-if="listing.data && listing.data.sfc_roi > .20" class="label label-success">
-                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.sfc_roi > .20" class="label label-success">
+                                {{ listing.sfc_roi !== null ? `${Math.ceil(listing.sfc_roi * 100)}%` : '-' }}
                             </span>
-                            <span v-if="listing.data && listing.data.sfc_roi >= 0 && listing.data.sfc_roi <= .20" class="label bg-grey-400">
-                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.sfc_roi >= 0 && listing.sfc_roi <= .20" class="label bg-grey-400">
+                                {{ listing.sfc_roi !== null ? `${Math.ceil(listing.sfc_roi * 100)}%` : '-' }}
                             </span>
-                            <span v-if="listing.data && listing.data.sfc_roi < 0" class="label label-danger">
-                                {{ listing.data ? `${Math.ceil(listing.data.sfc_roi * 100)}%` : '-' }}
+                            <span v-if="listing.sfc_roi < 0" class="label label-danger">
+                                {{ listing.sfc_roi !== null ? `${Math.ceil(listing.sfc_roi * 100)}%` : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_roi_dollar')">
-                            <span class="">{{ listing.data ? `$${listing.data.sfc_roi_dollar}` : '-' }}</span>
+                            <span class="">{{ listing.sfc_roi_dollar !== null ? `$${listing.sfc_roi_dollar}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sfc_cogs')">
-                            <span class="">{{ listing.data ? `$${listing.data.sfc_cogs}` : '-' }}</span>
+                            <span class="">{{ listing.sfc_cogs !== null ? `$${listing.sfc_cogs}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sold')">
-                            <span class="">{{listing.data ? listing.data.total_sold : '-' }}</span>
+                            <span class="">{{listing.total_sold !== null ? listing.total_sold : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('total_sales')">
                             <span class="">
-                                {{listing.data ? listing.data.total_sold - listing.data.tn_tix_sold : '-' }}
+                                {{listing.total_sold !== null ? listing.total_sold - listing.tn_tix_sold : '-' }}
                             </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('tn_tix_sold')">
-                            <span class="">{{ listing.data ? `${listing.data.tn_tix_sold}` : '-' }}</span>
+                            <span class="">{{ listing.tn_tix_sold !== null ? `${listing.tn_tix_sold}` : '-' }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('high_ticket_price')" class="col-border-left">
-                            <span class="">${{ listing.high_ticket_price }}</span>
+                        <md-table-cell v-if="columnActive('max_price')" class="col-border-left">
+                            <span class="">${{ listing.max_price }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('low_ticket_price')" class="col-border-right">
-                            <span class="">${{ listing.low_ticket_price }}</span>
+                        <md-table-cell v-if="columnActive('second_highest_price')">
+                            <span class="">${{ listing.second_highest_price }}</span>
+                        </md-table-cell>
+                        <md-table-cell v-if="columnActive('min_price')" class="col-border-right">
+                            <span class="">${{ listing.min_price }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('event_day')">
-                            <span class="">{{ listing.event_day }}</span>
+                            <span class="" style="text-transform: capitalize;">{{ listing.event_day }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('sale_date')">
-                            <span class="">{{ listing.nice_sale_date }}</span>
+                            <span class="">{{ formatDateTime(listing.first_onsale_timestamp) }}</span>
                         </md-table-cell>
-                        <md-table-cell v-if="columnActive('venue_state')">
-                            <span class="">{{ listing.venue_state }}</span>
+                        <md-table-cell v-if="columnActive('venue_state_code')">
+                            <span class="">{{ listing.venue_state_code }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('buy')">
                             <div v-if="listing.ticket_url">
@@ -505,18 +506,18 @@
             tableView: 'simple',
             columns: [
                 {id : 1, name: 'event_name', title: 'Event'},
-                {id : 2, name: 'performer', title: 'Performer'},
-                {id : 3, name: 'venue', title: 'Venue'},
-                {id : 4, name: 'roi_sh', title: 'ROI'},
+                {id : 2, name: 'attraction_name', title: 'Performer'},
+                {id : 3, name: 'venue_name', title: 'Venue'},
+                {id : 4, name: 'roi_high', title: 'ROI'},
                 {id : 5, name: 'roi_low', title: 'ROI Low'},
                 {id : 6, name: 'sh_sold', title: 'SH Sold'},
                 {id : 7, name: 'total_sales', title: 'SH Tix'},
-                {id : 8, name: 'high_ticket_price', title: 'High'},
-                {id : 9, name: 'low_ticket_price', title: 'Low'},
+                {id : 8, name: 'max_price', title: 'High'},
+                {id : 9, name: 'min_price', title: 'Low'},
                 {id : 10, name: 'venue_capacity', title: 'Venue Capacity'},
                 {id : 11, name: 'event_day', title: 'Day'},
                 {id : 12, name: 'sale_date', title: 'Date'},
-                {id : 13, name: 'venue_state', title: 'State'},
+                {id : 13, name: 'venue_state_code', title: 'State'},
                 {id : 14, name: 'buy', title: 'Buy'},
                 {id : 15, name: 'sfc_roi', title: 'SCF ROI'},
                 {id : 16, name: 'sfc_roi_dollar', title: 'SFC ROI Dollar'},
@@ -527,6 +528,7 @@
                 {id : 21, name: 'tn_avg_sale', title: 'TN Sold'},
                 {id : 22, name: 'weighted_sold', title: 'Weighted Sold'},
                 {id : 23, name: 'total_sold', title: 'Total Sold All'},
+                {id : 24, name: 'second_highest_price', title: '2nd High'},
             ],
             options: {
                 pager: {
@@ -628,6 +630,19 @@
                 return "N/A";
 
             },
+            formatDateTime(timestamp) {
+        	    const dateObject = new Date(timestamp * 1000);
+                const dateOptions = {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour12: true,
+                    hour: 'numeric',
+                    minute: 'numeric'
+                };
+
+        	    return dateObject.toLocaleDateString('en-US', dateOptions);
+            },
         	openSearch() {
         		this.state.searchSelected = !this.state.searchSelected;
 				setTimeout(() => {
@@ -711,7 +726,7 @@
                 	event_name: listing.event_name,
                 	match_name: this.manualLookupName
                 }
-				this.$http.post(`/apiv1/lookups`, lookup).then((response) => {
+				this.$http.post(`/apiv1/tm/lookups`, lookup).then((response) => {
 
 					this.$root.showNotification(response.body.message);
 
@@ -724,7 +739,7 @@
                 });
 			},
 			updateStatus(listing, status, rowIndex) {
-				this.$http.post(`/apiv1/listings/status/${listing.id}/${status}`).then((response) => {
+				this.$http.post(`/apiv1/tm/listings/status/${listing.id}/${status}`).then((response) => {
 
 					this.shared.listings[rowIndex] = response.body.results;
 					this.$root.showNotification(response.body.message);
@@ -740,7 +755,7 @@
 				});
 			},
             sendZapierWebHook(listing) {
-                this.$http.post(`/apiv1/listings/sendZapierWebHook/${listing.id}`).then((response) => {
+                this.$http.post(`/apiv1/tm/listings/sendZapierWebHook/${listing.id}`).then((response) => {
 
                     this.$root.showNotification(response.body.message);
 
@@ -750,7 +765,7 @@
                 });
             },
             associateListingWithData(listing, data) {
-				this.$http.post(`/apiv1/listings/associate/${listing.id}/${data.id}`).then((response) => {
+				this.$http.post(`/apiv1/tm/listings/associate/${listing.id}/${data.id}`).then((response) => {
 
 					this.$root.showNotification(response.body.message);
 					this.shared.listing = response.body.results;
@@ -872,7 +887,7 @@
 						dataSearch: this.options.dataSearch
 					};
 
-					this.$http.get('/apiv1/dataSearch', {params: dataOptions}).then((response) => {
+					this.$http.get('/apiv1/tm/dataSearch', {params: dataOptions}).then((response) => {
 
 						this.shared.dataSearch = response.body.data;
 						this.state.dataLoading = false;
@@ -903,7 +918,7 @@
 					this.options.reportId = this.shared.activeReport.id;
                 }
 
-                this.$http.get('/apiv1/listings', {params : this.options}).then((response) => {
+                this.$http.get('/apiv1/tm/listings', {params : this.options}).then((response) => {
 
                     this.shared.listings = response.body.data;
                     this.options.pager.page = response.body['current_page'];
@@ -929,7 +944,7 @@
                   this.$root.showNotification('Invalid listing selected, please refresh the listings and try again.');
               }
 
-                this.$http.post('/apiv1/listings/delete/' + this.state.selectedListing.id, this.state.selectedListing).then((response) => {
+                this.$http.post('/apiv1/tm/listings/delete/' + this.state.selectedListing.id, this.state.selectedListing).then((response) => {
 
                     this.$root.showNotification(response.body.message);
                     this.refreshTable();
