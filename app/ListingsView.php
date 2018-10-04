@@ -4,9 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class ListingsView extends Model
 {
-    protected $guarded = ['id'];
+    protected $guarded = ['event_id'];
+    protected $table = 'listings_view';
 
     public function state()
     {

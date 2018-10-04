@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Event;
+use App\ListingsView;
 use App\Reference;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
@@ -325,7 +326,7 @@ class ListingsTicketMasterController extends Controller
      * @param Listing $listing
      * @return mixed
      */
-    public function updateStatus( Request $request, Listing $listing, $status = 'active' )
+    public function updateStatus($event_id, $state = 'active')
     {
         $canEdit = false;
         if ( \Auth::user()->isAdmin() ) {
@@ -341,13 +342,24 @@ class ListingsTicketMasterController extends Controller
             );
         }
 
+        // get event
+        $event = Event::where('id', '=', $event_id)->first();
+
         /* Reset to default if status changed/clicked again */
-        if ($listing->status == $status) {
-            $status = 'active';
+        if ($event->state->slug === $state) {
+            $state = 'active';
         }
 
-        if ( $listing->update( ['status' => $status] ) ) {
-            $listing->load( "sales", "data", "updates", "stats" );
+        // get state id
+        $event_state = new EventState();
+        $event_state_id = $event_state->getStateId($state);
+
+        // update event status
+        if ( $event->update( ['event_state_id' => $event_state_id] ) ) {
+            $listing = DB::table('listings_view')
+                ->where('event_id', '=', $event_id)
+                ->first();
+
             return response()->json( [
                 'message' => "Listing updated successfully.",
                 'new'     => false,
@@ -365,55 +377,16 @@ class ListingsTicketMasterController extends Controller
 
     }
 
-    /**
-     * Delete a listing.
-     * @param Request $request
-     * @param User $user
-     * @return mixed
-     */
-    public function delete( Request $request, Listing $listing )
-    {
-
-        /* Confirm user has permission to delete the listing */
-        $canDelete= false;
-        if (\Auth::user()->isAdmin())
-         {
-            $canDelete = true;
-        }
-
-        if ( !$canDelete ) {
-            return response()->json( [
-                'message' => "This listing can not be deleted. You may not have permission to delete it.",
-                'status'  => "error"
-            ],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-
-        if ( $listing->delete() ) {
-            return response()->json( [
-                'message' => "Listing deleted successfully.",
-                'status'  => "success"
-            ] );
-        }
-
-        return response()->json( [
-            'message' => "Error deleting listing. Please Try Again.",
-            'status'  => "error"
-        ],
-            Response::HTTP_UNPROCESSABLE_ENTITY
-        );
-
-    }
-
     public function sendZapierWebHook($event_id)
     {
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
 
-        // get listing with data
-        $listing = DB::table('listings_view')
-            ->where('event_id', '=', $event_id)->first()->toArray();
+        // get listings view data
+        $listing = (new ListingsView())
+            ->where('event_id', '=', $event_id)
+            ->first()
+            ->toArray();
 
         /* if local, don't send, but just log the data */
         if( env('APP_ENV') === 'local') {

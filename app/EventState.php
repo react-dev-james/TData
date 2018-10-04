@@ -9,6 +9,11 @@ class EventState extends Model
     protected $guarded = ['id'];
     protected $table = 'event_states';
 
+    public function event()
+    {
+        return $this->hasMany(Event::class);
+    }
+
     public function active_state_id()
     {
         return $this->getStateId('active');
@@ -24,7 +29,7 @@ class EventState extends Model
         return $this->getStateId('excluded');
     }
 
-    private function getStateId($slug)
+    public function getStateId($slug)
     {
         return $this->where('slug', '=', $slug)->value('id');
     }

@@ -747,7 +747,8 @@
                 });
 			},
 			updateStatus(listing, status, rowIndex) {
-				this.$http.post(`/apiv1/tm/listings/status/${listing.id}/${status}`).then((response) => {
+        	    console.log(listing);
+				this.$http.post(`/apiv1/tm/listings/status/${listing.event_id}/${status}`).then((response) => {
 
 					this.shared.listings[rowIndex] = response.body.results;
 					this.$root.showNotification(response.body.message);
@@ -763,7 +764,7 @@
 				});
 			},
             sendZapierWebHook(listing) {
-                this.$http.post(`/apiv1/tm/listings/sendZapierWebHook/${listing.id}`).then((response) => {
+                this.$http.post(`/apiv1/tm/listings/sendZapierWebHook/${listing.event_id}`).then((response) => {
 
                     this.$root.showNotification(response.body.message);
 

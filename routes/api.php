@@ -17,7 +17,7 @@ Route::get( "/reports/{reportType}", 'Api\ReportsController@report' );
 /* Listings */
 Route::get( "/listings", 'Api\ListingsController@index' );
 Route::get( "/dataSearch", 'Api\ListingsController@dataSearch' );
-Route::post( '/listings/update/{listing}', 'Api\ListingsController@update' );
+Route::post( '/listings/update/{event_id}', 'Api\ListingsController@update' );
 Route::post( '/listings/associate/{listing}/{data}', 'Api\ListingsController@associate' );
 Route::post( '/listings/status/{listing}/{status}', 'Api\ListingsController@updateStatus' );
 Route::post( '/listings/updateOutlierStatus/{listing}', 'Api\ListingsController@updateOutlierStatus' );
@@ -32,7 +32,7 @@ Route::get( "/tm/dataSearch", 'Api\ListingsTicketMasterController@dataSearch' );
 Route::post( '/tm/listings/associate/{listing}/{data}', 'Api\ListingsTicketMasterController@associate' );
 Route::post( '/tm/listings/status/{listing}/{status}', 'Api\ListingsTicketMasterController@updateStatus' );
 Route::post( '/tm/listings/delete/{listing}', 'Api\ListingsTicketMasterController@delete' );
-Route::post( '/tm/listings/sendZapierWebHook/{listing}', 'Api\ListingsController@sendZapierWebHook' );
+Route::post( '/tm/listings/sendZapierWebHook/{event_id}', 'Api\ListingsTicketMasterController@sendZapierWebHook' );
 
 
 /* Locations */
