@@ -30,6 +30,7 @@ class TicketMaster
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'get');
         curl_setopt($ch, CURLOPT_TIMEOUT, 45);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_ENCODING ,"");
 
         $request_headers = [
             "Accept: application/json",
@@ -108,10 +109,11 @@ class TicketMaster
         if( env('API_DEBUG_OFFERS') && !isset($data->offers[0]) ) {
             echo "--- offer not found ---\n";
             echo "/commerce/v2/events/$event_id/offers.json\n";
-            echo mb_detect_encoding($response);
-            Log::info("--- offer not found ---\n");
-            Log::info("/commerce/v2/events/$event_id/offers.json\n");
-            Log::info($response);
+            //echo mb_detect_encoding($response);
+            echo $response . "\n";
+            //Log::info("--- offer not found ---\n");
+            //Log::info("/commerce/v2/events/$event_id/offers.json\n");
+            //Log::info($response);
         }
 
         return $data;
