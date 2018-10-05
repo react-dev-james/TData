@@ -29,9 +29,9 @@ Route::post( '/listings/sendZapierWebHook/{listing}', 'Api\ListingsController@se
 /* Listings ticket master */
 Route::get( "/tm/listings", 'Api\ListingsTicketMasterController@index' );
 Route::get( "/tm/dataSearch", 'Api\ListingsTicketMasterController@dataSearch' );
-Route::post( '/tm/listings/associate/{listing}/{data}', 'Api\ListingsTicketMasterController@associate' );
-Route::post( '/tm/listings/status/{listing}/{status}', 'Api\ListingsTicketMasterController@updateStatus' );
-Route::post( '/tm/listings/delete/{listing}', 'Api\ListingsTicketMasterController@delete' );
+Route::post( '/tm/lookups', 'Api\ListingsTicketMasterController@createLookup' );
+Route::post( '/tm/listings/associate/{event_id}/{data}', 'Api\ListingsTicketMasterController@associate' );
+Route::post( '/tm/listings/status/{event_id}/{status}', 'Api\ListingsTicketMasterController@updateStatus' );
 Route::post( '/tm/listings/sendZapierWebHook/{event_id}', 'Api\ListingsTicketMasterController@sendZapierWebHook' );
 
 

@@ -199,51 +199,40 @@ class ListingsTicketMasterController extends Controller
         ] );
     }
 
-    public function associate( Request $request, Listing $listing, \App\DataMaster $data )
+    public function associate( $event_id, \App\DataMaster $data )
     {
+        // get listing view
+        $event = (new Event())->where('id', '=', $event_id)->first();
+
         /* Create new lookup in the lookups table */
-        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $listing->event_name, 'match_slug' => str_slug( $data->category) ],
+        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $event->name, 'match_slug' => str_slug( $data->category) ],
             [
                 'match_name' => $data->category,
-                'event_slug' => str_slug( $listing->event_name ),
+                'event_slug' => str_slug( $event->name ),
                 'match_slug' => str_slug( $data->category ),
                 'confidence' => 100,
                 'is_auto' => false
             ] );
 
-        $listing->performer = $data->category;
-        $listing->data_master_id = $data->id;
-        $listing->confidence = 100;
-        $listing->save();
+        $numListings = 0;
 
-        /* Recalc ROI */
-        //$listing->fresh();
-        $listing->calcRoi($data);
+        // update the events table for matches
+        $events = (new Event())->where('name', 'ilike', $event->name)->get();
+        foreach ($events as $evt)
+        {
+            // save match data
+            $evt->data_master_id = $data->id;
+            $evt->match_confidence = 100;
+            $evt->save();
 
-        /* Load relations */
-        $listing->load('data','sales','updates', 'stats');
-
-        $numListings = 1;
-
-        /* Check lookups table for other matching listings */
-        $listings = \App\Listing::where("event_name", $lookup->event_name)->where("id","!=", $listing->id)->get();
-        foreach ($listings as $otherListing) {
             $numListings++;
-            $otherListing->performer = $lookup->match_name;
-            $listing->data_master_id = $data->id;
-            $listing->confidence = 100;
-            $otherListing->save();
-
-            /* Recalc ROI */
-            //$otherListing->fresh();
-            $otherListing->calcRoi($data);
         }
 
         return response()->json( [
             'message' => $numListings . " listing(s) updated successfully.",
             'new'     => false,
-            'status'  => "success",
-            'results' => $listing
+            'status'  => 'success',
+            'results' => (new ListingsView())->where('event_id', '=', $event_id)->first(),
         ] );
     }
 

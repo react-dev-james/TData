@@ -774,7 +774,7 @@
                 });
             },
             associateListingWithData(listing, data) {
-				this.$http.post(`/apiv1/tm/listings/associate/${listing.id}/${data.id}`).then((response) => {
+				this.$http.post(`/apiv1/tm/listings/associate/${listing.event_id}/${data.id}`).then((response) => {
 
 					this.$root.showNotification(response.body.message);
 					this.shared.listing = response.body.results;
