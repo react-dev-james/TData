@@ -33,6 +33,7 @@ class TicketMaster
 
         $request_headers = [
             "Accept: application/json",
+            "Content-type: text/html; charset=utf-8",
         ];
 
         //set header
@@ -104,9 +105,13 @@ class TicketMaster
         $data = json_decode($response);
 
         // debug
-        if( env('API_DEBUG') && !isset($data->offers[0]) ) {
+        if( env('API_DEBUG_OFFERS') && !isset($data->offers[0]) ) {
             echo "--- offer not found ---\n";
             echo "/commerce/v2/events/$event_id/offers.json\n";
+            echo mb_detect_encoding($response);
+            Log::info("--- offer not found ---\n");
+            Log::info("/commerce/v2/events/$event_id/offers.json\n");
+            Log::info($response);
         }
 
         return $data;
