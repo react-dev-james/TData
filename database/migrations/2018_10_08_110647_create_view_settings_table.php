@@ -15,7 +15,7 @@ class CreateViewSettingsTable extends Migration
     {
         Schema::create( 'ticket_master_view_settings', function ( Blueprint $table ) {
             $table->string('key', 100);
-            $table->float('value');
+            $table->decimal('value');
         });
     }
 
