@@ -437,7 +437,9 @@ class ListingsTicketMasterController extends Controller
         //run request
         $response = curl_exec($ch);
 
-        //Log::info(json_encode($payload));
+        Log::info(json_encode($payload));
+        Log::info($response);
+
 
         //check for curl error
         if( curl_error($ch) ) {
