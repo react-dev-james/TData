@@ -1,6 +1,6 @@
---DROP VIEW listings_view;
+DROP VIEW listings_view;
 
-CREATE OR REPLACE VIEW listings_view AS
+CREATE VIEW listings_view AS
 
 SELECT  evt.id AS event_id,
         evt.tm_id,
@@ -42,6 +42,7 @@ SELECT  evt.id AS event_id,
         evt.event_status_code,
         evt.event_state_id,
         evt_st.title AS event_state,
+        evt_st.slug AS event_state_slug,
         seg.name AS segment_name,
         gen.name AS genre_name,
         sub_gen.name AS sub_genre_name,
@@ -296,6 +297,7 @@ GROUP BY
         evt.tm_id,
         evt.event_state_id,
         evt_st.title,
+        evt_st.slug,
         evt."fromBoxOfficeFox",
         evt.name,
         ven.id,

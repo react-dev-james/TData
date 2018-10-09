@@ -236,7 +236,7 @@
 
                 <md-table-body>
                     <md-table-row v-for="(listing, rowIndex) in shared.listings" :md-item="listing"  :key="rowIndex"
-                                  :class="[{'bg-targeted' : listing.status == 'targeted'}, {'bg-excluded' : listing.status == 'excluded'}] ">
+                                  :class="[{'bg-targeted' : listing.event_state_slug == 'targeted'}, {'bg-excluded' : listing.event_state_slug == 'excluded'}] ">
                         <md-table-cell>
                             <button class="btn btn-small btn-danger margin-right-5 padding-5" @click="updateStatus(listing, 'excluded', rowIndex)">
                                 <md-icon>close</md-icon>
