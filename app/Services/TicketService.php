@@ -461,6 +461,8 @@ class TicketService extends ScraperService implements IScraper
                 $updatedSales++;
             }
 
+            /* update venues_bof for capacity */
+
         }
 
         return collect([

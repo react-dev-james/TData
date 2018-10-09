@@ -28,7 +28,7 @@
 
             <div class="padding-15">
                 <div class="pull-left">
-                    <h1 class="md-title">Event Listings</h1>
+                    <h1 class="md-title">Event Listings - TM</h1>
                     <span v-if="options.currentFilter" class="text-muted">Viewing Current Listings</span>
                     <span v-else class="text-muted">Viewing Past Listings</span>
                 </div>
