@@ -1,6 +1,6 @@
-DROP VIEW listings_view;
+--DROP VIEW listings_view;
 
-CREATE VIEW listings_view AS
+CREATE OR REPLACE VIEW listings_view AS
 
 SELECT  evt.id AS event_id,
         evt.tm_id,
