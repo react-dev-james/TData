@@ -29,6 +29,7 @@ class CreateVenuesBofTable extends Migration
 
         Schema::table('venues_bof', function (Blueprint $table) {
             $table->foreign('venue_id')->references('id')->on('venues');
+            $table->unique('venue_id');
         });
     }
 
