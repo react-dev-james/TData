@@ -111,7 +111,7 @@ SELECT  evt.id AS event_id,
             WHEN evt.currency ILIKE 'CAD'
             THEN
                 round(min(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
-        END AS min_price,
+        END AS min_price_offer,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
@@ -131,7 +131,7 @@ SELECT  evt.id AS event_id,
                                WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
                     ) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')
                  )
-        END AS second_highest_price,
+        END AS second_highest_price_offer,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
@@ -139,7 +139,7 @@ SELECT  evt.id AS event_id,
             WHEN evt.currency ILIKE 'CAD'
             THEN
                 round(max(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
-        END AS max_price,
+        END AS max_price_offer,
         CASE
             WHEN evt.currency ILIKE 'USD'
             THEN
@@ -147,7 +147,7 @@ SELECT  evt.id AS event_id,
             WHEN evt.currency ILIKE 'CAD'
             THEN
                 round(avg(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
-        END AS average_price,
+        END AS average_price_offer,
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND min(evt_prc.total) > 0
             THEN
@@ -161,7 +161,7 @@ SELECT  evt.id AS event_id,
                  END        
             ELSE
                 0
-        END AS roi_low,  
+        END AS roi_low_offer,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
@@ -175,7 +175,7 @@ SELECT  evt.id AS event_id,
                 END    
             ELSE
                 0
-        END AS roi_second_highest,  
+        END AS roi_second_highest_offer,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
@@ -189,7 +189,7 @@ SELECT  evt.id AS event_id,
                 END    
             ELSE
                 0
-        END AS roi_high,  
+        END AS roi_high_offer,  
         CASE
             WHEN dm.weighted_avg IS NOT NULL AND max(evt_prc.total) > 0
             THEN
@@ -201,6 +201,234 @@ SELECT  evt.id AS event_id,
                     THEN
                         round(ceil(((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total) * 40) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
                 END    
+            ELSE
+                0
+        END AS roi_net_offer,  
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                CASE 
+                    WHEN min(evt_prc.total) IS NOT NULL
+                    THEN
+                        min(evt_prc.total)
+                    ELSE   
+                        evt.price_range_min
+                END        
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                CASE 
+                    WHEN min(evt_prc.total) IS NOT NULL
+                    THEN
+                        round(min(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                    ELSE   
+                        round(evt.price_range_min / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')) 
+                END      
+        END AS min_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                CASE 
+                    WHEN max(evt_prc.total) IS NOT NULL
+                    THEN
+                        array_min
+                        (
+                            ARRAY ( 
+                                   SELECT total FROM event_prices 
+                                   WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
+                        ) 
+                     ELSE
+                         evt.price_range_max
+                END        
+            WHEN evt.currency ILIKE 'CAD'
+            THEN  
+                CASE
+                    WHEN max(evt_prc.total) IS NOT NULL
+                    THEN
+                        round(
+                            array_min
+                            (
+                                ARRAY ( 
+                                       SELECT total FROM event_prices 
+                                       WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )
+                            ) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')
+                         )
+                     ELSE   
+                        round(evt.price_range_max / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')) 
+                END     
+        END AS second_highest_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                CASE 
+                    WHEN max(evt_prc.total) IS NOT NULL
+                    THEN
+                        max(evt_prc.total)
+                    ELSE   
+                        evt.price_range_max
+                END        
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                CASE 
+                    WHEN max(evt_prc.total) IS NOT NULL
+                    THEN
+                        round(max(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                    ELSE   
+                        round(evt.price_range_max / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')) 
+                END      
+        END AS max_price,
+        CASE
+            WHEN evt.currency ILIKE 'USD'
+            THEN
+                CASE 
+                    WHEN min(evt_prc.total) IS NOT NULL
+                    THEN
+                        round(avg(evt_prc.total))
+                    ELSE   
+                        round((price_range_min + price_range_max) / 2)
+                END        
+            WHEN evt.currency ILIKE 'CAD'
+            THEN
+                CASE 
+                    WHEN min(evt_prc.total) IS NOT NULL
+                    THEN
+                        round(avg(evt_prc.total) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                    ELSE   
+                        round(((evt.price_range_min + evt.price_range_max) / 2) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion')) 
+                END      
+        END AS average_price,
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL 
+            THEN
+                CASE 
+                    WHEN min(evt_prc.total) > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  min(evt_prc.total))  / min(evt_prc.total)) * 100) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))  
+                         END  
+                     WHEN evt.price_range_min > 0
+                     THEN
+                         CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((
+        (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  
+        ((evt.price_range_min * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')))  
+        / 
+        ((evt.price_range_min * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  (evt.price_range_min * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition'))  / ((evt.price_range_min * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100))  / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))  
+                         END        
+                     ELSE
+                         0   
+                END               
+            ELSE
+                0
+        END AS roi_low,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL
+            THEN
+                CASE
+                    WHEN max(evt_prc.total) > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) - array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 )))  / array_min(ARRAY (SELECT total FROM event_prices WHERE event_id = evt.id ORDER BY total DESC LIMIT 2 ))) * 100) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                        END    
+                    WHEN evt.price_range_max > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((
+        (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')))  
+        / 
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  (evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition'))  / ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100))  / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))  
+                         END        
+                    ELSE
+                         0
+                END         
+            ELSE
+                0
+        END AS roi_second_highest,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL
+            THEN
+                CASE
+                    WHEN max(evt_prc.total) > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total)) * 100) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                        END  
+                     WHEN evt.price_range_max > 0
+                     THEN
+                         CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((
+        (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')))  
+        / 
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  (evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition'))  / ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100))  / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))  
+                         END       
+                     ELSE
+                         0
+                END    
+            ELSE
+                0
+        END AS roi_high,  
+        CASE
+            WHEN dm.weighted_avg IS NOT NULL
+            THEN
+                CASE 
+                    WHEN max(evt_prc.total) > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil(((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total)) * 40)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil(((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  max(evt_prc.total))  / max(evt_prc.total) * 40) / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))
+                        END    
+                    WHEN evt.price_range_max > 0
+                    THEN
+                        CASE
+                            WHEN evt.currency ILIKE 'USD'
+                            THEN
+                                ceil((
+        (dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 40)  
+        / 
+        ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100)
+                            WHEN evt.currency ILIKE 'CAD'
+                            THEN
+                                round(ceil((((dm.weighted_avg * .94 * (SELECT adjustment FROM weekday_adjustment WHERE weekday = EXTRACT(dow FROM evt.event_local_date))) -  (evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition'))  / ((evt.price_range_max * (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_multiplier')) + (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'ROI_price_addition')) * 100) * 409)  / (SELECT "value" FROM ticket_master_view_settings WHERE "key" = 'CAD_conversion'))  
+                         END       
+                    ELSE
+                        0
+                END        
             ELSE
                 0
         END AS roi_net,  

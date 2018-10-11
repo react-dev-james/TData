@@ -266,46 +266,46 @@
                             <md-tooltip md-direction="top">{{ listing.venue_name }}</md-tooltip>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_high')">
-                            <div v-if="listing.max_price !== null">
-                                <span v-if="listing.roi_high >= 40" class="label label-success">{{ `${listing.roi_high}%` }}</span>
-                                <span v-if="listing.roi_high >= 20 && listing.roi_high < 40" class="label label-success-light">{{ `${listing.roi_high}%` }}</span>
-                                <span v-if="listing.roi_high < 20 && listing.roi_high > 0" class="label bg-grey-400">{{ `${listing.roi_high}%` }}</span>
-                                <span v-if="listing.roi_high < 0" class="label label-danger">{{ `${listing.roi_high}%` }}</span>
-                            </div>
-                            <div v-if="listing.max_price === null">
-                                <span v-if="listing.price_range_roi_high >= 40" class="label label-success">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high >= 20 && listing.price_range_roi_high < 40" class="label label-success-light">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high < 20 && listing.price_range_roi_high > 0" class="label bg-grey-400">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high < 0" class="label label-danger">{{ `${listing.price_range_roi_high}% *` }}</span>
-                            </div>
+                                <span v-if="listing.roi_high >= 40" class="label label-success">
+                                    {{ `${listing.roi_high}%` }}<span v-if="listing.max_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_high >= 20 && listing.roi_high < 40" class="label label-success-light">
+                                    {{ `${listing.roi_high}%` }}<span v-if="listing.max_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_high < 20 && listing.roi_high > 0" class="label bg-grey-400">
+                                    {{ `${listing.roi_high}%` }}<span v-if="listing.max_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_high < 0" class="label label-danger">
+                                    {{ `${listing.roi_high}%` }}<span v-if="listing.max_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_second_highest')">
-                            <div v-if="listing.second_highest_price !== null">
-                                <span v-if="listing.roi_second_highest >= 40" class="label label-success">{{ `${listing.roi_second_highest}%` }}</span>
-                                <span v-if="listing.roi_second_highest >= 20 && listing.roi_second_highest < 40" class="label label-success-light">{{ `${listing.roi_second_highest}%` }}</span>
-                                <span v-if="listing.roi_second_highest < 20 && listing.roi_second_highest > 0" class="label bg-grey-400">{{ `${listing.roi_second_highest}%` }}</span>
-                                <span v-if="listing.roi_second_highest < 0" class="label label-danger">{{ `${listing.roi_second_highest}%` }}</span>
-                            </div>
-                            <div v-if="listing.second_highest_price === null">
-                                <span v-if="listing.price_range_roi_high >= 40" class="label label-success">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high >= 20 && listing.price_range_roi_high < 40" class="label label-success-light">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high < 20 && listing.price_range_roi_high > 0" class="label bg-grey-400">{{ `${listing.price_range_roi_high}% *` }}</span>
-                                <span v-if="listing.price_range_roi_high < 0" class="label label-danger">{{ `${listing.price_range_roi_high}% *` }}</span>
-                            </div>
+                                <span v-if="listing.roi_second_highest >= 40" class="label label-success">
+                                    {{ `${listing.roi_second_highest}%` }}<span v-if="listing.second_highest_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_second_highest >= 20 && listing.roi_second_highest < 40" class="label label-success-light">
+                                    {{ `${listing.roi_second_highest}%` }}<span v-if="listing.second_highest_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_second_highest < 20 && listing.roi_second_highest > 0" class="label bg-grey-400">
+                                    {{ `${listing.roi_second_highest}%` }}<span v-if="listing.second_highest_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_second_highest < 0" class="label label-danger">
+                                    {{ `${listing.roi_second_highest}%` }}<span v-if="listing.second_highest_price_offer === null && listing.price_range_max !== null"> *</span>
+                                </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('roi_low')">
-                            <div v-if="listing.min_price !== null">
-                                <span v-if="listing.roi_low >= 40" class="label label-success">{{ `${listing.roi_low}%` }}</span>
-                                <span v-if="listing.roi_low >= 20 && listing.roi_low < 40" class="label label-success-light">{{ `${listing.roi_low}%` }}</span>
-                                <span v-if="listing.roi_low < 20 && listing.roi_low > 0" class="label bg-grey-400">{{ `${listing.roi_low}%` }}</span>
-                                <span v-if="listing.roi_low < 0" class="label label-danger">{{ `${listing.roi_low}%` }}</span>
-                            </div>
-                            <div v-if="listing.min_price === null">
-                                <span v-if="listing.price_range_roi_low >= 40" class="label label-success">{{ `${listing.price_range_roi_low}% *` }}</span>
-                                <span v-if="listing.price_range_roi_low >= 20 && listing.price_range_roi_low < 40" class="label label-success-light">{{ `${listing.price_range_roi_low}% *` }}</span>
-                                <span v-if="listing.price_range_roi_low < 20 && listing.price_range_roi_low > 0" class="label bg-grey-400">{{ `${listing.price_range_roi_low}% *` }}</span>
-                                <span v-if="listing.price_range_roi_low < 0" class="label label-danger">{{ `${listing.price_range_roi_low}% *` }}</span>
-                            </div>
+                                <span v-if="listing.roi_low >= 40" class="label label-success">
+                                    {{ `${listing.roi_low}%` }}<span v-if="listing.min_price_offer === null && listing.price_range_min !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_low >= 20 && listing.roi_low < 40" class="label label-success-light">
+                                    {{ `${listing.roi_low}%` }}<span v-if="listing.min_price_offer === null && listing.price_range_min !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_low < 20 && listing.roi_low > 0" class="label bg-grey-400">
+                                    {{ `${listing.roi_low}%` }}<span v-if="listing.min_price_offer === null && listing.price_range_min !== null"> *</span>
+                                </span>
+                                <span v-if="listing.roi_low < 0" class="label label-danger">
+                                    {{ `${listing.roi_low}%` }}<span v-if="listing.min_price_offer === null && listing.price_range_min !== null"> *</span>
+                                </span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('weighted_sold')">
                             <span class="">{{ listing.weighted_sold > 0 ? listing.weighted_sold : '-' }}</span>
@@ -360,13 +360,13 @@
                             <span class="">{{ listing.tn_tix_sold !== null ? `${listing.tn_tix_sold}` : '-' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('max_price')" class="col-border-left">
-                            <span class="">${{ listing.max_price !== null ? Math.round(listing.max_price): listing.price_range_max !== null ? `${Math.round(listing.price_range_max)}*` : 'N/A' }}</span>
+                            <span class="">${{ listing.max_price_offer !== null ? Math.round(listing.max_price): listing.max_price !== null ? `${Math.round(listing.max_price)}*` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('second_highest_price')">
-                            <span class="">${{ listing.second_highest_price !== null ? Math.round(listing.second_highest_price) : listing.price_range_max !== null ? `${Math.round(listing.price_range_max)}*` : 'N/A' }}</span>
+                            <span class="">${{ listing.second_highest_price_offer !== null ? Math.round(listing.second_highest_price) : listing.second_highest_price !== null ? `${Math.round(listing.second_highest_price)}*` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('min_price')" class="col-border-right">
-                            <span class="">${{ listing.min_price !== null ? Math.round(listing.min_price) : listing.price_range_max !== null ? `${Math.round(listing.price_range_min)}*` : 'N/A' }}</span>
+                            <span class="">${{ listing.min_price_offer !== null ? Math.round(listing.min_price) : listing.min_price !== null ? `${Math.round(listing.min_price)}*` : 'N/A' }}</span>
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('venue_capacity')">
                             <span class="">{{ listing.venue_capacity }}</span>
@@ -568,7 +568,7 @@
                     size: 250
                 },
                 sort : {
-                    name: 'roi_net',
+                    name: 'roi_second_highest',
                     type: 'asc' //asc is actually = to desc, it gets flipped when calling API
                 },
 				multiSort: [],
