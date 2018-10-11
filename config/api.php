@@ -5,6 +5,9 @@ return [
         'keys' => [
             'EZMjWPEfiB5w3iTTspvpEVZu7jkhN7fP', // sung-whi's key
             'vy2R4hEqq991irZAPCNkGn2C9VAAt4Ni', // mike's primary key
+            // other keys from Mike
+            'UVC8xDzYL9HGPOlNyTBSWx7p87OflmnR',
+            'O90ACi4TXXYoq2ZMjq9csRQi1DTjkvf9'
         ],
         'country_codes' => [
             'us',

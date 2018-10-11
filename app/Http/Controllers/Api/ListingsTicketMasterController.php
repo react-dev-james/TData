@@ -202,13 +202,13 @@ class ListingsTicketMasterController extends Controller
     public function associate( $event_id, \App\DataMaster $data )
     {
         // get listing view
-        $event = (new Event())->where('id', '=', $event_id)->first();
+        $listing_view = (new ListingsView())->where('event_id', '=', $event_id)->first();
 
         /* Create new lookup in the lookups table */
-        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $event->name, 'match_slug' => str_slug( $data->category) ],
+        $lookup = \App\EventLookup::firstOrCreate( [ 'event_name' => $listing_view->event_name, 'match_slug' => str_slug( $data->category) ],
             [
                 'match_name' => $data->category,
-                'event_slug' => str_slug( $event->name ),
+                'event_slug' => str_slug( $listing_view->event_name ),
                 'match_slug' => str_slug( $data->category ),
                 'confidence' => 100,
                 'is_auto' => false
@@ -217,13 +217,17 @@ class ListingsTicketMasterController extends Controller
         $numListings = 0;
 
         // update the events table for matches
-        $events = (new Event())->where('name', 'ilike', $event->name)->get();
-        foreach ($events as $evt)
+        $matching_listings = (new ListingsView())->where('attraction_id', '=', $listing_view->attraction_id)->get();
+
+        foreach ($matching_listings as $matched_listing)
         {
+            // get event
+            $event = (new Event())->where('id', '=', $matched_listing->event_id)->first();
+
             // save match data
-            $evt->data_master_id = $data->id;
-            $evt->match_confidence = 100;
-            $evt->save();
+            $event->data_master_id = $data->id;
+            $event->match_confidence = 100;
+            $event->save();
 
             $numListings++;
         }
@@ -232,7 +236,7 @@ class ListingsTicketMasterController extends Controller
             'message' => $numListings . " listing(s) updated successfully.",
             'new'     => false,
             'status'  => 'success',
-            'results' => (new ListingsView())->where('event_id', '=', $event_id)->first(),
+            'results' => $listing_view,
         ] );
     }
 
