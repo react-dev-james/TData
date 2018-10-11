@@ -222,14 +222,17 @@ class ImportData
         // add all the presales
         foreach( $presales as $presale )
         {
-            DB::table('event_presales')->insert([
-                'event_id'       => $event_id,
-                'start_datetime' => $presale->startDateTime,
-                'end_datetime'   => isset($presale->endDateTime) ? $presale->endDateTime : null,
-                'name'           => isset($presale->name) ? $presale->name : null,
-                'created_at'     => date("Y-m-d H:i:s"),
-                'updated_at'     => date("Y-m-d H:i:s"),
-            ]);
+            // only add valid presales
+            if( isset($presale->startDateTime) ) {
+                DB::table('event_presales')->insert([
+                    'event_id'       => $event_id,
+                    'start_datetime' => $presale->startDateTime,
+                    'end_datetime'   => isset($presale->endDateTime) ? $presale->endDateTime : null,
+                    'name'           => isset($presale->name) ? $presale->name : null,
+                    'created_at'     => date("Y-m-d H:i:s"),
+                    'updated_at'     => date("Y-m-d H:i:s"),
+                ]);
+            }
         }
     }
 
