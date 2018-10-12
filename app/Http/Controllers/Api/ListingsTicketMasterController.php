@@ -374,23 +374,20 @@ class ListingsTicketMasterController extends Controller
     {
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
-
+Log::info('--- send zapier webhook fired ---');
         // get listings view data
         $listing = (new ListingsView())
             ->where('event_id', '=', $event_id)
             ->first()
             ->toArray();
 
-        /* if local, don't send, but just log the data */
-        if( env('APP_ENV') === 'local') {
-            Log::info(print_r($listing, true));
-        }
+Log::info('--- got listing ---');
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
 
         /* -- debug --*/
-        // Log::info($response);
+        Log::info($response);
 
         // return status of success
         if( $response !== null ) {
