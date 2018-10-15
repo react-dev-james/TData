@@ -793,6 +793,7 @@
                     this.$root.showNotification(response.body.message);
 
                 }, (response) => {
+                    this.$root.showNotification("Error sending Zapier webhook.");
                     console.log("Error sending Zapier webhook.");
                     console.log(response);
                 });

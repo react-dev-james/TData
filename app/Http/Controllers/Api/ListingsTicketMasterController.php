@@ -16,6 +16,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Mockery\Exception;
 
 class ListingsTicketMasterController extends Controller
 {
@@ -372,16 +373,17 @@ class ListingsTicketMasterController extends Controller
 
     public function sendZapierWebHook($event_id)
     {
+        Log::info('--- send zapier webhook fired ---');
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
-Log::info('--- send zapier webhook fired ---');
+
         // get listings view data
         $listing = (new ListingsView())
             ->where('event_id', '=', $event_id)
             ->first()
             ->toArray();
 
-Log::info('--- got listing ---');
+        Log::info('--- got listing ---');
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);

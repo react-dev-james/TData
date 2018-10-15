@@ -99,7 +99,6 @@ class ImportData
 
                 // set basic data
                 $payload = [
-                    'event_state_id'       => $event_state_active_id,
                     'name'                 => $event_data->name,
                     'type'                 => $event_data->type,
                     'url'                  => $event_data->url,
@@ -149,6 +148,16 @@ class ImportData
                     $payload
                 );
 
+                // set to a flag here so we can use it later after any event update
+                $new_event = $event->wasRecentlyCreated;
+
+                // set status to active if the event was created only to preserve previously set state
+                if( $new_event=== true ) {
+
+                    $event->event_state_id = $event_state_active_id;
+                    $event->save();
+                }
+
                 // get/set venues
                 $this->setVenues($event->id, $event_data);
 
@@ -162,12 +171,12 @@ class ImportData
                 }
 
                 // get/set prices only if the event was created or if no prices were set
-                if( $event->wasRecentlyCreated === true
+                if( $new_event === true
                     || (new \App\EventPrice())->where('event_id', '=', $event->id)->count() === 0 ) {
 
                     // check to see if it was a create or update
                     if( env('API_DEBUG') ) {
-                        echo '-- was created recently = ' . $event->wasRecentlyCreated . " : " . $event->id . "---\n";
+                        echo '-- was created recently = ' . $new_event . " : " . $event->id . "---\n";
                         echo '* event price count = ' . (new \App\EventPrice())->where('event_id', '=', $event->id)->count() . "\n";
                     }
 

@@ -13,10 +13,11 @@ class CreateCurrencyCoversionTable extends Migration
      */
     public function up()
     {
-        Schema::create( 'currency_conversion', function ( Blueprint $table ) {
-            $table->string('code', 10);
-            $table->decimal('rate', 3, 2);
-        });
+        /* We are not using this table any more */
+//        Schema::create( 'currency_conversion', function ( Blueprint $table ) {
+//            $table->string('code', 10);
+//            $table->decimal('rate', 3, 2);
+//        });
     }
 
     /**
