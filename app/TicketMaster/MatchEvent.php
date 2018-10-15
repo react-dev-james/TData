@@ -10,7 +10,7 @@ class MatchEvent
     public static function runMatch()
     {
         // -- todo -- need to add event status to not include excluded or archived events
-        // get all the events that have no match so far and only the primary events
+        // get all the events that have no match so far and only the primary attractions
         $events = Event::select('events.id', 'events.name as event_name', 'attractions.name AS attraction_name')
             ->leftJoin('event_attraction', function ($join) {
                 $join->on('event_attraction.event_id', '=', 'events.id');
