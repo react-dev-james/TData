@@ -13,7 +13,7 @@ class ImportTicketMaster extends Command
      *
      * @var string
      */
-    protected $signature = 'tickets:ticket-master';
+    protected $signature = 'tickets:ticket-master {api_key_index}';
 
     /**
      * The console command description.
@@ -39,9 +39,12 @@ class ImportTicketMaster extends Command
      */
     public function handle()
     {
+        // get api key
+        $api_key = config('api.ticket_master.keys')[$this->argument('api_key_index')];
+
         // import data
         $import = new ImportData();
-        $import->loadAllData();
+        $import->loadAllData($api_key);
 
         // match
         MatchEvent::runMatch();

@@ -19,16 +19,14 @@ class ImportData
 {
     private $ticket_master;
 
-    public function loadAllData()
+    public function loadAllData($api_key)
     {
         // init ticket master
-        $this->ticket_master = new TicketMaster(config('api.ticket_master.keys')[0]);
+        $this->ticket_master = new TicketMaster($api_key);
 
         // get dates
         $start_date = Carbon::now();
         $start_date->startOfWeek();
-
-        // --todo -- if api call limit is close, change to another api key -> do in the curl call
 
         // run for each day of the week
         for( $day_of_week = 0; $day_of_week < 7; $day_of_week++ )

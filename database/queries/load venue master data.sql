@@ -23,3 +23,30 @@ DROP TABLE venues_bof_old
 
 SELECT * FROM venues_bof_old
 
+INSERT INTO venues_bof("name", venue_id, capacity, lat, lng, city, country, state, zip, created_at, updated_at)
+SELECT venues_temp.name, 
+        venues_temp.venue_id,
+        venues_temp.venue_capacity,
+        venues_temp.venue_lat,
+        venues_temp.venue_lng,
+        venues_temp.venue_city, 
+        venues_temp.venue_country,
+        venues_temp.venue_state,   
+        venues_temp.venue_zip, 
+        now(), 
+        now() 
+FROM venues_temp
+GROUP BY 
+    venues_temp.venue_id,
+    venues_temp.name, 
+    venues_temp.venue_city, 
+    venues_temp.venue_state,   
+    venues_temp.venue_country,
+    venues_temp.venue_capacity,
+    venues_temp.venue_lat,
+    venues_temp.venue_lng,
+    venues_temp.venue_zip
+
+
+
+
