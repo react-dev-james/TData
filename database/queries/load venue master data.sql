@@ -46,6 +46,21 @@ GROUP BY
     venues_temp.venue_lat,
     venues_temp.venue_lng,
     venues_temp.venue_zip
+    
+UPDATE venues_bof
+SET capacity = NULL
+WHERE capacity = 0;
+    
+UPDATE venues
+SET capacity = venues_bof.capacity
+FROM venues_bof
+WHERE venues.id = venues_bof.venue_id
+
+UPDATE venues
+SET capacity = NULL
+WHERE capacity = 0;
+
+SELECT count(*) FROM venues WHERE capacity IS NOT NULL;
 
 
 

@@ -13,7 +13,7 @@ SELECT  evt.id AS event_id,
         ven.name AS venue_name,
         ven.city AS venue_city,
         ven.state_code AS venue_state_code,
-        ven_bof.capacity AS venue_capacity,
+        ven.capacity AS venue_capacity,
         evt.type,
         evt.url AS ticket_url,
         evt.locale,
@@ -488,8 +488,6 @@ FROM events evt
         ON evt.id = evt_ven.event_id
     LEFT JOIN venues ven
         ON evt_ven.venue_id = ven.id   
-    LEFT JOIN venues_bof ven_bof
-        ON ven.id = ven_bof.venue_id
     LEFT JOIN event_prices evt_prc
         ON evt.id = evt_prc.event_id    
     LEFT JOIN event_presales evt_psl
@@ -532,7 +530,7 @@ GROUP BY
         ven.id,
         ven.name,
         ven.state_code,
-        ven_bof.capacity,
+        ven.capacity,
         att.id,
         att.name,
         att.upcoming_events,
