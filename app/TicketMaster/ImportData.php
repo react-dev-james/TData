@@ -347,7 +347,14 @@ class ImportData
                 // set social media links only if this attraction was created
                 if( $attraction->wasRecentlyCreated === true ) {
 
-                    $this->setExternalLinks($attraction->id, $attraction_data);
+                    /* we are not doing this anymore.  We are just creating a single row in the social_medias table */
+                    //$this->setExternalLinks($attraction->id, $attraction_data);
+
+                    DB::table('social_medias')->insert([
+                        'attraction_id'        => $attraction->id,
+                        'created_at'           => date("Y-m-d H:i:s"),
+                        'updated_at'           => date("Y-m-d H:i:s"),
+                    ]);
                 }
             }
 

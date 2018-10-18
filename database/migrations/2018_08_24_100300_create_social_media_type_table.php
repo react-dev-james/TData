@@ -13,11 +13,14 @@ class CreateSocialMediaTypeTable extends Migration
      */
     public function up()
     {
+        /* we are no longer using this */
+        /*
         Schema::create( 'social_media_types', function ( Blueprint $table ) {
             $table->increments('id');
             $table->string('name', 100);
             $table->timestamps();
         });
+        */
     }
 
     /**

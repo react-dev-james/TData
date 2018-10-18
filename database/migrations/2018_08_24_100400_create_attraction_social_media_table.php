@@ -15,16 +15,13 @@ class CreateAttractionSocialMediaTable extends Migration
     {
         schema::create( 'social_medias', function ( Blueprint $table ) {
             $table->increments('id');
-            $table->integer('social_media_type_id');
-            $table->string('url', 100)->nullable();
             $table->integer('attraction_id');
             $table->timestamps();
         });
 
         Schema::table('social_medias', function (Blueprint $table) {
-            $table->unique(['attraction_id', 'social_media_type_id']);
+            $table->unique(['attraction_id']);
             $table->foreign('attraction_id')->references('id')->on('attractions')->onDelete('cascade');
-            $table->foreign('social_media_type_id')->references('id')->on('social_media_types')->onDelete('cascade');
         });
     }
 

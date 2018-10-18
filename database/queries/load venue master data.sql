@@ -1,7 +1,7 @@
 
 --/users/sungwhikim/downloads/venues_master_list.csv            
 COPY venues_temp("name", venue_id, venue_capacity, venue_lat, venue_lng, venue_city, venue_country, venue_state, venue_zip) 
-FROM '/users/sungwhikim/downloads/venues_master_list.csv' DELIMITER ';' CSV HEADER;           
+FROM '/home/tickets/current/resources/database/venues_master_list.csv' DELIMITER ';' CSV HEADER;           
 
 SELECT * FROM venues_temp; 
 
@@ -17,7 +17,7 @@ SELECT count(*) FROM venues_bof
 GROUP BY "name", city, state;
 
 SELECT * INTO venues_bof_old
-FROM venues_temp
+FROM venues_bof
 
 DROP TABLE venues_bof_old
 
@@ -52,9 +52,9 @@ SET capacity = NULL
 WHERE capacity = 0;
     
 UPDATE venues
-SET capacity = venues_bof.capacity
-FROM venues_bof
-WHERE venues.id = venues_bof.venue_id
+SET capacity = venues_temp.venue_capacity
+FROM venues_temp
+WHERE venues.id = venues_temp.venue_id
 
 UPDATE venues
 SET capacity = NULL
