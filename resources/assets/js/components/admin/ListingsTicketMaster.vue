@@ -143,6 +143,7 @@
                         <md-select v-model="options.searchField">
                             <md-option value="all">All Fields</md-option>
                             <md-option value="event_name">Event Name</md-option>
+                            <md-option value="attraction_name">Attraction Name</md-option>
                             <md-option value="venue_city">Venue City</md-option>
                             <md-option value="venue_name">Venue Name</md-option>
                         </md-select>

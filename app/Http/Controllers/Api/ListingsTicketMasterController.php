@@ -75,13 +75,13 @@ class ListingsTicketMasterController extends Controller
             $size = 25;
         }
 
-        // -- todo -- verify other search fields
         if ( $request->has( "search" ) && !empty( $request->search ) ) {
             $searchField = $request->get( 'searchField', 'all' );
             if ( $searchField == 'all' ) {
                 $query->where( "event_name", "ilike", "%" . $request->search . "%" );
                 $query->orWhere( "venue_name", "ilike", "%" . $request->search . "%" );
                 $query->orWhere( "venue_city", "ilike", "%" . $request->search . "%" );
+                $query->orWhere( "attraction_name", "ilike", "%" . $request->search . "%" );
             } else if ( !empty( $searchField ) ) {
                     $query->where( $searchField, "ilike", "%" . $request->search . "%" );
             }
