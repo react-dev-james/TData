@@ -463,6 +463,10 @@ class TicketService extends ScraperService implements IScraper
 
             /* match to listings and venues for capacity */
 
+            // first try to match the event based on url
+
+            // since the event did not match, at least update the capacity if needed
+
         }
 
         return collect([
@@ -473,7 +477,10 @@ class TicketService extends ScraperService implements IScraper
         ]);
     }
 
+    private function updateCapacity($venue_id, $capacity)
+    {
 
+    }
 
 
 }

@@ -772,32 +772,35 @@
                 });
 			},
 			updateStatus(listing, status, rowIndex) {
-        	    console.log(listing);
-				this.$http.post(`/apiv1/tm/listings/status/${listing.event_id}/${status}`).then((response) => {
+				this.$http.post(`/apiv1/tm/listings/status/${listing.event_id}/${status}`, '')
+                    .then((response) => {
 
-					this.shared.listings[rowIndex] = response.body.results;
-					this.$root.showNotification(response.body.message);
-					this.$forceUpdate();
-					//this.refreshTable();
+                        this.shared.listings[rowIndex] = response.body.results;
+                        this.$root.showNotification(response.body.message);
+                        this.$forceUpdate();
+                        //this.refreshTable();
 
-                    // only send webhook for targeted
-                    if( status === 'targeted' ) { this.sendZapierWebHook(listing); }
+                        // only send webhook for targeted
+                        if( status === 'targeted' ) { this.sendZapierWebHook(listing); }
+                    }, (response) => {
 
-				}, (response) => {
-					console.log("Error updating listing status. Try again.");
-					console.log(response);
-				});
+                        console.log("Error updating listing status. Try again.");
+                        console.log(response);
+
+                        this.$root.showNotification("Error updating status.");
+                    });
 			},
             sendZapierWebHook(listing) {
-                this.$http.post(`/apiv1/tm/listings/sendZapierWebHook/${listing.event_id}`).then((response) => {
+                this.$http.post(`/apiv1/tm/listings/sendZapierWebHook/${listing.event_id}`, '')
+                    .then((response) => {
 
-                    this.$root.showNotification(response.body.message);
+                        this.$root.showNotification(response.body.message);
+                    }, (response) => {
 
-                }, (response) => {
-                    this.$root.showNotification("Error sending Zapier webhook.");
-                    console.log("Error sending Zapier webhook.");
-                    console.log(response);
-                });
+                        console.log("Error sending Zapier webhook.");
+                        console.log(response);
+                        this.$root.showNotification("Error sending Zapier webhook.");
+                    });
             },
             associateListingWithData(listing, data) {
 				this.$http.post(`/apiv1/tm/listings/associate/${listing.event_id}/${data.id}`).then((response) => {
@@ -806,6 +809,7 @@
 					this.shared.listing = response.body.results;
 					this.$refs.associateModal.close();
 				}, (response) => {
+
 					console.log("Error associating listing. Try again.");
 					console.log(response);
 				});
