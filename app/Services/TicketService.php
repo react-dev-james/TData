@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+use App\Event;
 use \App\Listing;
+use App\Venue;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class TicketService extends ScraperService implements IScraper
@@ -463,10 +466,71 @@ class TicketService extends ScraperService implements IScraper
 
             /* match to listings and venues for capacity */
 
-            // first try to match the event based on url
+            // extract the event id
+            $url_path = parse_url($listing['ticket_url'], PHP_URL_PATH);
+            $url_parts = explode('/', $url_path);
+            $url_event_id = end($url_parts);
 
-            // since the event did not match, at least update the capacity if needed
+            // make sure it is at least 5 characters and has numbers or numbers and characters before matching
+            if( strlen($url_event_id) >= 5 &&
+                ( ctype_digit($url_event_id) ||
+                  (preg_match('/[A-Za-z]/', $url_event_id) && preg_match('/[0-9]/', $url_event_id)) ) ) {
 
+                //Log::info('||||||----- url event id: ' . $url_event_id);
+
+                // first try to match the event based on url
+                $tm_listings = DB::table('listings_view')
+                    ->where('ticket_url', 'like', "%$url_event_id%")
+                    ->get();
+
+                // found match(es)
+                if( count($tm_listings) > 0 ) {
+
+                    // if we get more than one match just log it so we can check for false matches
+                    if( count($tm_listings) > 1 )  Log::info('/*** found more than one tm_listing for id ' . $url_event_id . ' ***/');
+
+                    // update each event and venue
+                    foreach( $tm_listings as $tm_listing )
+                    {
+                        // save offer code and listing id
+                        if( strlen($listing['offer_code']) > 1 ) {
+                            $event = (new Event())->where('id', '=', $tm_listing->event_id)->first();
+                            $event->listing_id = $newListing->id;
+                            $event->offer_code = $listing['offer_code'];
+                            $event->save();
+
+                            Log::info('/* offer code saved for: ' . $tm_listing->event_id);
+                        }
+
+                        // set capacity
+                        if( $tm_listing->venue_id !== null &&
+                            ($tm_listing->venue_capacity === null || $tm_listing->venue_capacity === 0) &&
+                            $listing['venue_capacity'] > 0) {
+
+                            $venue = (new Venue())->where('id', '=', $tm_listing->venue_id)->first();
+                            $venue->capacity = $listing['venue_capacity'];
+                            $venue->save();
+
+                            Log::info('/* capacity saved for: ' . $tm_listing->event_id);
+                        }
+                    }
+                }
+
+                // no match found
+                else {
+                    // since the event did not match, at least update the capacity if needed
+                    $venue = (new Venue())
+                        ->where('name', 'ilike', $listing['venue'])
+                        ->where('city', 'ilike', $listing['venue_city'])
+                        ->where('state_code', 'ilike', $listing['venue_state'])
+                        ->first();
+                    if( $venue !== null && ($venue->capacity === null || $venue->capacity === 0) && $listing['venue_capacity'] > 0) {
+
+                        $venue->capacity = $listing['venue_capacity'];
+                        $venue->save();
+                    }
+                }
+            }
         }
 
         return collect([
@@ -475,11 +539,6 @@ class TicketService extends ScraperService implements IScraper
             'sales_new' => $newSales,
             'sales_updated' => $updatedSales
         ]);
-    }
-
-    private function updateCapacity($venue_id, $capacity)
-    {
-
     }
 
 
