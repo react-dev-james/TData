@@ -499,7 +499,7 @@ class TicketService extends ScraperService implements IScraper
                             $event->offer_code = $listing['offer_code'];
                             $event->save();
 
-                            Log::info('/* offer code saved for: ' . $tm_listing->event_id);
+                            //Log::info('/* offer code saved for: ' . $tm_listing->event_id);
                         }
 
                         // set capacity
@@ -511,7 +511,7 @@ class TicketService extends ScraperService implements IScraper
                             $venue->capacity = $listing['venue_capacity'];
                             $venue->save();
 
-                            Log::info('/* capacity saved for: ' . $tm_listing->event_id);
+                            //Log::info('/* capacity saved for: ' . $tm_listing->event_id);
                         }
                     }
                 }
