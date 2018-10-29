@@ -423,11 +423,11 @@
     <ui-modal ref="offerCodeModal" title="Offer Codes" size="medium">
         <table>
             <tr v-for="offerCode in state.offerCodes">
-                <td>
-                    <a class="offer-code-copy" :data-clipboard-text="offerCode">
-                        <md-icon>assignment</md-icon>
-                    </a>
-                </td>
+                <!--<td>-->
+                    <!--<a class="offer-code-copy" :data-clipboard-text="offerCode">-->
+                        <!--<md-icon>assignment</md-icon>-->
+                    <!--</a>-->
+                <!--</td>-->
                 <td>{{ offerCode }}</td>
             </tr>
         </table>
