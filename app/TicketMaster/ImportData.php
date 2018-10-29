@@ -250,26 +250,29 @@ class ImportData
 
             foreach( $event_data->_embedded->venues as $venue_data)
             {
-                $venue = (new \App\Venue())->updateOrCreate(
-                    ['tm_id' => $venue_data->id],
-                    [
-                        'name'         => $venue_data->name,
-                        'url'          => isset($venue_data->url) ? $venue_data->url : null,
-                        'locale'       => isset($venue_data->locale) ? $venue_data->locale : null,
-                        'postal_code'  => isset($venue_data->postalCode) ? $venue_data->postalCode : null,
-                        'time_zone'    => isset($venue_data->timezone) ? $venue_data->timezone : null,
-                        'city'         => isset($venue_data->city->name) ? $venue_data->city->name : null,
-                        'state_name'   => isset($venue_data->state->name) ? $venue_data->state->name : null,
-                        'state_code'   => isset($venue_data->state->stateCode) ? $venue_data->state->stateCode : null,
-                        'country_code' => isset($venue_data->country->countryCode) ? $venue_data->country->countryCode : null,
-                        'address'      => isset($venue_data->address->line1) ? $venue_data->address->line1 : null,
-                        'longitude'    => isset($venue_data->location->longitude) ? $venue_data->location->longitude : null,
-                        'latitude'     => isset($venue_data->location->latitude) ? $venue_data->location->latitude : null,
-                        'api_url'      => isset($venue_data->_links->self->href) ? $venue_data->_links->self->href : null,
-                    ]
-                );
+                // only add if it has a name
+                if( isset($venue_data->name) ) {
+                    $venue = (new \App\Venue())->updateOrCreate(
+                        ['tm_id' => $venue_data->id],
+                        [
+                            'name'         => $venue_data->name,
+                            'url'          => isset($venue_data->url) ? $venue_data->url : null,
+                            'locale'       => isset($venue_data->locale) ? $venue_data->locale : null,
+                            'postal_code'  => isset($venue_data->postalCode) ? $venue_data->postalCode : null,
+                            'time_zone'    => isset($venue_data->timezone) ? $venue_data->timezone : null,
+                            'city'         => isset($venue_data->city->name) ? $venue_data->city->name : null,
+                            'state_name'   => isset($venue_data->state->name) ? $venue_data->state->name : null,
+                            'state_code'   => isset($venue_data->state->stateCode) ? $venue_data->state->stateCode : null,
+                            'country_code' => isset($venue_data->country->countryCode) ? $venue_data->country->countryCode : null,
+                            'address'      => isset($venue_data->address->line1) ? $venue_data->address->line1 : null,
+                            'longitude'    => isset($venue_data->location->longitude) ? $venue_data->location->longitude : null,
+                            'latitude'     => isset($venue_data->location->latitude) ? $venue_data->location->latitude : null,
+                            'api_url'      => isset($venue_data->_links->self->href) ? $venue_data->_links->self->href : null,
+                        ]
+                    );
 
-                $venue_ids[] = $venue->id;
+                    $venue_ids[] = $venue->id;
+                }
             }
 
             /* Update x-ref table.  We are doing this manually as using the relationship in the model is not reliable. */

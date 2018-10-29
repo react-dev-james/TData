@@ -232,6 +232,7 @@
                         <md-table-head v-if="columnActive('sale_date')" md-sort-by="first_onsale_datetime" >Date</md-table-head>
                         <md-table-head v-if="columnActive('venue_state_code')" md-sort-by="venue_state_code" >State</md-table-head>
                         <md-table-head v-if="columnActive('buy')">Buy</md-table-head>
+                        <md-table-head v-if="columnActive('offer_code')">Ofr Cd</md-table-head>
                     </md-table-row>
                 </md-table-header>
 
@@ -383,11 +384,17 @@
                         </md-table-cell>
                         <md-table-cell v-if="columnActive('buy')">
                             <div v-if="listing.ticket_url">
-                            <a class="buyUrlLink" :data-clipboard-text="listing.ticket_url"
-                               :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon>
-                            </a>
+                                <a class="buyUrlLink" :href="listing.ticket_url" target="_blank"><md-icon>shopping_cart</md-icon>
+                                </a>
                             </div>
                             <span v-else>-</span>
+                        </md-table-cell>
+                        <md-table-cell>
+                            <div v-if="listing.offer_code !== null">
+                                <a class="offerCodeLink" @click="openOfferCodeDialog(listing)">
+                                    <md-icon>format_list_bulleted</md-icon>
+                                </a>
+                            </div>
                         </md-table-cell>
                     </md-table-row>
                 </md-table-body>
@@ -412,6 +419,22 @@
             @close="deleteListing"
             ref="delete-listing">
     </md-dialog-confirm>
+
+    <ui-modal ref="offerCodeModal" title="Offer Codes" size="medium">
+        <table>
+            <tr v-for="offerCode in state.offerCodes">
+                <td>
+                    <a class="offer-code-copy" :data-clipboard-text="offerCode">
+                        <md-icon>assignment</md-icon>
+                    </a>
+                </td>
+                <td>{{ offerCode }}</td>
+            </tr>
+        </table>
+        <div slot="footer">
+            <ui-button @click="$refs.offerCodeModal.close();">Close</ui-button>
+        </div>
+    </ui-modal>
 
     <ui-modal ref="uploadDataModal" title="Upload master data" size="medium">
         <p>Please select a file and the upload will start automatically</p>
@@ -529,6 +552,7 @@
 				addManualLookup: false,
                 dataUploadInProgress: false,
                 dataUploadReady: true,
+                offerCodes: [],
             },
             manualLookupName: '',
             _: window._,
@@ -562,6 +586,7 @@
                 {id : 23, name: 'total_sold', title: 'Total Sold All'},
                 {id : 24, name: 'second_highest_price', title: '2nd High'},
                 {id : 25, name: 'roi_second_highest', title: 'ROI 2nd'},
+                {id : 26, name: 'offer_code', title: 'Ofr Cd'},
             ],
             options: {
                 pager: {
@@ -814,6 +839,20 @@
 					console.log(response);
 				});
 
+            },
+            openOfferCodeDialog(listing) {
+                // load data
+                if (listing.offer_code !== null) {
+                    this.state.offerCodes = listing.offer_code.split(',');
+                }
+
+                /* testing */
+                this.state.offerCodes.push('1 - testing');
+                this.state.offerCodes.push('2 - testing');
+
+
+                // open the dialog box
+                this.$refs.offerCodeModal.open();
             },
             openUploadDialog() {
         	    // make sure loading icon is not displayed
