@@ -847,8 +847,8 @@
                 }
 
                 /* testing */
-                this.state.offerCodes.push('1 - testing');
-                this.state.offerCodes.push('2 - testing');
+                //this.state.offerCodes.push('1 - testing');
+                //this.state.offerCodes.push('2 - testing');
 
 
                 // open the dialog box
