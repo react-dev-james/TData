@@ -424,11 +424,11 @@
         <table>
             <tr v-for="offerCode in state.offerCodes">
                 <!--<td>-->
-                    <!--<a class="offer-code-copy" :data-clipboard-text="offerCode">-->
+                    <!--<a class="offer-code-copy" @click="copyOfferCode(offerCode)">-->
                         <!--<md-icon>assignment</md-icon>-->
                     <!--</a>-->
                 <!--</td>-->
-                <td>{{ offerCode }}</td>
+                <td :id="`oc_${offerCode}`">{{ offerCode }}</td>
             </tr>
         </table>
         <div slot="footer">
@@ -846,13 +846,14 @@
                     this.state.offerCodes = listing.offer_code.split(',');
                 }
 
-                /* testing */
-                //this.state.offerCodes.push('1 - testing');
-                //this.state.offerCodes.push('2 - testing');
-
-
                 // open the dialog box
                 this.$refs.offerCodeModal.open();
+            },
+            copyOfferCode(offerCode) {
+        	    const target = this.$refs['oc_' + offerCode];
+        	   console.log(target);
+        	    target.select();
+                document.execCommand("copy");
             },
             openUploadDialog() {
         	    // make sure loading icon is not displayed

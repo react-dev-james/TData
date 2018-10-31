@@ -373,7 +373,7 @@ class ListingsTicketMasterController extends Controller
 
     public function sendZapierWebHook($event_id)
     {
-        Log::info('--- send zapier webhook fired ---');
+        //Log::info('--- send zapier webhook fired ---');
 
         // set Zapier end point
         $zapier_endpoint = 'https://hooks.zapier.com/hooks/catch/2587272/gjw4qj/';
@@ -384,14 +384,14 @@ class ListingsTicketMasterController extends Controller
             ->first()
             ->toArray();
 
-        Log::info('--- got listing ---');
-        Log::info(json_encode($listing));
+        //Log::info('--- got listing ---');
+        //Log::info(json_encode($listing));
 
         // send request
         $response = $this->sendHttpPostRequest($zapier_endpoint, $listing);
 
         /* -- debug --*/
-        Log::info($response);
+        //Log::info($response);
 
         // return status of success
         if( $response !== null ) {
