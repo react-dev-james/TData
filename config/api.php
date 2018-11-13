@@ -20,6 +20,9 @@ return [
             '-Film',
         ],
     ],
+    'last_fm' => [
+        'api_key' => '0a5b3500c2c9a42f64a977fafe8f143a',
+    ],
     'event_exclusions' => [
         'fast lane',
         'express lane',

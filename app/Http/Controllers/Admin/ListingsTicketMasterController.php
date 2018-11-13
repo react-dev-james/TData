@@ -16,16 +16,6 @@ class ListingsTicketMasterController extends Controller
 
     public function index( Request $request )
     {
-        /* Run ticket network import of not running already */
-        /* We no longer run this job
-        exec( "ps aux | grep -i 'tickets:importtn' | grep -v grep", $pids );
-        if (empty($pids)) {
-            exec( "php " . base_path( "artisan" ) . " tickets:importtn > /dev/null 2>&1 &" );
-        }
-        */
-
-        return view("admin.listings-ticket-master", [
-        ]);
+        return view("admin.listings-ticket-master", []);
     }
-
 }

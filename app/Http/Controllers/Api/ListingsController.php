@@ -66,12 +66,17 @@ class ListingsController extends Controller
 
         if ( $request->has( "search" ) && !empty( $request->search ) ) {
             $searchField = $request->get( 'searchField', 'all' );
+            $search_term = $request->search;
+
             if ( $searchField == 'all' ) {
-                $query->where( "event_name", "ilike", "%" . $request->search . "%" );
-                $query->orWhere( "venue", "ilike", "%" . $request->search . "%" );
-                $query->orWhere( "venue_city", "ilike", "%" . $request->search . "%" );
+                // use closure to create combined or where clauses
+                $query->where(function ($q) use($search_term) {
+                    $q->where( "event_name", "ilike", "%" . $search_term . "%" );
+                    $q->orWhere( "venue", "ilike", "%" . $search_term . "%" );
+                    $q->orWhere( "venue_city", "ilike", "%" . $search_term . "%" );
+                });
             } else if ( !empty( $searchField ) ) {
-                    $query->where( $searchField, "ilike", "%" . $request->search . "%" );
+                $query->where( $searchField, "ilike", "%" . $search_term . "%" );
             }
 
         }

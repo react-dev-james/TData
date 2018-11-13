@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\SocialMedia\LastFm;
 use Illuminate\Console\Command;
 
 class test extends Command
@@ -37,6 +38,9 @@ class test extends Command
      */
     public function handle()
     {
-        $this->info('hello');
+        $last_fm = new LastFm(config('api.last_fm.api_key'));
+        $response = $last_fm->getArtistData('taylor swift');
+
+        $this->info(print_r($response));
     }
 }
