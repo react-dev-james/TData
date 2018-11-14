@@ -31,24 +31,36 @@ class LastFm
             'artist' => $artist_name,
         ];
 
-        // send request
-        //$response = \App\SocialMedia\Api::call($this->url, $parameters);
+        // set the querystring
+        $query_string = http_build_query($parameters);
 
-        $ch = curl_init("http://ws.audioscrobbler.com/2.0/?api_key=0a5b3500c2c9a42f64a977fafe8f143a&method=artist.search&format=json&artist=taylor+swift");
+        // init request
+        $ch = curl_init($this->url . '?' . $query_string);
 
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        // set options
+        curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+        // get response
         $response = curl_exec($ch);
+
+        //check for curl error
+        if( curl_error($ch) ) {
+            Log::error('*** Curl Error ***');
+            Log::error('Request Route: ' . $this->url . $query_string);
+            Log::error('Curl Error: ' . curl_error($ch));
+
+            $response = null;
+        }
+
         curl_close($ch);
 
-echo($response);
         // convert data
         $data = json_decode($response);
 
         /* check response */
         // found artist
         if( isset($data->results->artistmatches->artist) && count($data->results->artistmatches->artist) > 0 ) {
-
             return $data->results->artistmatches->artist[0];
         }
 

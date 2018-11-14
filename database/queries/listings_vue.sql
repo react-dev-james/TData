@@ -471,7 +471,15 @@ SELECT  evt.id AS event_id,
         dm.si_vol,
         dm.sfc_roi,
         dm.sfc_roi_dollar,
-        dm.sfc_cogs
+        dm.sfc_cogs,
+        soc_med.spotify_popularity,
+        soc_med.spotify_followers,
+        soc_med.nextbigsound_listeners,
+        soc_med.nextbigsound_streams,
+        soc_med.nextbigsound_facebook_likes,
+        soc_med.nextbigsound_twitter_followers,
+        soc_med.nextbigsound_songkick_followers,
+        soc_med.lastfm_listeners 
 FROM events evt
     LEFT JOIN event_states evt_st
         ON evt.event_state_id = evt_st.id
@@ -485,6 +493,8 @@ FROM events evt
         ON evt.id = evt_att.event_id
     LEFT JOIN attractions att
         ON evt_att.attraction_id = att.id
+    LEFT JOIN social_medias soc_med
+        ON att.id = soc_med.attraction_id
     LEFT JOIN event_venue evt_ven
         ON evt.id = evt_ven.event_id
     LEFT JOIN venues ven
@@ -511,7 +521,6 @@ FROM events evt
                     ON evt_ven.venue_id = ven.id    
             WHERE evt_att.primary = TRUE    
             AND evt_ven.primary = TRUE   
-            --and evt.name = 'A Bronx Tale: The Musical (Touring)'
             GROUP BY att.id, ven.id, ven.name, evt.name
         ) first_event_date 
         ON first_event_date.event_name = evt."name"
@@ -576,7 +585,15 @@ GROUP BY
         dm.si_vol,
         dm.sfc_roi,
         dm.sfc_roi_dollar,
-        dm.sfc_cogs;
+        dm.sfc_cogs,
+        soc_med.spotify_popularity,
+        soc_med.spotify_followers,
+        soc_med.nextbigsound_listeners,
+        soc_med.nextbigsound_streams,
+        soc_med.nextbigsound_facebook_likes,
+        soc_med.nextbigsound_twitter_followers,
+        soc_med.nextbigsound_songkick_followers,
+        soc_med.lastfm_listeners;
         
 GRANT SELECT ON listings_view TO tickets;
    
