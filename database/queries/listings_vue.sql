@@ -479,7 +479,16 @@ SELECT  evt.id AS event_id,
         soc_med.nextbigsound_facebook_likes,
         soc_med.nextbigsound_twitter_followers,
         soc_med.nextbigsound_songkick_followers,
-        soc_med.lastfm_listeners 
+        soc_med.lastfm_listeners,
+        social_media_agg.spotify_popularity_total AS spotify_popularity_total,
+        social_media_agg.spotify_followers_total AS spotify_followers_total,
+        social_media_agg.nextbigsound_listeners_total AS nextbigsound_listeners_total,
+        social_media_agg.nextbigsound_streams_total AS nextbigsound_streams_total,
+        social_media_agg.nextbigsound_facebook_likes_total AS nextbigsound_facebook_likes_total,
+        social_media_agg.nextbigsound_twitter_followers_total AS nextbigsound_twitter_followers_total,
+        social_media_agg.nextbigsound_songkick_followers_total AS nextbigsound_songkick_followers_total,
+        social_media_agg.lastfm_listeners_total AS lastfm_listeners_total,
+        social_media_agg.attraction_ids AS attraction_ids
 FROM events evt
     LEFT JOIN event_states evt_st
         ON evt.event_state_id = evt_st.id
@@ -495,6 +504,10 @@ FROM events evt
         ON evt_att.attraction_id = att.id
     LEFT JOIN social_medias soc_med
         ON att.id = soc_med.attraction_id
+    LEFT JOIN event_attraction evt_att_soc_med
+        ON evt.id = evt_att_soc_med.event_id
+    LEFT JOIN social_medias soc_med_agg
+        ON evt_att_soc_med.attraction_id = soc_med_agg.attraction_id
     LEFT JOIN event_venue evt_ven
         ON evt.id = evt_ven.event_id
     LEFT JOIN venues ven
@@ -505,6 +518,24 @@ FROM events evt
         ON evt.id = evt_psl.event_id        
     LEFT JOIN data_master dm
         ON evt.data_master_id = dm.id    
+    LEFT JOIN
+        (SELECT evt.id AS event_id,
+                string_agg(soc_med.attraction_id::TEXT, ',') AS attraction_ids,
+                sum(soc_med.spotify_popularity) AS spotify_popularity_total,
+                sum(soc_med.spotify_followers) AS spotify_followers_total,
+                sum(soc_med.nextbigsound_listeners) AS nextbigsound_listeners_total,
+                sum(soc_med.nextbigsound_streams) AS nextbigsound_streams_total,
+                sum(soc_med.nextbigsound_facebook_likes) AS nextbigsound_facebook_likes_total,
+                sum(soc_med.nextbigsound_twitter_followers) AS nextbigsound_twitter_followers_total,
+                sum(soc_med.nextbigsound_songkick_followers) AS nextbigsound_songkick_followers_total,
+                sum(soc_med.lastfm_listeners) AS lastfm_listeners_total
+        FROM events evt
+            LEFT JOIN event_attraction evt_att
+                ON evt.id = evt_att.event_id
+            LEFT JOIN social_medias soc_med
+                ON evt_att.attraction_id = soc_med.attraction_id   
+        GROUP BY evt.id) social_media_agg    
+    ON evt.id = social_media_agg.event_id        
     JOIN (
             SELECT  evt.name AS event_name,
                     min(evt.event_datetime) AS event_datetime,
@@ -593,7 +624,16 @@ GROUP BY
         soc_med.nextbigsound_facebook_likes,
         soc_med.nextbigsound_twitter_followers,
         soc_med.nextbigsound_songkick_followers,
-        soc_med.lastfm_listeners;
+        soc_med.lastfm_listeners,
+        social_media_agg.spotify_popularity_total,
+        social_media_agg.spotify_followers_total,
+        social_media_agg.nextbigsound_listeners_total,
+        social_media_agg.nextbigsound_streams_total,
+        social_media_agg.nextbigsound_facebook_likes_total,
+        social_media_agg.nextbigsound_twitter_followers_total,
+        social_media_agg.nextbigsound_songkick_followers_total,
+        social_media_agg.lastfm_listeners_total,
+        social_media_agg.attraction_ids;
         
 GRANT SELECT ON listings_view TO tickets;
    

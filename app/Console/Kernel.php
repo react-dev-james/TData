@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ImportSocialMedia;
 use App\Console\Commands\ImportTicketDataMaster;
 use App\Console\Commands\ImportTicketMaster;
 use App\Console\Commands\ImportTicketNetwork;
@@ -33,6 +34,7 @@ class Kernel extends ConsoleKernel
         test::class,
         ImportTicketMaster::class,
         MatchEventTicketMaster::class,
+        ImportSocialMedia::class,
     ];
 
     /**
